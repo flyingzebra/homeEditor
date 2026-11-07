@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-You just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers. The editor scripts, interface styles, and Font Awesome resources are local; no external Bootstrap or jQuery downloads are required.
+Just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers. The editor scripts, interface styles, and Font Awesome resources are local; no external Bootstrap or jQuery downloads are required.
 
 ## Running the tests
 

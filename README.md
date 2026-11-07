@@ -1,17 +1,14 @@
-# homeRoughEditor Version 0.95
+# homeRoughEditor v0.1
 
 Help me to make this project an essential and free resource for all, so that any developer / integrator can propose to create **_plans for house_, _apartment_**, etc. online. **Full JavaScript**, using native browser DOM and SVG APIs without jQuery. A locally maintained CSS subset replaces Bootstrap, and Font Awesome icons are loaded from local webfonts. For cons, forgive me for my English, it is very rusty !!!
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+[CLICK HERE](https://flyingzebra.github.io/homeEditor/)
 
 ### Installing
 
-You just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers. The editor scripts, interface styles, and Font Awesome resources are local; no external Bootstrap or jQuery downloads are required.
-
-### See example
-[![homeRoughEditor](https://raw.githubusercontent.com/ekymoz/homeRoughEditor/master/test.jpg)](https://ekymoz.github.io/homeRoughEditor/)]
+Just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers. The editor scripts, interface styles, and Font Awesome resources are local; no external Bootstrap or jQuery downloads are required.
 
 ## Running the tests
 

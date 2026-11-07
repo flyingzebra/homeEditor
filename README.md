@@ -2,6 +2,9 @@
 
 Help me to make this project an essential and free resource for all, so that any developer / integrator can propose to create **_plans for house_, _apartment_**, etc. online. **Full JavaScript**, using native browser DOM and SVG APIs without jQuery. A locally maintained CSS subset replaces Bootstrap, and Font Awesome icons are loaded from local webfonts. For cons, forgive me for my English, it is very rusty !!!
 
+<img src=res/splash.png>
+
+
 ## Getting Started
 
 [CLICK HERE](https://flyingzebra.github.io/homeEditor/)

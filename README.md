@@ -22,17 +22,9 @@ Just have to copy the files into a directory and open the index.html file in you
 - Complete the translation (i'm French) 
 - Make your own system/functions to export plan to any database 
 
-## Built With
-
-* [Atom.io](https://atom.io/) - My code editor. Simple and free.
-* Native browser DOM/SVG APIs and a project-specific CSS subset based on the Bootstrap 5 interface (MIT license).
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://en.wikipedia.org/wiki/MIT_License) on Web file for details
-
-
-
 
 ## Coding conventions and offline checks
 

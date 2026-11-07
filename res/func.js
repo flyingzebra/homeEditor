@@ -1307,19 +1307,13 @@ function debugPoint(point, name, color = "#00ff00")
 function showVertex()
 {
     for (let i = 0; i < vertex.length; i++)
-    {
         debugPoint(vertex[i], i);
-
-    }
 }
 
 function showJunction()
 {
     for (let i = 0; i < junction.length; i++)
-    {
         debugPoint({ x: junction[i].values[0], y: junction[i].values[1] }, i);
-
-    }
 }
 
 document.querySelectorAll('.visu').forEach(function(element)
@@ -1344,9 +1338,7 @@ function allRib()
 {
     document.getElementById('boxRib').replaceChildren();
     for (let i in WALLS)
-    {
         inWallRib(WALLS[i], 'all');
-    }
 }
 
 function inWallRib(wall, option = false)

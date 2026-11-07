@@ -2,7 +2,7 @@
 
 This project is an essential and free resource for all, so that any developer / integrator can propose to create **_plans for house_, _apartment_**, etc. online. **Full JavaScript**. A locally maintained CSS subset replaces Bootstrap, and Font Awesome icons are loaded from local webfonts.
 
-<img src=res/splash.png>
+<a hre=https://flyingzebra.github.io/homeEditor/><img src=res/splash.png></a>
 
 
 ## Getting Started

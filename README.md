@@ -19,11 +19,9 @@ Just have to copy the files into a directory and open the index.html file in you
 
 ## TODO
 - Make TouchScreen functions for tablet (or smartphone, but too tiny screen i think...)
-- Make interoperability for browsers (actually good for Moz.)
-- Refine the CSS and buttons behavior
 - Refine the Historical system (use LocalStorage)
-- Complete the translation (i'm French) 
-- Make your own system/functions to export plan to any database 
+- Chose an interesting file interchage file format (import/export)
+- Make your own system/functions to export plan to any web/local database
 
 ## License
 

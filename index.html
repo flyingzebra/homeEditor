@@ -120,7 +120,7 @@
 
     <div id="reportTools" class="leftBox" style="width:500px;overflow-y: scroll;overflow-x: hidden">
         <h2><i class="fa fa-calculator" aria-hidden="true"></i> Report plan.</h2>
-        <br /><br />
+        <br/><br/>
         <h2 class="toHide" id="reportTotalSurface" style="display:none"></h2>
         <h2 class="toHide" id="reportNumberSurface" style="display:none"></h2>
         <hr />
@@ -140,22 +140,22 @@
         </section>
         <ul class="list-unstyled">
             <section id="cutWall">
-                <p>Cut the wall :<br /><small>A cut will be made at each wall encountered.</small></p>
+                <p>Cut the wall :<br/><small>A cut will be made at each wall encountered.</small></p>
                 <li><button class="btn btn-light shadow fully" data-editor-action="splitWall"><i class="fa fa-2x fa-cutlery"
                             aria-hidden="true"></i></button></li>
             </section>
-            <br />
+            <br/>
             <section id="separate">
-                <p>Separation wall :<br /><small>Transform the wall into simple separation line.</small></p>
+                <p>Separation wall :<br/><small>Transform the wall into simple separation line.</small></p>
                 <li><button class="btn btn-light shadow fully" data-editor-action="hideWall" id="wallInvisible"><i
                             class="fa fa-2x fa-crop" aria-hidden="true"></i></button></li>
             </section>
             <section id="recombine">
-                <p>Transform to wall :<br /><small>The thickness will be identical to the last known.</small></p>
+                <p>Transform to wall :<br/><small>The thickness will be identical to the last known.</small></p>
                 <li><button class="btn btn-light shadow fully" data-editor-action="showWall" id="wallVisible"><i
                             class="fa fa-2x fa-crop" aria-hidden="true"></i></button></li>
             </section>
-            <br />
+            <br/>
             <li><button class="btn btn-danger fully" id="wallTrash"><i class="fa fa-2x fa-trash"
                         aria-hidden="true"></i></button></li>
             <li><button class="btn btn-info fully" style="margin-top:50px"
@@ -213,7 +213,7 @@
             <div style="clear:both"></div>
         </div>
 
-        <br /><br />
+        <br/><br/>
         <button class="btn btn-danger fully" id="bboxTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
         <button class="btn btn-info" style="margin-top:100px"
             data-editor-action="closeBoundingBox"><i
@@ -224,12 +224,12 @@
         <h2>Modify door/window</h2>
         <hr />
         <ul class="list-unstyled">
-            <br /><br />
+            <br/><br/>
             <li><button class="btn btn-light shadow fully" id="objToolsHinge">Reverse hinges</button></li>
 
             <p>Width [<span id="doorWindowWidthScale"></span>] : <span id="doorWindowWidthVal"></span> cm</span></p>
             <input type="range" id="doorWindowWidth" step="1" class="range" />
-            <br />
+            <br/>
             <li><button class="btn btn-danger fully objTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
             </li>
             <li><button class="btn btn-info" style="margin-top:100px"
@@ -239,17 +239,17 @@
     </div>
 
     <div id="roomTools" class="leftBox">
-        <span style="color:#08d">Home Editor</span> estimates an area of:<br /><b><span class="size"></span></b>
-        <br /><br />
+        <span style="color:#08d">Home Editor</span> area estimation<b><span class="size"></span></b>
+        <br/><br/>
         <p>If you know the actual area, enter it below</p>
         <div class="input-group">
             <input type="text" class="form-control" id="roomSurface" placeholder="Actual area"
                 aria-describedby="basic-addon2">
             <span class="input-group-addon" id="basic-addon2">m²</span>
         </div>
-        <br />
+        <br/>
         <input type="hidden" id="roomName" value="" />
-        <label for="roomLabel">Room type:</label><br />
+        <label for="roomLabel">Room type</label><br/>
         <select class="form-select" aria-label="Room type" id="roomLabel">
             <option selected value="0">None</option>
             <option value="1">Living room</option>
@@ -274,8 +274,8 @@
             <option value="20">Garage</option>
             <option value="21">Storage</option>
         </select>
-        <br />
-        <br />
+        <br/>
+        <br/>
         Meter :
         <div class="funkyradio">
             <div class="funkyradio-success">
@@ -310,7 +310,7 @@
         <div class="roomColor" data-type="gradientBlack" style="background:linear-gradient(30deg,#3c3b3b, #000000);"></div>
         <div class="roomColor" data-type="gradientNeutral" style="background:linear-gradient(30deg,#e2c695, #c69d56);">
         </div>
-        <br /><br />
+        <br/><br/>
         <p>Materials</p>
         <div class="roomColor" data-type="wood"
             style="background: url('res/texture_wood.png');">
@@ -325,13 +325,13 @@
             style="background: url('res/texture_grass.png');">
         </div>
         <div data-type="#ff008a" style="clear:both"></div>
-        <br /><br />
+        <br/><br/>
         <input type="hidden" id="roomBackground" value="gradientNeutral" />
         <input type="hidden" id="roomIndex" value="" />
         <button type="button" class="btn btn-primary" id="applySurface">Apply</button>
         <button type="button" class="btn btn-danger" id="resetRoomTools">Cancel</button>
 
-        <br />
+        <br/>
     </div>
 
     <div id="panel" class="leftBox">
@@ -341,10 +341,10 @@
                     <button class="btn disabled halfy pull-right" id="redo" title="redo"><i class="fa fa-chevron-circle-right"
                             aria-hidden="true"></i></button>
             </li>
-            <br />
+            <br/>
             <li><button class="btn btn-success fully " id="select_mode" style="box-shadow:2px 2px 3px #ccc;"><i
                         class="fa fa-2x fa-mouse-pointer" aria-hidden="true"></i></button></li>
-            <br />
+            <br/>
             <li>
                 <button class="btn btn-light shadow fully " style="margin-bottom:0px" id="line_mode" data-toggle="tooltip"
                     data-placement="right" title="Make walls">WALL</button>
@@ -357,17 +357,17 @@
                     </div>
                 </div>
             </li>
-            <br />
+            <br/>
             <li><button class="btn btn-light shadow fully " id="room_mode">CONFIG. ROOMS</button></li>
-            <br />
+            <br/>
             <li><button class="btn btn-light shadow fully " id="node_mode"><i class="fa fa-2x fa-scissors"
                         aria-hidden="true"></i></button></li>
-            <br />
+            <br/>
             <li><button class="btn btn-light shadow fully " id="distance_mode" data-toggle="tooltip" data-placement="right"
                     title="Add a measurement">MEASURE</button></li>
             <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
                     title="Add text">TEXT</button></li>
-            <br />
+            <br/>
             <div id="door_list" class="list-unstyled sub"
                 style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;width:150px">
                 <button class="btn fully door" id="aperture">Aperture</button>
@@ -389,7 +389,7 @@
                     data-editor-action="toggleWindows">WINDOW</button></li>
             <li><button class="btn btn-light shadow fully object" id="stair_mode"
                     data-editor-action="hideDoors">STAIR</button></li>
-            <br />
+            <br/>
             <div id="energy_list" class="list-unstyled sub"
                 style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;bottom:40px;width:600px">
                 <div style="width:600px;float:left;padding:10px">
@@ -430,7 +430,7 @@
             <li><button class="btn btn-light shadow fully " id="object_mode"
                     data-editor-action="toggleEnergy">ENERGY</button></li>
             <!-- <li><button class="btn btn-light shadow fully " id="object_mode" data-editor-action="toggleFurniture">FURNITURE</button></li> -->
-            <br />
+            <br/>
 
             <li><button class="btn btn-light shadow fully " id="layer_mode"
                     data-editor-action="toggleLayers">Layers</button></li>

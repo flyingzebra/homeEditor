@@ -1,6 +1,6 @@
 # HomeEditor v0.1
 
-Help me to make this project an essential and free resource for all, so that any developer / integrator can propose to create **_plans for house_, _apartment_**, etc. online. **Full JavaScript**, using native browser DOM and SVG APIs without jQuery. A locally maintained CSS subset replaces Bootstrap, and Font Awesome icons are loaded from local webfonts. For cons, forgive me for my English, it is very rusty !!!
+This project is an essential and free resource for all, so that any developer / integrator can propose to create **_plans for house_, _apartment_**, etc. online. **Full JavaScript**. A locally maintained CSS subset replaces Bootstrap, and Font Awesome icons are loaded from local webfonts.
 
 <img src=res/splash.png>
 

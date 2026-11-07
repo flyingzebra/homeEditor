@@ -579,7 +579,7 @@ function QSVG()
                             }
                         }
                     }
-                    // IF EQ1 == EQ 2 FIND IF START OF SECOND SEG == END OF FIRST seg (eq.A maybe values H ou V)
+                    // IF EQ1 == EQ 2 FIND IF START OF SECOND SEG == END OF FIRST seg (eq.A maybe values H or V)
                     if ((Math.abs(equation1.A) == Math.abs(equation2.A) || equation1.A == equation2.A) && equation1.B == equation2.B)
                     {
 

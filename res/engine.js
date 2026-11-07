@@ -93,11 +93,11 @@ function _MOUSEMOVE(event)
     });
 
     //**************************************************************************
-    //********************   TEXTE   MODE **************************************
+    //********************   TEXT MODE **************************************
     //**************************************************************************
     if (mode == 'text_mode')
     {
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         if (action == 0) cursor('text');
         else
         {
@@ -110,7 +110,7 @@ function _MOUSEMOVE(event)
     //**************************************************************************
     if (mode == 'object_mode')
     {
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         if (typeof (binder) == 'undefined')
         {
             setElementVisible(document.getElementById('object_list'), false);
@@ -186,7 +186,7 @@ function _MOUSEMOVE(event)
     //**************************************************************************
     if (mode == 'distance_mode')
     {
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         if (typeof (binder) == 'undefined')
         {
             cross = qSVG.create("boxbind", "path", {
@@ -247,7 +247,7 @@ function _MOUSEMOVE(event)
 
     if (mode == 'room_mode')
     {
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         var roomTarget;
         if (roomTarget = editor.rayCastingRoom(snap))
         {
@@ -307,7 +307,7 @@ function _MOUSEMOVE(event)
     if (mode == 'door_mode')
     {
 
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         if (wallSelect = editor.nearWall(snap))
         {
             var wall = wallSelect.wall;
@@ -394,7 +394,7 @@ function _MOUSEMOVE(event)
     if (mode == 'node_mode')
     {
 
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
 
         if (typeof (binder) == 'undefined')
         {
@@ -457,7 +457,7 @@ function _MOUSEMOVE(event)
     {
         // FIRST TEST ON SELECT MODE (and drag OFF) to detect MOUSEOVER DOOR
 
-        snap = calcul_snap(event, 'off');
+        snap = calculateSnap(event, 'off');
 
         var objTarget = false;
         for (var i = 0; i < OBJDATA.length; i++)
@@ -673,7 +673,7 @@ function _MOUSEMOVE(event)
 
     if ((mode == 'line_mode' || mode == 'partition_mode') && action == 0)
     {
-        snap = calcul_snap(event, 'off');
+        snap = calculateSnap(event, 'off');
         cursor('grab');
         pox = snap.x;
         poy = snap.y;
@@ -726,7 +726,7 @@ function _MOUSEMOVE(event)
     if (action == 1 && (mode == 'line_mode' || mode == 'partition_mode'))
     {
 
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         x = snap.x;
         y = snap.y;
         starter = minMoveGrid(snap);
@@ -931,7 +931,7 @@ function _MOUSEMOVE(event)
     if (mode == 'bind_mode')
     {
 
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
 
         if (binder.type == 'node')
         {
@@ -1322,7 +1322,7 @@ function _MOUSEMOVE(event)
 
     if (mode == 'select_mode' && drag == 'on')
     {
-        snap = calcul_snap(event, grid_snap);
+        snap = calculateSnap(event, grid_snap);
         document.getElementById('lin').style.cursor = 'move';
         distX = (snap.xMouse - pox) * factor;
         distY = (snap.yMouse - poy) * factor;
@@ -1352,7 +1352,7 @@ function _MOUSEDOWN(event)
         if (action == 0)
         {
             action = 1;
-            snap = calcul_snap(event, grid_snap);
+            snap = calculateSnap(event, grid_snap);
             pox = snap.x;
             poy = snap.y;
         }
@@ -1365,7 +1365,7 @@ function _MOUSEDOWN(event)
     {
         if (action == 0)
         {
-            snap = calcul_snap(event, grid_snap);
+            snap = calculateSnap(event, grid_snap);
             pox = snap.x;
             poy = snap.y;
             if (wallStartConstruc = editor.nearWall(snap, 12))
@@ -1643,7 +1643,7 @@ function _MOUSEDOWN(event)
         {
             action = 0;
             drag = 'on';
-            snap = calcul_snap(event, grid_snap);
+            snap = calculateSnap(event, grid_snap);
             pox = snap.xMouse;
             poy = snap.yMouse;
         }
@@ -1674,7 +1674,7 @@ function _MOUSEUP(event)
     }
 
     //**************************************************************************
-    //********************   TEXTE   MODE **************************************
+    //********************   TEXT MODE **************************************
     //**************************************************************************
     if (mode == 'text_mode')
     {
@@ -1699,7 +1699,7 @@ function _MOUSEUP(event)
         document.getElementById(targetBox).append(OBJDATA[OBJDATA.length - 1].graph);
         delete binder;
         document.getElementById('boxinfo').innerHTML = ('Object added');
-        fonc_button('select_mode');
+        setModeButton('select_mode');
         save();
     }
 
@@ -1731,7 +1731,7 @@ function _MOUSEUP(event)
             cross.remove();
             delete cross;
             document.getElementById('boxinfo').innerHTML = ('Measure added');
-            fonc_button('select_mode');
+            setModeButton('select_mode');
             save();
         }
     }
@@ -1759,16 +1759,14 @@ function _MOUSEUP(event)
         else document.getElementById('roomSurface').value = ('');
         document.querySelector('#seeArea').checked = ROOM[binder.id].showSurface;
         document.querySelector('#roomBackground').value = ROOM[binder.id].color;
-        var roomName = ROOM[binder.id].name;
-        document.querySelector('#roomName').value = roomName;
-        if (ROOM[binder.id].name != '')
+        var roomName = translateRoomName(ROOM[binder.id].name);
+        var roomLabel = document.getElementById('roomLabel');
+        var matchingOption = Array.from(roomLabel.options).find(function(option)
         {
-            document.querySelector('#roomLabel').innerHTML = roomName + ' <span class="caret"></span>';
-        }
-        else
-        {
-            document.querySelector('#roomLabel').innerHTML = 'None <span class="caret"></span>';
-        }
+            return option.textContent.trim() === roomName;
+        });
+        roomLabel.value = matchingOption ? matchingOption.value : '0';
+        document.getElementById('roomName').value = matchingOption ? roomName : '';
 
         var actionToDo = ROOM[binder.id].action;
         document.querySelector('#' + actionToDo + 'Action').checked = true;
@@ -1798,7 +1796,7 @@ function _MOUSEUP(event)
             editor.architect(WALLS);
             save();
         }
-        fonc_button('select_mode');
+        setModeButton('select_mode');
     }
 
     // *******************************************************************  ***** ****      *******  ******  ******  *****
@@ -1810,7 +1808,7 @@ function _MOUSEUP(event)
         if (typeof (binder) == "undefined")
         {
             document.getElementById('boxinfo').innerHTML = ('The plan currently contains no wall.');
-            fonc_button('select_mode');
+            setModeButton('select_mode');
             return false;
         }
         OBJDATA.push(binder);
@@ -1818,7 +1816,7 @@ function _MOUSEUP(event)
         document.getElementById('boxcarpentry').append(OBJDATA[OBJDATA.length - 1].graph);
         delete binder;
         document.getElementById('boxinfo').innerHTML = ('Element added');
-        fonc_button('select_mode');
+        setModeButton('select_mode');
         save();
     }
 
@@ -1864,13 +1862,13 @@ function _MOUSEUP(event)
             action = 0;
             construc = 0;
             document.getElementById('boxinfo').innerHTML = ('Select mode');
-            fonc_button('select_mode');
+            setModeButton('select_mode');
             if (typeof (binder) != 'undefined')
             {
                 binder.remove();
                 delete binder;
             }
-            snap = calcul_snap(event, grid_snap);
+            snap = calculateSnap(event, grid_snap);
             pox = snap.x;
             poy = snap.y;
         }
@@ -1887,7 +1885,7 @@ function _MOUSEUP(event)
         construc = 0; // CONSTRUC 0 TO FREE BINDER GROUP NODE WALL MOVING
         if (typeof (binder) != 'undefined')
         {
-            fonc_button('select_mode');
+            setModeButton('select_mode');
             if (binder.type == 'node')
             {
 

@@ -299,7 +299,7 @@ function Editor()
         }
         else
         {
-            document.getElementById('boxinfo').innerHTML = ('Les murs contenant des portes ou des fenêtres ne peuvent être une séparation !');
+            document.getElementById('boxinfo').innerHTML = ('Walls containing doors or windows cannot be partition walls.');
             return false;
         }
     };
@@ -349,7 +349,7 @@ function Editor()
         });
         var initCoords = wallToSplit.start;
         var initThick = wallToSplit.thick;
-        // CLEAR THE WALL BEFORE PIECES RE-BUILDER
+        // CLEAR THE WALL BEFORE ROOM REBUILDER
         for (var k in WALLS)
         {
             if (isObjectsEquals(WALLS[k].child, wallToSplit)) WALLS[k].child = null;

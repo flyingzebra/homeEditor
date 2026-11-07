@@ -1,3 +1,19 @@
+// Translate historical room labels without modifying saved plan data.
+function translateRoomName(name)
+{
+    if (!name) return '';
+    var legacyNames = {
+        'Salon': 'Living room',
+        'Salle à manger': 'Dining room',
+        'Couloir': 'Corridor',
+        'Cuisine': 'Kitchen',
+        'Toilette': 'Toilet'
+    };
+    if (Object.prototype.hasOwnProperty.call(legacyNames, name)) return legacyNames[name];
+    if (name.indexOf('Chambre') === 0) return 'Bedroom' + name.slice('Chambre'.length);
+    return name;
+}
+
 //init
 WALLS = [];
 OBJDATA = [];
@@ -394,8 +410,8 @@ document.getElementById('report_mode').addEventListener("click", function()
     let reportRoom = '<div class="row">\n';
     for (let k in ROOM)
     {
-        let nameRoom = "Room n°" + number + " <small>(sans nom)</small>";
-        if (ROOM[k].name != "") nameRoom = ROOM[k].name;
+        let nameRoom = "Room no. " + number + " <small>(unnamed)</small>";
+        if (ROOM[k].name != "") nameRoom = translateRoomName(ROOM[k].name);
         reportRoom += '<div class="col-md-6"><p>' + nameRoom + '</p></div>\n';
         reportRoom += '<div class="col-md-6"><p>Surface : <b>' + ((ROOM[k].area) / 3600).toFixed(2) + '</b> m²</p></div>\n';
         number++;
@@ -434,7 +450,7 @@ document.getElementById('report_mode').addEventListener("click", function()
     {
         reportRoom += '<div class="row">\n';
         let nameRoom = "Room n°" + number + " <small>(no name)</small>";
-        if (ROOM[k].name != "") nameRoom = ROOM[k].name;
+        if (ROOM[k].name != "") nameRoom = translateRoomName(ROOM[k].name);
         reportRoom += '<div class="col-md-4"><p>' + nameRoom + '</p></div>\n';
         switchNumber = 0;
         plugNumber = 0;
@@ -514,7 +530,7 @@ document.getElementById('report_mode').addEventListener("click", function()
         reportRoom += '<div class="row">\n';
         let nfc = true;
         let nameRoom = "Room n°" + number + " <small>(no name)</small>";
-        if (ROOM[k].name != "") nameRoom = ROOM[k].name;
+        if (ROOM[k].name != "") nameRoom = translateRoomName(ROOM[k].name);
         reportRoom += '<div class="col-md-4"><p>' + nameRoom + '</p></div>\n';
         if (ROOM[k].name === "")
         {
@@ -523,11 +539,11 @@ document.getElementById('report_mode').addEventListener("click", function()
         }
         else
         {
-            if (ROOM[k].name === "Salon")
+            if (translateRoomName(ROOM[k].name) === "Living room")
             {
                 for (let g in ROOM)
                 {
-                    if (ROOM[g].name === "Salle à manger")
+                    if (translateRoomName(ROOM[g].name) === "Dining room")
                     {
                         roomEnergy[k].light += roomEnergy[g].light;
                         roomEnergy[k].plug += roomEnergy[g].plug;
@@ -552,12 +568,12 @@ document.getElementById('report_mode').addEventListener("click", function()
                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
                 reportRoom += '</div>';
             }
-            if (ROOM[k].name === "Salle à manger")
+            if (translateRoomName(ROOM[k].name) === "Dining room")
             {
                 reportRoom +=
-                    '<div class="col-md-8"><p><i class="fa fa-info" aria-hidden="true" style="color:blue"></i> This room is linked to the <b>living room / living room</b> according to the standard.</p></div>\n';
+                    '<div class="col-md-8"><p><i class="fa fa-info" aria-hidden="true" style="color:blue"></i> This room is linked to the <b>living room</b> according to the standard.</p></div>\n';
             }
-            if (ROOM[k].name.substr(0, 7) === "Chambre")
+            if (translateRoomName(ROOM[k].name).startsWith("Bedroom"))
             {
                 reportRoom += '<div class="col-md-8">';
                 if (roomEnergy[k].light === 0)
@@ -604,7 +620,7 @@ document.getElementById('report_mode').addEventListener("click", function()
                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
                 reportRoom += '</div>';
             }
-            if (ROOM[k].name === "Couloir")
+            if (translateRoomName(ROOM[k].name) === "Corridor")
             {
                 reportRoom += '<div class="col-md-8">';
                 if (roomEnergy[k].light === 0)
@@ -624,7 +640,7 @@ document.getElementById('report_mode').addEventListener("click", function()
                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
                 reportRoom += '</div>';
             }
-            if (ROOM[k].name === "Toilette")
+            if (translateRoomName(ROOM[k].name) === "Toilet")
             {
                 reportRoom += '<div class="col-md-8">';
                 if (roomEnergy[k].light === 0)
@@ -637,7 +653,7 @@ document.getElementById('report_mode').addEventListener("click", function()
                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
                 reportRoom += '</div>';
             }
-            if (ROOM[k].name === "Cuisine")
+            if (translateRoomName(ROOM[k].name) === "Kitchen")
             {
                 reportRoom += '<div class="col-md-8">';
                 if (roomEnergy[k].light === 0)
@@ -706,7 +722,7 @@ document.getElementById("bboxTrash").addEventListener("click", function()
     OBJDATA.splice(OBJDATA.indexOf(binder.obj), 1);
     setElementVisible(document.getElementById('objBoundingBox'), false);
     setElementVisible(document.getElementById('panel'), true);
-    fonc_button('select_mode');
+    setModeButton('select_mode');
     document.getElementById('boxinfo').innerHTML = ('Deleted object');
     delete binder;
     rib();
@@ -820,21 +836,21 @@ window.addEventListener("load", function()
     showEditorModal('myModal');
 });
 
-document.getElementById('sizePolice').addEventListener("input", function()
+document.getElementById('fontSizeInput').addEventListener("input", function()
 {
     document.getElementById('labelBox').style.fontSize = this.value + 'px';
 });
 
 document.getElementById('textToLayer').addEventListener('editor-modal-hidden', function(e)
 {
-    fonc_button('select_mode');
+    setModeButton('select_mode');
     action = 0;
     let textToMake = document.getElementById('labelBox').textContent;
     if (textToMake != "" && textToMake != "Your text")
     {
         binder = new editor.obj2D("free", "text", document.getElementById('labelBox').style.color, snap, 0, 0, 0, "normal", 0, {
             text: textToMake,
-            size: document.getElementById('sizePolice').value
+            size: document.getElementById('fontSizeInput').value
         });
         binder.update();
         OBJDATA.push(binder);
@@ -852,7 +868,7 @@ document.getElementById('textToLayer').addEventListener('editor-modal-hidden', f
     document.getElementById('labelBox').textContent = "Your text";
     document.getElementById('labelBox').style.color = "#333333";
     document.getElementById('labelBox').style.fontSize = "15px";
-    document.getElementById('sizePolice').value = 15;
+    document.getElementById('fontSizeInput').value = 15;
 });
 
 if (!Array.prototype.includes)
@@ -913,7 +929,7 @@ function throttle(callback, delay)
         let args = arguments;
         if (last && now < last + delay)
         {
-            // le délai n'est pas écoulé on reset le timer
+            // The delay has not elapsed; restart the timer.
             clearTimeout(timer);
             timer = setTimeout(function()
             {
@@ -1020,11 +1036,9 @@ document.getElementById("applySurface").addEventListener("click", function()
     let data = document.getElementById('roomBackground').value;
     ROOM[id].color = data;
     //ROOM NAME
-    let roomName = document.getElementById('roomName').value;
-    if (roomName === 'None')
-    {
-        roomName = '';
-    }
+    let roomLabel = document.getElementById('roomLabel');
+    let roomName = roomLabel.value === '0' ? '' :
+        roomLabel.options[roomLabel.selectedIndex].textContent.trim();
     ROOM[id].name = roomName;
     //ROOM SURFACE
     let area = document.getElementById('roomSurface').value;
@@ -1047,7 +1061,7 @@ document.getElementById("applySurface").addEventListener("click", function()
     document.getElementById('boxSurface').replaceChildren();
     editor.roomMaker(Rooms);
     document.getElementById('boxinfo').innerHTML = ('Updated room');
-    fonc_button('select_mode');
+    setModeButton('select_mode');
 });
 
 document.getElementById("resetRoomTools").addEventListener("click", function()
@@ -1057,7 +1071,7 @@ document.getElementById("resetRoomTools").addEventListener("click", function()
     binder.remove();
     delete binder;
     document.getElementById('boxinfo').innerHTML = ('Updated room');
-    fonc_button('select_mode');
+    setModeButton('select_mode');
 
 });
 
@@ -1121,7 +1135,7 @@ for (let k = 0; k < objTrashBtn.length; k++)
         let obj = binder.obj;
         obj.graph.remove();
         OBJDATA.splice(OBJDATA.indexOf(obj), 1);
-        fonc_button('select_mode');
+        setModeButton('select_mode');
         document.getElementById('boxinfo').innerHTML = ('Selection mode');
         setElementVisible(document.getElementById('panel'), true);
         binder.graph.remove();
@@ -1131,17 +1145,12 @@ for (let k = 0; k < objTrashBtn.length; k++)
     });
 }
 
-let dropdownMenu = document.querySelectorAll(".dropdown-menu li a");
-for (let k = 0; k < dropdownMenu.length; k++)
+// The room type uses a native select element; keep the stored label synchronized.
+document.getElementById('roomLabel').addEventListener('change', function()
 {
-    dropdownMenu[k].addEventListener("click", function()
-    {
-        let selText = this.textContent;
-        this.closest('.btn-group').querySelector('.dropdown-toggle').innerHTML = selText + ' <span class="caret"></span>';
-        if (selText != 'None') document.getElementById('roomName').value = (selText);
-        else document.getElementById('roomName').value = ('');
-    });
-}
+    document.getElementById('roomName').value = this.value === '0' ? '' :
+        this.options[this.selectedIndex].textContent.trim();
+});
 
 // TRY MATRIX CALC FOR BBOX REAL COORDS WITH TRAS + ROT.
 function matrixCalc(el, message = false)
@@ -1271,7 +1280,7 @@ function zoom_maker(lens, xmove, xview)
 
 tactile = false;
 
-function calcul_snap(event, state)
+function calculateSnap(event, state)
 {
     if (event.touches)
     {
@@ -1885,7 +1894,7 @@ document.addEventListener("fullscreenchange", function()
     }
 });
 
-function raz_button()
+function resetModeButtons()
 {
     var buttonIds = ['rect_mode','select_mode','line_mode','partition_mode','door_mode',
         'node_mode','text_mode','room_mode','distance_mode','object_mode','stair_mode'];
@@ -1898,7 +1907,7 @@ function raz_button()
     }
 }
 
-function fonc_button(modesetting, option)
+function setModeButton(modesetting, option)
 {
     save();
 
@@ -1906,7 +1915,7 @@ function fonc_button(modesetting, option)
     {
         setElementVisible(element, false);
     });
-    raz_button();
+    resetModeButtons();
     if (option != 'simpleStair')
     {
         var selectedButton = document.getElementById(modesetting);
@@ -1932,14 +1941,14 @@ document.getElementById('distance_mode').addEventListener('click', function()
 {
     linElement.style.cursor = 'crosshair';
     document.getElementById('boxinfo').innerHTML = ('Add a measurement');
-    fonc_button('distance_mode');
+    setModeButton('distance_mode');
 });
 
 document.getElementById('room_mode').addEventListener('click', function()
 {
     linElement.style.cursor = 'pointer';
     document.getElementById('boxinfo').innerHTML = ('Config. of rooms');
-    fonc_button('room_mode');
+    setModeButton('room_mode');
 });
 
 document.getElementById('select_mode').addEventListener('click', function()
@@ -1951,7 +1960,7 @@ document.getElementById('select_mode').addEventListener('click', function()
         delete binder;
     }
 
-    fonc_button('select_mode');
+    setModeButton('select_mode');
 });
 
 document.getElementById('line_mode').addEventListener('click', function()
@@ -1960,11 +1969,11 @@ document.getElementById('line_mode').addEventListener('click', function()
     document.getElementById('boxinfo').innerHTML = ('Creation of wall(s)');
     multi = 0;
     action = 0;
-    // snap = calcul_snap(event, grid_snap);
+    // snap = calculateSnap(event, grid_snap);
     //
     // pox = snap.x;
     // poy = snap.y;
-    fonc_button('line_mode');
+    setModeButton('line_mode');
 });
 
 document.getElementById('partition_mode').addEventListener('click', function()
@@ -1972,14 +1981,14 @@ document.getElementById('partition_mode').addEventListener('click', function()
     linElement.style.cursor = 'crosshair';
     document.getElementById('boxinfo').innerHTML = ('Creation of thin wall(s)');
     multi = 0;
-    fonc_button('partition_mode');
+    setModeButton('partition_mode');
 });
 
 document.getElementById('rect_mode')?.addEventListener('click', function()
 {
     linElement.style.cursor = 'crosshair';
     document.getElementById('boxinfo').innerHTML = ('Room(s) creation');
-    fonc_button('rect_mode');
+    setModeButton('rect_mode');
 });
 
 document.querySelectorAll('.door').forEach(function(element)
@@ -1989,7 +1998,7 @@ document.querySelectorAll('.door').forEach(function(element)
         linElement.style.cursor = 'crosshair';
         document.getElementById('boxinfo').innerHTML = ('Add a door');
         setElementVisible(document.getElementById('door_list'), false);
-        fonc_button('door_mode', this.id);
+        setModeButton('door_mode', this.id);
     });
 });
 
@@ -2001,7 +2010,7 @@ document.querySelectorAll('.window').forEach(function(element)
         document.getElementById('boxinfo').innerHTML = ('Add a window');
         setElementVisible(document.getElementById('door_list'), false);
         setElementVisible(document.getElementById('window_list'), false);
-        fonc_button('door_mode', this.id);
+        setModeButton('door_mode', this.id);
     });
 });
 
@@ -2011,7 +2020,7 @@ document.querySelectorAll('.object').forEach(function(element)
     {
         cursor('move');
         document.getElementById('boxinfo').innerHTML = ('Add an object');
-        fonc_button('object_mode', this.id);
+        setModeButton('object_mode', this.id);
     });
 });
 
@@ -2019,7 +2028,7 @@ document.getElementById('stair_mode').addEventListener('click', function()
 {
     cursor('move');
     document.getElementById('boxinfo').innerHTML = ('Add stair');
-    fonc_button('object_mode', 'simpleStair');
+    setModeButton('object_mode', 'simpleStair');
 });
 
 document.getElementById('node_mode').addEventListener('click', function()
@@ -2027,14 +2036,14 @@ document.getElementById('node_mode').addEventListener('click', function()
     document.getElementById('boxinfo')
         .html('Cut a wall<br/><span style=\"font-size:0.7em\">Warning : Cutting the wall of a room can cancel its ' +
             'configuration</span>');
-    fonc_button('node_mode');
+    setModeButton('node_mode');
 });
 
 document.getElementById('text_mode').addEventListener('click', function()
 {
     document.getElementById('boxinfo').innerHTML = ('Add text<br/><span style=\"font-size:0.7em\">Place the cursor to the desired location, then ' +
         'type your text.</span>');
-    fonc_button('text_mode');
+    setModeButton('text_mode');
 });
 
 document.getElementById('grid_mode')?.addEventListener('click', function()

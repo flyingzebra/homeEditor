@@ -15,7 +15,7 @@ function HomeEditorUI()
 
     this.closeWallTools = function()
     {
-        fonc_button('select_mode');
+        setModeButton('select_mode');
         document.getElementById('boxinfo').innerHTML = ('Selection mode');
         setElementVisible(document.getElementById('wallTools'), false);
         setElementVisible(document.getElementById('panel'), true);
@@ -23,7 +23,7 @@ function HomeEditorUI()
 
     this.closeBoundingBox = function()
     {
-        fonc_button('select_mode');
+        setModeButton('select_mode');
         document.getElementById('boxinfo').innerHTML = ('Selection mode');
         setElementVisible(document.getElementById('objBoundingBox'), false);
         setElementVisible(document.getElementById('panel'), true);
@@ -33,7 +33,7 @@ function HomeEditorUI()
 
     this.closeObjectTools = function()
     {
-        fonc_button('select_mode');
+        setModeButton('select_mode');
         document.getElementById('boxinfo').innerHTML = ('Selection mode');
         setElementVisible(document.getElementById('objTools'), false);
         setElementVisible(document.getElementById('panel'), true);

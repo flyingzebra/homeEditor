@@ -1,0 +1,835 @@
+diff --git a/index.html b/index.html
+index 4de2389..834665a 100644
+--- a/index.html
++++ b/index.html
+@@ -239,21 +239,21 @@
+     </div>
+ 
+     <div id="roomTools" class="leftBox">
+-        <span style="color:#08d">Home Editor</span> estimated a surface of :<br /><b><span class="size"></span></b>
++        <span style="color:#08d">Home Editor</span> estimates an area of:<br /><b><span class="size"></span></b>
+         <br /><br />
+-        <p>If you have the actual area, you can write it</p>
++        <p>If you know the actual area, enter it below</p>
+         <div class="input-group">
+-            <input type="text" class="form-control" id="roomSurface" placeholder="real surface"
++            <input type="text" class="form-control" id="roomSurface" placeholder="Actual area"
+                 aria-describedby="basic-addon2">
+             <span class="input-group-addon" id="basic-addon2">m²</span>
+         </div>
+         <br />
+         <input type="hidden" id="roomName" value="" />
+-        Wording :<br />
+-        <select class="form-select" aria-label="Default select example" id="roomLabel">
++        <label for="roomLabel">Room type:</label><br />
++        <select class="form-select" aria-label="Room type" id="roomLabel">
+             <option selected value="0">None</option>
+-            <option value="1">Lounge</option>
+-            <option value="2">Lunchroom</option>
++            <option value="1">Living room</option>
++            <option value="2">Dining room</option>
+             <option value="3">Kitchen</option>
+             <option value="4">Toilet</option>
+             <option value="5">Bathroom</option>
+@@ -264,7 +264,7 @@
+             <option value="10">Office</option>
+             <option value="11">Hall</option>
+             <option value="12">Loggia</option>
+-            <option value="13">Bath 2</option>
++            <option value="13">Bathroom 2</option>
+             <option value="14">Toilet 2</option>
+             <option value="15">Bedroom 4</option>
+             <option value="16">Bedroom 5</option>
+@@ -272,7 +272,7 @@
+             <option value="18">Terrace</option>
+             <option value="19">Corridor</option>
+             <option value="20">Garage</option>
+-            <option value="21">Clearance</option>
++            <option value="21">Storage</option>
+         </select>
+         <br />
+         <br />
+@@ -311,7 +311,7 @@
+         <div class="roomColor" data-type="gradientNeutral" style="background:linear-gradient(30deg,#e2c695, #c69d56);">
+         </div>
+         <br /><br />
+-        <p>Matérials</p>
++        <p>Materials</p>
+         <div class="roomColor" data-type="wood"
+             style="background: url('res/texture_wood.png');">
+         </div>
+@@ -487,11 +487,11 @@
+                 </div>
+                 <div class="modal-body m-2">
+                     <div id="recover">
+-                        <p>A plan exists in historical, would you like recover him ?</p>
++                        <p>A previous plan is available. Would you like to restore it?</p>
+                         <button class="btn btn-success shadow" data-editor-dismiss="modal"
+                             data-editor-action="recoverHistory">YES</button></p>
+                         <hr />
+-                        <p>Or are you prefer start a new plan ?</p>
++                        <p>Or would you prefer to start a new plan?</p>
+                     </div>
+                     <div class="w-100 d-flex justify-content-center  flex-column gap-4 flex-md-row">
+                         <div class="boxMouseOver"><img src="res/newPlanEmpty.png" class="img-fluid" data-editor-action="newEmptyPlan"
+@@ -519,7 +519,7 @@
+                     <h4 class="modal-title" id="textToLayerLabel">Text editor</h4>
+                 </div>
+                 <div class="modal-body">
+-                    <p>Choose police color</p>
++                    <p>Choose font color</p>
+                     <div class="color textEditorColor" data-type="gradientRed"
+                         style="color:#f55847;background:linear-gradient(30deg, #f55847, #f00);"></div>
+                     <div class="color textEditorColor" data-type="gradientYellow"
+@@ -546,8 +546,8 @@
+                         style="color:#e2c695;background:linear-gradient(30deg,#e2c695, #c69d56);"></div>
+                     <div style="clear:both"></div>
+                     <hr />
+-                    <p>Police size</p>
+-                    <input type="range" list="tickmarks" id="sizePolice" step="0.1" min="10" max="30" value="15" class="range"
++                    <p>Font size</p>
++                    <input type="range" list="tickmarks" id="fontSizeInput" step="0.1" min="10" max="30" value="15" class="range"
+                         style="width:200px" />
+                     <hr />
+                     <p contenteditable="true" id="labelBox" data-editor-focus="clearText"
+diff --git a/res/editor.js b/res/editor.js
+index 954c67b..1687224 100644
+--- a/res/editor.js
++++ b/res/editor.js
+@@ -299,7 +299,7 @@ function Editor()
+         }
+         else
+         {
+-            document.getElementById('boxinfo').innerHTML = ('Les murs contenant des portes ou des fenêtres ne peuvent être une séparation !');
++            document.getElementById('boxinfo').innerHTML = ('Walls containing doors or windows cannot be partition walls.');
+             return false;
+         }
+     };
+@@ -349,7 +349,7 @@ function Editor()
+         });
+         var initCoords = wallToSplit.start;
+         var initThick = wallToSplit.thick;
+-        // CLEAR THE WALL BEFORE PIECES RE-BUILDER
++        // CLEAR THE WALL BEFORE ROOM REBUILDER
+         for (var k in WALLS)
+         {
+             if (isObjectsEquals(WALLS[k].child, wallToSplit)) WALLS[k].child = null;
+diff --git a/res/engine.js b/res/engine.js
+index bcb9207..ca5c92e 100644
+--- a/res/engine.js
++++ b/res/engine.js
+@@ -93,11 +93,11 @@ function _MOUSEMOVE(event)
+     });
+ 
+     //**************************************************************************
+-    //********************   TEXTE   MODE **************************************
++    //********************   TEXT MODE **************************************
+     //**************************************************************************
+     if (mode == 'text_mode')
+     {
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         if (action == 0) cursor('text');
+         else
+         {
+@@ -110,7 +110,7 @@ function _MOUSEMOVE(event)
+     //**************************************************************************
+     if (mode == 'object_mode')
+     {
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         if (typeof (binder) == 'undefined')
+         {
+             setElementVisible(document.getElementById('object_list'), false);
+@@ -186,7 +186,7 @@ function _MOUSEMOVE(event)
+     //**************************************************************************
+     if (mode == 'distance_mode')
+     {
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         if (typeof (binder) == 'undefined')
+         {
+             cross = qSVG.create("boxbind", "path", {
+@@ -247,7 +247,7 @@ function _MOUSEMOVE(event)
+ 
+     if (mode == 'room_mode')
+     {
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         var roomTarget;
+         if (roomTarget = editor.rayCastingRoom(snap))
+         {
+@@ -307,7 +307,7 @@ function _MOUSEMOVE(event)
+     if (mode == 'door_mode')
+     {
+ 
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         if (wallSelect = editor.nearWall(snap))
+         {
+             var wall = wallSelect.wall;
+@@ -394,7 +394,7 @@ function _MOUSEMOVE(event)
+     if (mode == 'node_mode')
+     {
+ 
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+ 
+         if (typeof (binder) == 'undefined')
+         {
+@@ -457,7 +457,7 @@ function _MOUSEMOVE(event)
+     {
+         // FIRST TEST ON SELECT MODE (and drag OFF) to detect MOUSEOVER DOOR
+ 
+-        snap = calcul_snap(event, 'off');
++        snap = calculateSnap(event, 'off');
+ 
+         var objTarget = false;
+         for (var i = 0; i < OBJDATA.length; i++)
+@@ -673,7 +673,7 @@ function _MOUSEMOVE(event)
+ 
+     if ((mode == 'line_mode' || mode == 'partition_mode') && action == 0)
+     {
+-        snap = calcul_snap(event, 'off');
++        snap = calculateSnap(event, 'off');
+         cursor('grab');
+         pox = snap.x;
+         poy = snap.y;
+@@ -726,7 +726,7 @@ function _MOUSEMOVE(event)
+     if (action == 1 && (mode == 'line_mode' || mode == 'partition_mode'))
+     {
+ 
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         x = snap.x;
+         y = snap.y;
+         starter = minMoveGrid(snap);
+@@ -931,7 +931,7 @@ function _MOUSEMOVE(event)
+     if (mode == 'bind_mode')
+     {
+ 
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+ 
+         if (binder.type == 'node')
+         {
+@@ -1322,7 +1322,7 @@ function _MOUSEMOVE(event)
+ 
+     if (mode == 'select_mode' && drag == 'on')
+     {
+-        snap = calcul_snap(event, grid_snap);
++        snap = calculateSnap(event, grid_snap);
+         document.getElementById('lin').style.cursor = 'move';
+         distX = (snap.xMouse - pox) * factor;
+         distY = (snap.yMouse - poy) * factor;
+@@ -1352,7 +1352,7 @@ function _MOUSEDOWN(event)
+         if (action == 0)
+         {
+             action = 1;
+-            snap = calcul_snap(event, grid_snap);
++            snap = calculateSnap(event, grid_snap);
+             pox = snap.x;
+             poy = snap.y;
+         }
+@@ -1365,7 +1365,7 @@ function _MOUSEDOWN(event)
+     {
+         if (action == 0)
+         {
+-            snap = calcul_snap(event, grid_snap);
++            snap = calculateSnap(event, grid_snap);
+             pox = snap.x;
+             poy = snap.y;
+             if (wallStartConstruc = editor.nearWall(snap, 12))
+@@ -1643,7 +1643,7 @@ function _MOUSEDOWN(event)
+         {
+             action = 0;
+             drag = 'on';
+-            snap = calcul_snap(event, grid_snap);
++            snap = calculateSnap(event, grid_snap);
+             pox = snap.xMouse;
+             poy = snap.yMouse;
+         }
+@@ -1674,7 +1674,7 @@ function _MOUSEUP(event)
+     }
+ 
+     //**************************************************************************
+-    //********************   TEXTE   MODE **************************************
++    //********************   TEXT MODE **************************************
+     //**************************************************************************
+     if (mode == 'text_mode')
+     {
+@@ -1699,7 +1699,7 @@ function _MOUSEUP(event)
+         document.getElementById(targetBox).append(OBJDATA[OBJDATA.length - 1].graph);
+         delete binder;
+         document.getElementById('boxinfo').innerHTML = ('Object added');
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+         save();
+     }
+ 
+@@ -1731,7 +1731,7 @@ function _MOUSEUP(event)
+             cross.remove();
+             delete cross;
+             document.getElementById('boxinfo').innerHTML = ('Measure added');
+-            fonc_button('select_mode');
++            setModeButton('select_mode');
+             save();
+         }
+     }
+@@ -1759,16 +1759,14 @@ function _MOUSEUP(event)
+         else document.getElementById('roomSurface').value = ('');
+         document.querySelector('#seeArea').checked = ROOM[binder.id].showSurface;
+         document.querySelector('#roomBackground').value = ROOM[binder.id].color;
+-        var roomName = ROOM[binder.id].name;
+-        document.querySelector('#roomName').value = roomName;
+-        if (ROOM[binder.id].name != '')
++        var roomName = translateRoomName(ROOM[binder.id].name);
++        var roomLabel = document.getElementById('roomLabel');
++        var matchingOption = Array.from(roomLabel.options).find(function(option)
+         {
+-            document.querySelector('#roomLabel').innerHTML = roomName + ' <span class="caret"></span>';
+-        }
+-        else
+-        {
+-            document.querySelector('#roomLabel').innerHTML = 'None <span class="caret"></span>';
+-        }
++            return option.textContent.trim() === roomName;
++        });
++        roomLabel.value = matchingOption ? matchingOption.value : '0';
++        document.getElementById('roomName').value = matchingOption ? roomName : '';
+ 
+         var actionToDo = ROOM[binder.id].action;
+         document.querySelector('#' + actionToDo + 'Action').checked = true;
+@@ -1798,7 +1796,7 @@ function _MOUSEUP(event)
+             editor.architect(WALLS);
+             save();
+         }
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+     }
+ 
+     // *******************************************************************  ***** ****      *******  ******  ******  *****
+@@ -1810,7 +1808,7 @@ function _MOUSEUP(event)
+         if (typeof (binder) == "undefined")
+         {
+             document.getElementById('boxinfo').innerHTML = ('The plan currently contains no wall.');
+-            fonc_button('select_mode');
++            setModeButton('select_mode');
+             return false;
+         }
+         OBJDATA.push(binder);
+@@ -1818,7 +1816,7 @@ function _MOUSEUP(event)
+         document.getElementById('boxcarpentry').append(OBJDATA[OBJDATA.length - 1].graph);
+         delete binder;
+         document.getElementById('boxinfo').innerHTML = ('Element added');
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+         save();
+     }
+ 
+@@ -1864,13 +1862,13 @@ function _MOUSEUP(event)
+             action = 0;
+             construc = 0;
+             document.getElementById('boxinfo').innerHTML = ('Select mode');
+-            fonc_button('select_mode');
++            setModeButton('select_mode');
+             if (typeof (binder) != 'undefined')
+             {
+                 binder.remove();
+                 delete binder;
+             }
+-            snap = calcul_snap(event, grid_snap);
++            snap = calculateSnap(event, grid_snap);
+             pox = snap.x;
+             poy = snap.y;
+         }
+@@ -1887,7 +1885,7 @@ function _MOUSEUP(event)
+         construc = 0; // CONSTRUC 0 TO FREE BINDER GROUP NODE WALL MOVING
+         if (typeof (binder) != 'undefined')
+         {
+-            fonc_button('select_mode');
++            setModeButton('select_mode');
+             if (binder.type == 'node')
+             {
+ 
+diff --git a/res/func.js b/res/func.js
+index 3f0b9a8..b4c2e9c 100644
+--- a/res/func.js
++++ b/res/func.js
+@@ -1,3 +1,19 @@
++// Translate historical room labels without modifying saved plan data.
++function translateRoomName(name)
++{
++    if (!name) return '';
++    var legacyNames = {
++        'Salon': 'Living room',
++        'Salle à manger': 'Dining room',
++        'Couloir': 'Corridor',
++        'Cuisine': 'Kitchen',
++        'Toilette': 'Toilet'
++    };
++    if (Object.prototype.hasOwnProperty.call(legacyNames, name)) return legacyNames[name];
++    if (name.indexOf('Chambre') === 0) return 'Bedroom' + name.slice('Chambre'.length);
++    return name;
++}
++
+ //init
+ WALLS = [];
+ OBJDATA = [];
+@@ -394,8 +410,8 @@ document.getElementById('report_mode').addEventListener("click", function()
+     let reportRoom = '<div class="row">\n';
+     for (let k in ROOM)
+     {
+-        let nameRoom = "Room n°" + number + " <small>(sans nom)</small>";
+-        if (ROOM[k].name != "") nameRoom = ROOM[k].name;
++        let nameRoom = "Room no. " + number + " <small>(unnamed)</small>";
++        if (ROOM[k].name != "") nameRoom = translateRoomName(ROOM[k].name);
+         reportRoom += '<div class="col-md-6"><p>' + nameRoom + '</p></div>\n';
+         reportRoom += '<div class="col-md-6"><p>Surface : <b>' + ((ROOM[k].area) / 3600).toFixed(2) + '</b> m²</p></div>\n';
+         number++;
+@@ -434,7 +450,7 @@ document.getElementById('report_mode').addEventListener("click", function()
+     {
+         reportRoom += '<div class="row">\n';
+         let nameRoom = "Room n°" + number + " <small>(no name)</small>";
+-        if (ROOM[k].name != "") nameRoom = ROOM[k].name;
++        if (ROOM[k].name != "") nameRoom = translateRoomName(ROOM[k].name);
+         reportRoom += '<div class="col-md-4"><p>' + nameRoom + '</p></div>\n';
+         switchNumber = 0;
+         plugNumber = 0;
+@@ -514,7 +530,7 @@ document.getElementById('report_mode').addEventListener("click", function()
+         reportRoom += '<div class="row">\n';
+         let nfc = true;
+         let nameRoom = "Room n°" + number + " <small>(no name)</small>";
+-        if (ROOM[k].name != "") nameRoom = ROOM[k].name;
++        if (ROOM[k].name != "") nameRoom = translateRoomName(ROOM[k].name);
+         reportRoom += '<div class="col-md-4"><p>' + nameRoom + '</p></div>\n';
+         if (ROOM[k].name === "")
+         {
+@@ -523,11 +539,11 @@ document.getElementById('report_mode').addEventListener("click", function()
+         }
+         else
+         {
+-            if (ROOM[k].name === "Salon")
++            if (translateRoomName(ROOM[k].name) === "Living room")
+             {
+                 for (let g in ROOM)
+                 {
+-                    if (ROOM[g].name === "Salle à manger")
++                    if (translateRoomName(ROOM[g].name) === "Dining room")
+                     {
+                         roomEnergy[k].light += roomEnergy[g].light;
+                         roomEnergy[k].plug += roomEnergy[g].plug;
+@@ -552,12 +568,12 @@ document.getElementById('report_mode').addEventListener("click", function()
+                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
+                 reportRoom += '</div>';
+             }
+-            if (ROOM[k].name === "Salle à manger")
++            if (translateRoomName(ROOM[k].name) === "Dining room")
+             {
+                 reportRoom +=
+-                    '<div class="col-md-8"><p><i class="fa fa-info" aria-hidden="true" style="color:blue"></i> This room is linked to the <b>living room / living room</b> according to the standard.</p></div>\n';
++                    '<div class="col-md-8"><p><i class="fa fa-info" aria-hidden="true" style="color:blue"></i> This room is linked to the <b>living room</b> according to the standard.</p></div>\n';
+             }
+-            if (ROOM[k].name.substr(0, 7) === "Chambre")
++            if (translateRoomName(ROOM[k].name).startsWith("Bedroom"))
+             {
+                 reportRoom += '<div class="col-md-8">';
+                 if (roomEnergy[k].light === 0)
+@@ -604,7 +620,7 @@ document.getElementById('report_mode').addEventListener("click", function()
+                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
+                 reportRoom += '</div>';
+             }
+-            if (ROOM[k].name === "Couloir")
++            if (translateRoomName(ROOM[k].name) === "Corridor")
+             {
+                 reportRoom += '<div class="col-md-8">';
+                 if (roomEnergy[k].light === 0)
+@@ -624,7 +640,7 @@ document.getElementById('report_mode').addEventListener("click", function()
+                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
+                 reportRoom += '</div>';
+             }
+-            if (ROOM[k].name === "Toilette")
++            if (translateRoomName(ROOM[k].name) === "Toilet")
+             {
+                 reportRoom += '<div class="col-md-8">';
+                 if (roomEnergy[k].light === 0)
+@@ -637,7 +653,7 @@ document.getElementById('report_mode').addEventListener("click", function()
+                 if (nfc) reportRoom += '<i class="fa fa-check" aria-hidden="true" style="color:green"></i>';
+                 reportRoom += '</div>';
+             }
+-            if (ROOM[k].name === "Cuisine")
++            if (translateRoomName(ROOM[k].name) === "Kitchen")
+             {
+                 reportRoom += '<div class="col-md-8">';
+                 if (roomEnergy[k].light === 0)
+@@ -706,7 +722,7 @@ document.getElementById("bboxTrash").addEventListener("click", function()
+     OBJDATA.splice(OBJDATA.indexOf(binder.obj), 1);
+     setElementVisible(document.getElementById('objBoundingBox'), false);
+     setElementVisible(document.getElementById('panel'), true);
+-    fonc_button('select_mode');
++    setModeButton('select_mode');
+     document.getElementById('boxinfo').innerHTML = ('Deleted object');
+     delete binder;
+     rib();
+@@ -820,21 +836,21 @@ window.addEventListener("load", function()
+     showEditorModal('myModal');
+ });
+ 
+-document.getElementById('sizePolice').addEventListener("input", function()
++document.getElementById('fontSizeInput').addEventListener("input", function()
+ {
+     document.getElementById('labelBox').style.fontSize = this.value + 'px';
+ });
+ 
+ document.getElementById('textToLayer').addEventListener('editor-modal-hidden', function(e)
+ {
+-    fonc_button('select_mode');
++    setModeButton('select_mode');
+     action = 0;
+     let textToMake = document.getElementById('labelBox').textContent;
+     if (textToMake != "" && textToMake != "Your text")
+     {
+         binder = new editor.obj2D("free", "text", document.getElementById('labelBox').style.color, snap, 0, 0, 0, "normal", 0, {
+             text: textToMake,
+-            size: document.getElementById('sizePolice').value
++            size: document.getElementById('fontSizeInput').value
+         });
+         binder.update();
+         OBJDATA.push(binder);
+@@ -852,7 +868,7 @@ document.getElementById('textToLayer').addEventListener('editor-modal-hidden', f
+     document.getElementById('labelBox').textContent = "Your text";
+     document.getElementById('labelBox').style.color = "#333333";
+     document.getElementById('labelBox').style.fontSize = "15px";
+-    document.getElementById('sizePolice').value = 15;
++    document.getElementById('fontSizeInput').value = 15;
+ });
+ 
+ if (!Array.prototype.includes)
+@@ -913,7 +929,7 @@ function throttle(callback, delay)
+         let args = arguments;
+         if (last && now < last + delay)
+         {
+-            // le délai n'est pas écoulé on reset le timer
++            // The delay has not elapsed; restart the timer.
+             clearTimeout(timer);
+             timer = setTimeout(function()
+             {
+@@ -1020,11 +1036,9 @@ document.getElementById("applySurface").addEventListener("click", function()
+     let data = document.getElementById('roomBackground').value;
+     ROOM[id].color = data;
+     //ROOM NAME
+-    let roomName = document.getElementById('roomName').value;
+-    if (roomName === 'None')
+-    {
+-        roomName = '';
+-    }
++    let roomLabel = document.getElementById('roomLabel');
++    let roomName = roomLabel.value === '0' ? '' :
++        roomLabel.options[roomLabel.selectedIndex].textContent.trim();
+     ROOM[id].name = roomName;
+     //ROOM SURFACE
+     let area = document.getElementById('roomSurface').value;
+@@ -1047,7 +1061,7 @@ document.getElementById("applySurface").addEventListener("click", function()
+     document.getElementById('boxSurface').replaceChildren();
+     editor.roomMaker(Rooms);
+     document.getElementById('boxinfo').innerHTML = ('Updated room');
+-    fonc_button('select_mode');
++    setModeButton('select_mode');
+ });
+ 
+ document.getElementById("resetRoomTools").addEventListener("click", function()
+@@ -1057,7 +1071,7 @@ document.getElementById("resetRoomTools").addEventListener("click", function()
+     binder.remove();
+     delete binder;
+     document.getElementById('boxinfo').innerHTML = ('Updated room');
+-    fonc_button('select_mode');
++    setModeButton('select_mode');
+ 
+ });
+ 
+@@ -1121,7 +1135,7 @@ for (let k = 0; k < objTrashBtn.length; k++)
+         let obj = binder.obj;
+         obj.graph.remove();
+         OBJDATA.splice(OBJDATA.indexOf(obj), 1);
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+         document.getElementById('boxinfo').innerHTML = ('Selection mode');
+         setElementVisible(document.getElementById('panel'), true);
+         binder.graph.remove();
+@@ -1131,17 +1145,12 @@ for (let k = 0; k < objTrashBtn.length; k++)
+     });
+ }
+ 
+-let dropdownMenu = document.querySelectorAll(".dropdown-menu li a");
+-for (let k = 0; k < dropdownMenu.length; k++)
++// The room type uses a native select element; keep the stored label synchronized.
++document.getElementById('roomLabel').addEventListener('change', function()
+ {
+-    dropdownMenu[k].addEventListener("click", function()
+-    {
+-        let selText = this.textContent;
+-        this.closest('.btn-group').querySelector('.dropdown-toggle').innerHTML = selText + ' <span class="caret"></span>';
+-        if (selText != 'None') document.getElementById('roomName').value = (selText);
+-        else document.getElementById('roomName').value = ('');
+-    });
+-}
++    document.getElementById('roomName').value = this.value === '0' ? '' :
++        this.options[this.selectedIndex].textContent.trim();
++});
+ 
+ // TRY MATRIX CALC FOR BBOX REAL COORDS WITH TRAS + ROT.
+ function matrixCalc(el, message = false)
+@@ -1271,7 +1280,7 @@ function zoom_maker(lens, xmove, xview)
+ 
+ tactile = false;
+ 
+-function calcul_snap(event, state)
++function calculateSnap(event, state)
+ {
+     if (event.touches)
+     {
+@@ -1885,7 +1894,7 @@ document.addEventListener("fullscreenchange", function()
+     }
+ });
+ 
+-function raz_button()
++function resetModeButtons()
+ {
+     var buttonIds = ['rect_mode','select_mode','line_mode','partition_mode','door_mode',
+         'node_mode','text_mode','room_mode','distance_mode','object_mode','stair_mode'];
+@@ -1898,7 +1907,7 @@ function raz_button()
+     }
+ }
+ 
+-function fonc_button(modesetting, option)
++function setModeButton(modesetting, option)
+ {
+     save();
+ 
+@@ -1906,7 +1915,7 @@ function fonc_button(modesetting, option)
+     {
+         setElementVisible(element, false);
+     });
+-    raz_button();
++    resetModeButtons();
+     if (option != 'simpleStair')
+     {
+         var selectedButton = document.getElementById(modesetting);
+@@ -1932,14 +1941,14 @@ document.getElementById('distance_mode').addEventListener('click', function()
+ {
+     linElement.style.cursor = 'crosshair';
+     document.getElementById('boxinfo').innerHTML = ('Add a measurement');
+-    fonc_button('distance_mode');
++    setModeButton('distance_mode');
+ });
+ 
+ document.getElementById('room_mode').addEventListener('click', function()
+ {
+     linElement.style.cursor = 'pointer';
+     document.getElementById('boxinfo').innerHTML = ('Config. of rooms');
+-    fonc_button('room_mode');
++    setModeButton('room_mode');
+ });
+ 
+ document.getElementById('select_mode').addEventListener('click', function()
+@@ -1951,7 +1960,7 @@ document.getElementById('select_mode').addEventListener('click', function()
+         delete binder;
+     }
+ 
+-    fonc_button('select_mode');
++    setModeButton('select_mode');
+ });
+ 
+ document.getElementById('line_mode').addEventListener('click', function()
+@@ -1960,11 +1969,11 @@ document.getElementById('line_mode').addEventListener('click', function()
+     document.getElementById('boxinfo').innerHTML = ('Creation of wall(s)');
+     multi = 0;
+     action = 0;
+-    // snap = calcul_snap(event, grid_snap);
++    // snap = calculateSnap(event, grid_snap);
+     //
+     // pox = snap.x;
+     // poy = snap.y;
+-    fonc_button('line_mode');
++    setModeButton('line_mode');
+ });
+ 
+ document.getElementById('partition_mode').addEventListener('click', function()
+@@ -1972,14 +1981,14 @@ document.getElementById('partition_mode').addEventListener('click', function()
+     linElement.style.cursor = 'crosshair';
+     document.getElementById('boxinfo').innerHTML = ('Creation of thin wall(s)');
+     multi = 0;
+-    fonc_button('partition_mode');
++    setModeButton('partition_mode');
+ });
+ 
+ document.getElementById('rect_mode')?.addEventListener('click', function()
+ {
+     linElement.style.cursor = 'crosshair';
+     document.getElementById('boxinfo').innerHTML = ('Room(s) creation');
+-    fonc_button('rect_mode');
++    setModeButton('rect_mode');
+ });
+ 
+ document.querySelectorAll('.door').forEach(function(element)
+@@ -1989,7 +1998,7 @@ document.querySelectorAll('.door').forEach(function(element)
+         linElement.style.cursor = 'crosshair';
+         document.getElementById('boxinfo').innerHTML = ('Add a door');
+         setElementVisible(document.getElementById('door_list'), false);
+-        fonc_button('door_mode', this.id);
++        setModeButton('door_mode', this.id);
+     });
+ });
+ 
+@@ -2001,7 +2010,7 @@ document.querySelectorAll('.window').forEach(function(element)
+         document.getElementById('boxinfo').innerHTML = ('Add a window');
+         setElementVisible(document.getElementById('door_list'), false);
+         setElementVisible(document.getElementById('window_list'), false);
+-        fonc_button('door_mode', this.id);
++        setModeButton('door_mode', this.id);
+     });
+ });
+ 
+@@ -2011,7 +2020,7 @@ document.querySelectorAll('.object').forEach(function(element)
+     {
+         cursor('move');
+         document.getElementById('boxinfo').innerHTML = ('Add an object');
+-        fonc_button('object_mode', this.id);
++        setModeButton('object_mode', this.id);
+     });
+ });
+ 
+@@ -2019,7 +2028,7 @@ document.getElementById('stair_mode').addEventListener('click', function()
+ {
+     cursor('move');
+     document.getElementById('boxinfo').innerHTML = ('Add stair');
+-    fonc_button('object_mode', 'simpleStair');
++    setModeButton('object_mode', 'simpleStair');
+ });
+ 
+ document.getElementById('node_mode').addEventListener('click', function()
+@@ -2027,14 +2036,14 @@ document.getElementById('node_mode').addEventListener('click', function()
+     document.getElementById('boxinfo')
+         .html('Cut a wall<br/><span style=\"font-size:0.7em\">Warning : Cutting the wall of a room can cancel its ' +
+             'configuration</span>');
+-    fonc_button('node_mode');
++    setModeButton('node_mode');
+ });
+ 
+ document.getElementById('text_mode').addEventListener('click', function()
+ {
+     document.getElementById('boxinfo').innerHTML = ('Add text<br/><span style=\"font-size:0.7em\">Place the cursor to the desired location, then ' +
+         'type your text.</span>');
+-    fonc_button('text_mode');
++    setModeButton('text_mode');
+ });
+ 
+ document.getElementById('grid_mode')?.addEventListener('click', function()
+diff --git a/res/qSVG.js b/res/qSVG.js
+index 9de2ebc..ad26c09 100644
+--- a/res/qSVG.js
++++ b/res/qSVG.js
+@@ -579,7 +579,7 @@ function QSVG()
+                             }
+                         }
+                     }
+-                    // IF EQ1 == EQ 2 FIND IF START OF SECOND SEG == END OF FIRST seg (eq.A maybe values H ou V)
++                    // IF EQ1 == EQ 2 FIND IF START OF SECOND SEG == END OF FIRST seg (eq.A maybe values H or V)
+                     if ((Math.abs(equation1.A) == Math.abs(equation2.A) || equation1.A == equation2.A) && equation1.B == equation2.B)
+                     {
+ 
+diff --git a/res/style.css b/res/style.css
+index 015529d..c322577 100644
+--- a/res/style.css
++++ b/res/style.css
+@@ -375,28 +375,8 @@ img, svg { vertical-align: middle; }
+          url("webfonts/fa-solid-900.woff") format("woff");
+ }
+ 
+-@font-face {
+-    font-family: "Font Awesome 5 Free";
+-    font-style: normal;
+-    font-weight: 400;
+-    font-display: block;
+-    src: url("webfonts/fa-regular-400.woff2") format("woff2"),
+-         url("webfonts/fa-regular-400.woff") format("woff");
+-}
+-
+-@font-face {
+-    font-family: "Font Awesome 5 Brands";
+-    font-style: normal;
+-    font-weight: 400;
+-    font-display: block;
+-    src: url("webfonts/fa-brands-400.woff2") format("woff2"),
+-         url("webfonts/fa-brands-400.woff") format("woff");
+-}
+-
+ .fa,
+-.fas,
+-.far,
+-.fab {
++.fas {
+     display: inline-block;
+     font-style: normal;
+     font-variant: normal;
+@@ -412,16 +392,6 @@ img, svg { vertical-align: middle; }
+     font-weight: 900;
+ }
+ 
+-.far {
+-    font-family: "Font Awesome 5 Free";
+-    font-weight: 400;
+-}
+-
+-.fab {
+-    font-family: "Font Awesome 5 Brands";
+-    font-weight: 400;
+-}
+-
+ .fa-2x { font-size: 2em; }
+ 
+ .fa-arrow-down::before { content: "\f063"; }
+@@ -449,11 +419,7 @@ img, svg { vertical-align: middle; }
+ .fa-th::before { content: "\f00a"; }
+ .fa-trash::before { content: "\f1f8"; }
+ 
+-/* fa-map-o was replaced by the regular-weight map icon in FA 5. */
+-.fa-map-o {
+-    font-family: "Font Awesome 5 Free";
+-    font-weight: 400;
+-}
++/* Legacy map icon uses the locally bundled solid map glyph. */
+ .fa-map-o::before { content: "\f279"; }
+ 
+ *:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
+diff --git a/res/ui_actions.js b/res/ui_actions.js
+index f41ce9f..5a69862 100644
+--- a/res/ui_actions.js
++++ b/res/ui_actions.js
+@@ -15,7 +15,7 @@ function HomeEditorUI()
+ 
+     this.closeWallTools = function()
+     {
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+         document.getElementById('boxinfo').innerHTML = ('Selection mode');
+         setElementVisible(document.getElementById('wallTools'), false);
+         setElementVisible(document.getElementById('panel'), true);
+@@ -23,7 +23,7 @@ function HomeEditorUI()
+ 
+     this.closeBoundingBox = function()
+     {
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+         document.getElementById('boxinfo').innerHTML = ('Selection mode');
+         setElementVisible(document.getElementById('objBoundingBox'), false);
+         setElementVisible(document.getElementById('panel'), true);
+@@ -33,7 +33,7 @@ function HomeEditorUI()
+ 
+     this.closeObjectTools = function()
+     {
+-        fonc_button('select_mode');
++        setModeButton('select_mode');
+         document.getElementById('boxinfo').innerHTML = ('Selection mode');
+         setElementVisible(document.getElementById('objTools'), false);
+         setElementVisible(document.getElementById('panel'), true);

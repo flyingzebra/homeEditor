@@ -239,21 +239,21 @@
     </div>
 
     <div id="roomTools" class="leftBox">
-        <span style="color:#08d">Home Editor</span> estimated a surface of :<br /><b><span class="size"></span></b>
+        <span style="color:#08d">Home Editor</span> estimates an area of:<br /><b><span class="size"></span></b>
         <br /><br />
-        <p>If you have the actual area, you can write it</p>
+        <p>If you know the actual area, enter it below</p>
         <div class="input-group">
-            <input type="text" class="form-control" id="roomSurface" placeholder="real surface"
+            <input type="text" class="form-control" id="roomSurface" placeholder="Actual area"
                 aria-describedby="basic-addon2">
             <span class="input-group-addon" id="basic-addon2">m²</span>
         </div>
         <br />
         <input type="hidden" id="roomName" value="" />
-        Wording :<br />
-        <select class="form-select" aria-label="Default select example" id="roomLabel">
+        <label for="roomLabel">Room type:</label><br />
+        <select class="form-select" aria-label="Room type" id="roomLabel">
             <option selected value="0">None</option>
-            <option value="1">Lounge</option>
-            <option value="2">Lunchroom</option>
+            <option value="1">Living room</option>
+            <option value="2">Dining room</option>
             <option value="3">Kitchen</option>
             <option value="4">Toilet</option>
             <option value="5">Bathroom</option>
@@ -264,7 +264,7 @@
             <option value="10">Office</option>
             <option value="11">Hall</option>
             <option value="12">Loggia</option>
-            <option value="13">Bath 2</option>
+            <option value="13">Bathroom 2</option>
             <option value="14">Toilet 2</option>
             <option value="15">Bedroom 4</option>
             <option value="16">Bedroom 5</option>
@@ -272,7 +272,7 @@
             <option value="18">Terrace</option>
             <option value="19">Corridor</option>
             <option value="20">Garage</option>
-            <option value="21">Clearance</option>
+            <option value="21">Storage</option>
         </select>
         <br />
         <br />
@@ -311,7 +311,7 @@
         <div class="roomColor" data-type="gradientNeutral" style="background:linear-gradient(30deg,#e2c695, #c69d56);">
         </div>
         <br /><br />
-        <p>Matérials</p>
+        <p>Materials</p>
         <div class="roomColor" data-type="wood"
             style="background: url('res/texture_wood.png');">
         </div>
@@ -487,11 +487,11 @@
                 </div>
                 <div class="modal-body m-2">
                     <div id="recover">
-                        <p>A plan exists in historical, would you like recover him ?</p>
+                        <p>A previous plan is available. Would you like to restore it?</p>
                         <button class="btn btn-success shadow" data-editor-dismiss="modal"
                             data-editor-action="recoverHistory">YES</button></p>
                         <hr />
-                        <p>Or are you prefer start a new plan ?</p>
+                        <p>Or would you prefer to start a new plan?</p>
                     </div>
                     <div class="w-100 d-flex justify-content-center  flex-column gap-4 flex-md-row">
                         <div class="boxMouseOver"><img src="res/newPlanEmpty.png" class="img-fluid" data-editor-action="newEmptyPlan"
@@ -519,7 +519,7 @@
                     <h4 class="modal-title" id="textToLayerLabel">Text editor</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Choose police color</p>
+                    <p>Choose font color</p>
                     <div class="color textEditorColor" data-type="gradientRed"
                         style="color:#f55847;background:linear-gradient(30deg, #f55847, #f00);"></div>
                     <div class="color textEditorColor" data-type="gradientYellow"
@@ -546,8 +546,8 @@
                         style="color:#e2c695;background:linear-gradient(30deg,#e2c695, #c69d56);"></div>
                     <div style="clear:both"></div>
                     <hr />
-                    <p>Police size</p>
-                    <input type="range" list="tickmarks" id="sizePolice" step="0.1" min="10" max="30" value="15" class="range"
+                    <p>Font size</p>
+                    <input type="range" list="tickmarks" id="fontSizeInput" step="0.1" min="10" max="30" value="15" class="range"
                         style="width:200px" />
                     <hr />
                     <p contenteditable="true" id="labelBox" data-editor-focus="clearText"

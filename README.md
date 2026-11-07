@@ -8,11 +8,11 @@ Help me to make this project an essential and free resource for all, so that any
 
 ### Installing
 
-Just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers. The editor scripts, interface styles, and Font Awesome resources are local; no external Bootstrap or jQuery downloads are required.
+Just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers.
 
 ## Running the tests
 
-Personally I only test all this with the mozilla debug console
+[CLICK HERE](https://flyingzebra.github.io/homeEditor/test)
 
 ## TODO
 - Make TouchScreen functions for tablet (or smartphone, but too tiny screen i think...)

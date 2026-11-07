@@ -10,9 +10,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 You just have to copy the files into a directory and open the index.html file in your browser. This native-DOM version targets modern browsers. The editor scripts, interface styles, and Font Awesome resources are local; no external Bootstrap or jQuery downloads are required.
 
-### See example
-[![homeRoughEditor](https://raw.githubusercontent.com/ekymoz/homeRoughEditor/master/test.jpg)](https://ekymoz.github.io/homeRoughEditor/)]
-
 ## Running the tests
 
 Personally I only test all this with the mozilla debug console

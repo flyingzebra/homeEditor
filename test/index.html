@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>homeEditor offline smoke tests</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+        li { margin-bottom: .5rem; }
+        .pass { color: #176b3e; }
+        .fail { color: #ad1e1e; }
+    </style>
+</head>
+<body>
+    <h1>homeEditor offline smoke tests</h1>
+    <p>These checks use the project's real object constructors and UI event bindings, with no CDN, jQuery, or Node.js.</p>
+    <button type="button" data-editor-action="newSquarePlan" id="test-plan">Create square plan</button>
+    <p id="test-focus" contenteditable="true" data-editor-focus="clearText">Clear me on focus</p>
+    <div id="testModal" class="modal" tabindex="-1" aria-hidden="true" style="display:none">
+        <button type="button" id="test-dismiss" data-editor-dismiss="modal">Close dialog</button>
+    </div>
+    <ol id="test-results"></ol>
+    <p id="test-summary" role="status"></p>
+    <script src="../res/dom.js"></script>
+    <script src="../res/qSVG.js"></script>
+    <script src="../res/editor.js"></script>
+    <script src="smoke.js"></script>
+    <script src="../res/ui_actions.js"></script>
+    <script src="run.js"></script>
+</body>
+</html>

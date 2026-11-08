@@ -2,7 +2,7 @@
 
 This project is an essential and free resource for all, so that any developer / integrator can propose to create **_plans for house_, _apartment_**, etc. online. **Plain vanilla JavaScript**.
 
-<a href=https://flyingzebra.github.io/homeEditor/><img src=res/splash1.png></a>
+<a href=https://flyingzebra.github.io/homeEditor/><img src=res/splash2.jpg></a>
 
 
 ## Getting Started

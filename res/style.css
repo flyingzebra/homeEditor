@@ -399,10 +399,24 @@ img, svg { vertical-align: middle; }
 .fa-arrow-down,
 .fa-arrow-left,
 .fa-arrow-right,
-.fa-chevron-circle-left,
-.fa-chevron-circle-right,
 .fa-backward,
-.fa-scissors {
+.fa-chevron-circle-left
+{
+    transform: scale(2);
+    transform-origin: center;
+}
+.fa-chevron-circle-right
+{
+    transform: scale(2);
+    transform-origin: center;
+}
+.fa-scissors
+{
+    transform: scale(0.8);
+    transform-origin: center;
+}
+.fa-mouse-pointer 
+{ 
     transform: scale(0.8);
     transform-origin: center;
 }

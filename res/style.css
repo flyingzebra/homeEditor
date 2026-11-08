@@ -407,7 +407,6 @@ img, svg { vertical-align: middle; }
     transform-origin: center;
 }
 
-
 .fa-arrow-down::before { content: "\f063"; }
 .fa-arrow-left::before { content: "\f060"; }
 .fa-arrow-right::before { content: "\f061"; }

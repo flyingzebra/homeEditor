@@ -42,7 +42,7 @@ document.querySelector('#panel').addEventListener('mousemove', function(event)
         action = 0;
         if (typeof (binder) != 'undefined')
         {
-            binder.remove();
+            removeBinderGraphic(binder);
             delete binder;
         }
         clearWallConstructionGuides();
@@ -51,9 +51,20 @@ document.querySelector('#panel').addEventListener('mousemove', function(event)
 
 window.addEventListener('resize', function(event)
 {
-    width_viewbox = document.getElementById('lin').clientWidth;
-    height_viewbox = document.getElementById('lin').clientHeight;
-    document.querySelector('#lin').setAttribute('viewBox', originX_viewbox + ' ' + originY_viewbox + ' ' + width_viewbox + ' ' + height_viewbox)
+    var svg = document.getElementById('lin');
+    var zoomFactor = width_viewbox / taille_w;
+    var centerX = originX_viewbox + width_viewbox / 2;
+    var centerY = originY_viewbox + height_viewbox / 2;
+    taille_w = svg.clientWidth;
+    taille_h = svg.clientHeight;
+    ratio_viewbox = taille_h / taille_w;
+    width_viewbox = taille_w * zoomFactor;
+    height_viewbox = taille_h * zoomFactor;
+    originX_viewbox = centerX - width_viewbox / 2;
+    originY_viewbox = centerY - height_viewbox / 2;
+    factor = zoomFactor;
+    svg.setAttribute('viewBox', originX_viewbox + ' ' + originY_viewbox + ' ' +
+        width_viewbox + ' ' + height_viewbox);
 });
 
 // *****************************************************************************************************
@@ -144,6 +155,7 @@ function _MOUSEMOVE(event)
             }
 
             document.getElementById('boxbind').append(binder.graph);
+            binder.update();
         }
         else
         {
@@ -275,7 +287,7 @@ function _MOUSEMOVE(event)
         {
             if (typeof (binder) != 'undefined')
             {
-                binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
             }
 
@@ -316,7 +328,7 @@ function _MOUSEMOVE(event)
         {
             if (typeof (binder) != 'undefined')
             {
-                binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
             }
         }
@@ -462,13 +474,13 @@ function _MOUSEMOVE(event)
                 }
                 else
                 {
-                    binder.remove();
+                    removeBinderGraphic(binder);
                     delete binder;
                 }
             }
             else
             {
-                binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
             }
         }
@@ -557,8 +569,7 @@ function _MOUSEMOVE(event)
         {
             if (typeof (binder) != 'undefined')
             {
-                if (typeof (binder.graph) != 'undefined') binder.graph.remove();
-                if (binder.type == 'node') binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
                 cursor('default');
                 rib();
@@ -597,7 +608,7 @@ function _MOUSEMOVE(event)
         {
             if (typeof (binder) != "undefined" && binder.type == 'node')
             {
-                binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
                 hideAllSize();
                 cursor('default');
@@ -735,7 +746,7 @@ function _MOUSEMOVE(event)
             if (typeof (binder) != "undefined")
             {
                 if (binder.graph) binder.graph.remove();
-                else binder.remove();
+                else removeBinderGraphic(binder);
                 delete binder;
             }
         }
@@ -865,7 +876,7 @@ function _MOUSEMOVE(event)
                 {
                     if (typeof (binder) != "undefined")
                     {
-                        binder.remove();
+                        removeBinderGraphic(binder);
                         delete binder;
                     }
                     if (wallEndConstruc === false) cursor('crosshair');
@@ -1016,7 +1027,7 @@ function _MOUSEMOVE(event)
                 {
                     cursor('move');
                 }
-                binder.remove()
+                removeBinderGraphic(binder)
                 //setSVGAttributes(document.getElementById('circlebinder'), {class: 'circle_css', cx: coords.x, cy: coords.y});
             }
             for (var k in wallListRun)
@@ -1346,8 +1357,8 @@ function _MOUSEMOVE(event)
     {
         snap = calculateSnap(event, grid_snap);
         document.getElementById('lin').style.cursor = 'move';
-        distX = (snap.xMouse - pox) * factor;
-        distY = (snap.yMouse - poy) * factor;
+        distX = snap.xMouse - pox;
+        distY = snap.yMouse - poy;
         // pox = event.pageX;
         // poy = event.pageY;
         zoom_maker('zoomdrag', distX, distY);
@@ -1689,7 +1700,7 @@ function _MOUSEUP(event)
     {
         if (typeof (binder) != 'undefined')
         {
-            binder.remove();
+            removeBinderGraphic(binder);
             delete binder;
             save();
         }
@@ -1713,6 +1724,10 @@ function _MOUSEUP(event)
     //**************************************************************************
     if (mode == 'object_mode')
     {
+        if (typeof binder === 'undefined')
+        {
+            _MOUSEMOVE(event);
+        }
         OBJDATA.push(binder);
         binder.graph.remove();
         var targetBox = 'boxcarpentry';
@@ -1735,9 +1750,7 @@ function _MOUSEUP(event)
         {
             action = 0;
             // MODIFY BBOX FOR BINDER ZONE (TXT)
-            var bbox = labelMeasure.getBoundingClientRect();
-            bbox.x = (bbox.x * factor) - (offset.left * factor) + originX_viewbox;
-            bbox.y = (bbox.y * factor) - (offset.top * factor) + originY_viewbox;
+            var bbox = svgRectFromClientRect(labelMeasure.getBoundingClientRect());
             bbox.origin = { x: bbox.x + (bbox.width / 2), y: bbox.y + (bbox.height / 2) };
             binder.bbox = bbox;
             binder.realBbox = [
@@ -1813,7 +1826,7 @@ function _MOUSEUP(event)
             var newWall = new editor.wall({ x: binder.data.x, y: binder.data.y }, binder.data.wall.end, "normal", binder.data.wall.thick);
             WALLS.push(newWall);
             binder.data.wall.end = { x: binder.data.x, y: binder.data.y };
-            binder.remove();
+            removeBinderGraphic(binder);
             delete binder;
             editor.architect(WALLS);
             save();
@@ -1884,7 +1897,7 @@ function _MOUSEUP(event)
             setModeButton('select_mode');
             if (typeof (binder) != 'undefined')
             {
-                binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
             }
             snap = calculateSnap(event, grid_snap);
@@ -2037,7 +2050,7 @@ function _MOUSEUP(event)
 
             if (mode == 'bind_mode')
             {
-                binder.remove();
+                removeBinderGraphic(binder);
                 delete binder;
             }
         } // END BIND IS DEFINED

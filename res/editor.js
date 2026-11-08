@@ -740,9 +740,7 @@ function Editor()
             this.graph.append(blank);
 
         } // ENDFOR
-        var bbox = this.graph.getBoundingClientRect();
-        bbox.x = (bbox.x * factor) - (offset.left * factor) + originX_viewbox;
-        bbox.y = (bbox.y * factor) - (offset.top * factor) + originY_viewbox;
+        var bbox = svgRectFromClientRect(this.graph.getBoundingClientRect());
         bbox.origin = { x: this.x, y: this.y };
         this.bbox = bbox;
         this.realBbox = [{ x: -this.size / 2, y: -this.thick / 2 }, { x: this.size / 2, y: -this.thick / 2 }, { x: this.size / 2, y: this.thick / 2 }, { x: -this.size / 2, y: this.thick / 2 }];
@@ -773,9 +771,7 @@ function Editor()
             if (hingeStatus == 'normal') hingeUpdate = 1;
             else hingeUpdate = -1;
             setSVGAttributes(this.graph, { "transform": "translate(" + (this.x) + "," + (this.y) + ") rotate(" + this.angle + ",0,0) scale(" + hingeUpdate + ", 1)" });
-            var bbox = this.graph.getBoundingClientRect();
-            bbox.x = (bbox.x * factor) - (offset.left * factor) + originX_viewbox;
-            bbox.y = (bbox.y * factor) - (offset.top * factor) + originY_viewbox;
+            var bbox = svgRectFromClientRect(this.graph.getBoundingClientRect());
             bbox.origin = { x: this.x, y: this.y };
             this.bbox = bbox;
 

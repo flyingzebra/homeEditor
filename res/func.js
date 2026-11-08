@@ -31,8 +31,6 @@ let modeOption;
 let linElement = document.getElementById('lin');
 taille_w = linElement.clientWidth;
 taille_h = linElement.clientHeight;
-let linBounds = linElement.getBoundingClientRect();
-let offset = { left: linBounds.left + window.scrollX, top: linBounds.top + window.scrollY };
 grid = 20;
 showRib = true;
 showArea = true;
@@ -864,7 +862,7 @@ document.getElementById("applySurface").addEventListener("click", function()
 {
     setElementVisible(document.getElementById('roomTools'), false);
     setElementVisible(document.getElementById('panel'), true);
-    binder.remove();
+    removeBinderGraphic(binder);
     delete binder;
     let id = document.getElementById('roomIndex').value;
     //COLOR
@@ -903,7 +901,7 @@ document.getElementById("resetRoomTools").addEventListener("click", function()
 {
     setElementVisible(document.getElementById('roomTools'), false);
     setElementVisible(document.getElementById('panel'), true);
-    binder.remove();
+    removeBinderGraphic(binder);
     delete binder;
     document.getElementById('boxinfo').innerHTML = ('Updated room');
     setModeButton('select_mode');
@@ -1113,41 +1111,70 @@ function zoom_maker(lens, xmove, xview)
     });
 }
 
-tactile = false;
+// Convert viewport coordinates through the browser's actual SVG transform.
+// This accounts for scrolling, CSS sizing, viewBox, zoom, pan, and aspect ratio.
+function svgPointFromClient(clientX, clientY)
+{
+    var svg = document.getElementById('lin');
+    var screenMatrix = svg.getScreenCTM();
+    if (!screenMatrix)
+    {
+        return null;
+    }
+    var point = svg.createSVGPoint();
+    point.x = clientX;
+    point.y = clientY;
+    var mappedPoint = point.matrixTransform(screenMatrix.inverse());
+    return { x: mappedPoint.x, y: mappedPoint.y };
+}
+
+// Convert DOM screen bounds into plan-space bounds for object selection.
+function svgRectFromClientRect(rect)
+{
+    var start = svgPointFromClient(rect.left, rect.top);
+    var end = svgPointFromClient(rect.right, rect.bottom);
+    if (!start || !end)
+    {
+        return { x: 0, y: 0, width: 0, height: 0, left: 0, top: 0, right: 0, bottom: 0 };
+    }
+    var left = Math.min(start.x, end.x);
+    var top = Math.min(start.y, end.y);
+    var right = Math.max(start.x, end.x);
+    var bottom = Math.max(start.y, end.y);
+    return { x: left, y: top, width: right - left, height: bottom - top,
+        left: left, top: top, right: right, bottom: bottom };
+}
+
+// A binder may be either a native SVG node or an Editor.obj2D with a .graph node.
+function removeBinderGraphic(target)
+{
+    if (!target)
+    {
+        return;
+    }
+    if (target.graph && typeof target.graph.remove === 'function')
+    {
+        target.graph.remove();
+    }
+    else if (typeof target.remove === 'function')
+    {
+        target.remove();
+    }
+}
 
 function calculateSnap(event, state)
 {
-    if (event.touches)
+    var pointer = event.changedTouches && event.changedTouches.length ? event.changedTouches[0] : event;
+    var mouse = svgPointFromClient(pointer.clientX, pointer.clientY);
+    if (!mouse)
     {
-        let touches = event.changedTouches;
-        console.log("toto")
-        eX = touches[0].pageX;
-        eY = touches[0].pageY;
-        tactile = true;
-    }
-    else
-    {
-        eX = event.pageX;
-        eY = event.pageY;
-    }
-    x_mouse = (eX * factor) - (offset.left * factor) + originX_viewbox;
-    y_mouse = (eY * factor) - (offset.top * factor) + originY_viewbox;
-
-    if (state === 'on')
-    {
-        x_grid = Math.round(x_mouse / grid) * grid;
-        y_grid = Math.round(y_mouse / grid) * grid;
-    }
-    if (state === 'off')
-    {
-        x_grid = x_mouse;
-        y_grid = y_mouse;
+        throw new Error('Unable to calculate pointer coordinates: the SVG canvas is unavailable.');
     }
     return {
-        x: x_grid,
-        y: y_grid,
-        xMouse: x_mouse,
-        yMouse: y_mouse
+        x: state === 'on' ? Math.round(mouse.x / grid) * grid : mouse.x,
+        y: state === 'on' ? Math.round(mouse.y / grid) * grid : mouse.y,
+        xMouse: mouse.x,
+        yMouse: mouse.y
     };
 }
 
@@ -1735,6 +1762,12 @@ function resetModeButtons()
 
 function setModeButton(modesetting, option)
 {
+    // Dispose of previews on tool changes. bind_mode continues using its active selection.
+    if (mode !== modesetting && mode !== 'bind_mode' && typeof binder !== 'undefined')
+    {
+        removeBinderGraphic(binder);
+        delete binder;
+    }
     save();
 
     document.querySelectorAll('.sub').forEach(function(element)
@@ -1782,7 +1815,7 @@ document.getElementById('select_mode').addEventListener('click', function()
     document.getElementById('boxinfo').innerHTML = ('Mode "select"');
     if (typeof (binder) != 'undefined')
     {
-        binder.remove();
+        removeBinderGraphic(binder);
         delete binder;
     }
 

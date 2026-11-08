@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>homeEditor - Wall construction cleanup regressions</title>
+</head>
+<body>
+    <h1>Wall construction cleanup</h1>
+    <p>This test page loads the actual <code>res/engine.js</code> with isolated DOM stubs. No dependencies or server are required.</p>
+    <pre id="results">Running tests...</pre>
+    <script>
+        var resultDisplay = document.getElementById('results');
+        var elements = Object.create(null);
+        var handlers = Object.create(null);
+        var passed = 0;
+        var failed = 0;
+        var output = [];
+
+        function makeElement(id)
+        {
+            return {
+                id: id,
+                style: {},
+                checked: false,
+                removed: false,
+                addEventListener: function(type, handler)
+                {
+                    handlers[id + ':' + type] = handler;
+                },
+                remove: function()
+                {
+                    this.removed = true;
+                    delete elements[this.id];
+                }
+            };
+        }
+
+        // The editor registers listeners when engine.js is loaded.
+        elements.lin = makeElement('lin');
+        elements.panel = makeElement('panel');
+        elements.boxinfo = makeElement('boxinfo');
+        elements.multi = makeElement('multi');
+        document.querySelector = function(selector)
+        {
+            return elements[selector.slice(1)] || null;
+        };
+        document.getElementById = function(id)
+        {
+            return elements[id] || null;
+        };
+
+        window.throttle = function(handler) { return handler; };
+        window.showRib = false;
+        window.cursor = function() {};
+        window.intersectionOff = function() {};
+        window.calculateSnap = function() { return { x: 5, y: 6 }; };
+        window.setModeButton = function(nextMode) { window.mode = nextMode; };
+        window.rib = function() {};
+        window.save = function() {};
+        window.grid_snap = 'off';
+        window.meter = 60;
+        window.wallSize = 20;
+        window.partitionSize = 8;
+        window.WALLS = [];
+        window.editor = {
+            wall: function(start, end, type, thickness)
+            {
+                this.start = start;
+                this.end = end;
+                this.type = type;
+                this.thick = thickness;
+            },
+            architect: function() {},
+            showScaleBox: function() {}
+        };
+        window.qSVG = {
+            measure: function(start, end)
+            {
+                return Math.hypot(end.x - start.x, end.y - start.y);
+            }
+        };
+
+        function reset(modeName)
+        {
+            window.mode = modeName;
+            window.action = 1;
+            window.construc = 1;
+            window.pox = 0;
+            window.poy = 0;
+            window.x = 0;
+            window.y = 0;
+            window.wallEndConstruc = false;
+            window.WALLS.length = 0;
+            delete elements.linetemp;
+            delete elements.line_construc;
+            delete window.lengthTemp;
+            elements.boxinfo.innerHTML = '';
+            elements.multi.checked = false;
+        }
+
+        function expect(name, check)
+        {
+            try
+            {
+                if (!check()) throw new Error('Assertion failed');
+                passed++;
+                output.push('PASS ' + name);
+            }
+            catch (error)
+            {
+                failed++;
+                output.push('FAIL ' + name + ' — ' + error.message);
+            }
+        }
+    </script>
+    <script src="../res/engine.js"></script>
+    <script>
+        expect('Empty partition mouseup does not throw', function()
+        {
+            reset('partition_mode');
+            _MOUSEUP({});
+            return WALLS.length === 0 && action === 0;
+        });
+
+        expect('Empty wall mouseup does not throw', function()
+        {
+            reset('line_mode');
+            _MOUSEUP({});
+            return WALLS.length === 0 && action === 0;
+        });
+
+        expect('Panel mousemove tolerates missing guides', function()
+        {
+            reset('partition_mode');
+            handlers['panel:mousemove']({});
+            return action === 0;
+        });
+
+        expect('Panel mousemove removes existing guides', function()
+        {
+            reset('line_mode');
+            var guide = elements.linetemp = makeElement('linetemp');
+            var line = elements.line_construc = makeElement('line_construc');
+            var length = window.lengthTemp = makeElement('length');
+            handlers['panel:mousemove']({});
+            return guide.removed && line.removed && length.removed && typeof lengthTemp === 'undefined';
+        });
+
+        expect('Click-and-release too short to make a wall cleans up', function()
+        {
+            reset('partition_mode');
+            window.x = 5;
+            var line = elements.line_construc = makeElement('line_construc');
+            var guide = elements.linetemp = makeElement('linetemp');
+            _MOUSEUP({});
+            return WALLS.length === 0 && line.removed && guide.removed && action === 0;
+        });
+
+        expect('Completed partition creates correct thickness', function()
+        {
+            reset('partition_mode');
+            window.x = 120;
+            var line = elements.line_construc = makeElement('line_construc');
+            var guide = elements.linetemp = makeElement('linetemp');
+            var length = window.lengthTemp = makeElement('length');
+            _MOUSEUP({});
+            return WALLS.length === 1 && WALLS[0].thick === 8 &&
+                line.removed && guide.removed && length.removed && typeof lengthTemp === 'undefined';
+        });
+
+        expect('Completed structural wall keeps configured thickness', function()
+        {
+            reset('line_mode');
+            window.x = 120;
+            elements.line_construc = makeElement('line_construc');
+            _MOUSEUP({});
+            return WALLS.length === 1 && WALLS[0].thick === 20;
+        });
+
+        resultDisplay.textContent = passed + ' passed / ' + (passed + failed) + ' total\n' + output.join('\n');
+        resultDisplay.setAttribute('data-passed', String(failed === 0));
+    </script>
+</body>
+</html>

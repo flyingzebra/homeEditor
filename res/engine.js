@@ -1,3 +1,28 @@
+// Remove optional SVG construction aids without assuming the drawing has started.
+function clearWallConstructionGuides()
+{
+    var temporaryLine = document.getElementById('linetemp');
+    if (temporaryLine)
+    {
+        temporaryLine.remove();
+    }
+
+    var constructionLine = document.getElementById('line_construc');
+    if (constructionLine)
+    {
+        constructionLine.remove();
+    }
+
+    if (typeof lengthTemp !== 'undefined')
+    {
+        if (lengthTemp)
+        {
+            lengthTemp.remove();
+        }
+        delete lengthTemp;
+    }
+}
+
 document.querySelector('#lin').addEventListener("mouseup", _MOUSEUP);
 document.querySelector('#lin').addEventListener("mousemove", throttle(function(event)
 {
@@ -20,10 +45,7 @@ document.querySelector('#panel').addEventListener('mousemove', function(event)
             binder.remove();
             delete binder;
         }
-        document.getElementById('linetemp').remove();
-        document.getElementById('line_construc').remove();
-        lengthTemp.remove();
-        delete lengthTemp;
+        clearWallConstructionGuides();
     }
 });
 
@@ -1826,16 +1848,16 @@ function _MOUSEUP(event)
 
     if (mode == 'line_mode' || mode == 'partition_mode')
     {
-        document.getElementById('linetemp').remove(); // DEL LINE HELP CONSTRUC 0 45 90
         intersectionOff();
 
-        var sizeWall = qSVG.measure({ x: x, y: y }, { x: pox, y: poy });
-        sizeWall = sizeWall / meter;
-        if (document.getElementById('line_construc') && sizeWall > 0.3)
+        // Mouse-up can occur before mouse-move creates the construction line.
+        var constructionLine = document.getElementById('line_construc');
+        var lengthMeters = constructionLine ? qSVG.measure({ x: x, y: y }, { x: pox, y: poy }) / meter : 0;
+        clearWallConstructionGuides();
+        if (constructionLine && lengthMeters > 0.3)
         {
-            var sizeWall = wallSize;
-            if (mode == 'partition_mode') sizeWall = partitionSize;
-            var wall = new editor.wall({ x: pox, y: poy }, { x: x, y: y }, "normal", sizeWall);
+            var newWallThickness = mode == 'partition_mode' ? partitionSize : wallSize;
+            var wall = new editor.wall({ x: pox, y: poy }, { x: x, y: y }, "normal", newWallThickness);
             WALLS.push(wall);
             editor.architect(WALLS);
 
@@ -1847,9 +1869,6 @@ function _MOUSEUP(event)
             else action = 0;
             document.getElementById('boxinfo').innerHTML = ('Wall added <span style=\'font-size:0.6em\'>Moy. ' + (qSVG.measure(
                 { x: pox, y: poy }, { x: x, y: y }) / 60).toFixed(2) + ' m</span>');
-            document.getElementById('line_construc').remove(); // DEL LINE CONSTRUC HELP TO VIEW NEW SEG PATH
-            lengthTemp.remove();
-            delete lengthTemp;
             construc = 0;
             if (wallEndConstruc) action = 0;
             delete wallEndConstruc;

@@ -534,7 +534,13 @@ document.getElementById('report_mode').addEventListener("click", function()
 
 document.getElementById('wallWidth').addEventListener("input", function()
 {
-    let sliderValue = this.value;
+    // Range inputs return strings. Wall geometry requires a finite numeric thickness.
+    const sliderValue = Number(this.value);
+    if (!Number.isFinite(sliderValue) || sliderValue <= 0 ||
+        typeof binder === 'undefined' || !binder.wall)
+    {
+        return;
+    }
     binder.wall.thick = sliderValue;
     binder.wall.type = "normal";
     editor.architect(WALLS);

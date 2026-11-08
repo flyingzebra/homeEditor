@@ -394,6 +394,20 @@ img, svg { vertical-align: middle; }
 
 .fa-2x { font-size: 2em; }
 
+/* Smaller navigation and cutting glyphs, without shrinking button hit areas. */
+.fa-arrow-up,
+.fa-arrow-down,
+.fa-arrow-left,
+.fa-arrow-right,
+.fa-chevron-circle-left,
+.fa-chevron-circle-right,
+.fa-backward,
+.fa-scissors {
+    transform: scale(0.8);
+    transform-origin: center;
+}
+
+
 .fa-arrow-down::before { content: "\f063"; }
 .fa-arrow-left::before { content: "\f060"; }
 .fa-arrow-right::before { content: "\f061"; }

@@ -119,7 +119,7 @@
     <div id="areaValue"></div>
 
     <div id="reportTools" class="leftBox" style="width:500px;overflow-y: scroll;overflow-x: hidden">
-        <h2><i class="fa fa-calculator" aria-hidden="true"></i> Report plan.</h2>
+        <h2><i class="fa fa-calculator" aria-hidden="true" title="Plan report"></i> Report plan.</h2>
         <br/><br/>
         <h2 class="toHide" id="reportTotalSurface" style="display:none"></h2>
         <h2 class="toHide" id="reportNumberSurface" style="display:none"></h2>
@@ -127,7 +127,7 @@
         <section id="reportRooms" class="toHide" style="display:none">
         </section>
         <button class="btn btn-info fully" style="margin-top:50px"
-            data-editor-action="closeReport"><i
+            data-editor-action="closeReport" title="Close report and return to editing" aria-label="Close report and return to editing"><i
                 class="fa fa-2x fa-backward" aria-hidden="true"></i></button>
     </div>
 
@@ -141,25 +141,25 @@
         <ul class="list-unstyled">
             <section id="cutWall">
                 <p>Cut the wall :<br/><small>A cut will be made at each wall encountered.</small></p>
-                <li><button class="btn btn-light shadow fully" data-editor-action="splitWall"><i class="fa fa-2x fa-cutlery"
+                <li><button class="btn btn-light shadow fully" data-editor-action="splitWall" title="Split walls at intersections" aria-label="Split walls at intersections"><i class="fa fa-2x fa-cutlery"
                             aria-hidden="true"></i></button></li>
             </section>
             <br/>
             <section id="separate">
                 <p>Separation wall :<br/><small>Transform the wall into simple separation line.</small></p>
-                <li><button class="btn btn-light shadow fully" data-editor-action="hideWall" id="wallInvisible"><i
+                <li><button class="btn btn-light shadow fully" data-editor-action="hideWall" id="wallInvisible" title="Convert selected wall to a partition" aria-label="Convert selected wall to a partition"><i
                             class="fa fa-2x fa-crop" aria-hidden="true"></i></button></li>
             </section>
             <section id="recombine">
                 <p>Transform to wall :<br/><small>The thickness will be identical to the last known.</small></p>
-                <li><button class="btn btn-light shadow fully" data-editor-action="showWall" id="wallVisible"><i
+                <li><button class="btn btn-light shadow fully" data-editor-action="showWall" id="wallVisible" title="Restore selected partition as a wall" aria-label="Restore selected partition as a wall"><i
                             class="fa fa-2x fa-crop" aria-hidden="true"></i></button></li>
             </section>
             <br/>
-            <li><button class="btn btn-danger fully" id="wallTrash"><i class="fa fa-2x fa-trash"
+            <li><button class="btn btn-danger fully" id="wallTrash" title="Delete selected wall" aria-label="Delete selected wall"><i class="fa fa-2x fa-trash"
                         aria-hidden="true"></i></button></li>
             <li><button class="btn btn-info fully" style="margin-top:50px"
-                    data-editor-action="closeWallTools"><i
+                    data-editor-action="closeWallTools" title="Close wall tools" aria-label="Close wall tools"><i
                         class="fa fa-2x fa-backward" aria-hidden="true"></i></button></li>
         </ul>
     </div>
@@ -175,14 +175,14 @@
         </section>
 
         <section id="objBoundingBoxRotation">
-            <p><i class="fa fa-compass" aria-hidden="true"></i> Rotation : <span id="bboxRotationVal"></span> °</p>
+            <p><i class="fa fa-compass" aria-hidden="true" title="Object rotation"></i> Rotation : <span id="bboxRotationVal"></span> °</p>
             <input type="range" id="bboxRotation" step="1" class="range" min="-180" max="180" />
         </section>
 
         <div id="stepsCounter" style="display:none;">
             <p><span id="bboxSteps">Nb steps [2-15] : <span id="bboxStepsVal">0</span></span></p>
-            <button class="btn btn-info" id="bboxStepsAdd"><i class="fa fa-plus" aria-hidden="true"></i></button>
-            <button class="btn btn-info" id="bboxStepsMinus"><i class="fa fa-minus" aria-hidden="true"></i></button>
+            <button class="btn btn-info" id="bboxStepsAdd" title="Add one stair step" aria-label="Add one stair step"><i class="fa fa-plus" aria-hidden="true"></i></button>
+            <button class="btn btn-info" id="bboxStepsMinus" title="Remove one stair step" aria-label="Remove one stair step"><i class="fa fa-minus" aria-hidden="true"></i></button>
         </div>
 
         <div id="objBoundingBoxColor" style="display:none">
@@ -214,9 +214,9 @@
         </div>
 
         <br/><br/>
-        <button class="btn btn-danger fully" id="bboxTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
+        <button class="btn btn-danger fully" id="bboxTrash" title="Delete selected object" aria-label="Delete selected object"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
         <button class="btn btn-info" style="margin-top:100px"
-            data-editor-action="closeBoundingBox"><i
+            data-editor-action="closeBoundingBox" title="Close object tools" aria-label="Close object tools"><i
                 class="fa fa-2x fa-backward" aria-hidden="true"></i></button>
     </div>
 
@@ -230,10 +230,10 @@
             <p>Width [<span id="doorWindowWidthScale"></span>] : <span id="doorWindowWidthVal"></span> cm</span></p>
             <input type="range" id="doorWindowWidth" step="1" class="range" />
             <br/>
-            <li><button class="btn btn-danger fully objTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
+            <li><button class="btn btn-danger fully objTrash" title="Delete selected door or window" aria-label="Delete selected door or window"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
             </li>
             <li><button class="btn btn-info" style="margin-top:100px"
-                    data-editor-action="closeObjectTools"><i
+                    data-editor-action="closeObjectTools" title="Close door and window tools" aria-label="Close door and window tools"><i
                         class="fa fa-2x fa-backward" aria-hidden="true"></i></button></li>
         </ul>
     </div>
@@ -336,13 +336,13 @@
 
     <div id="panel" class="leftBox">
         <ul class="list-unstyled">
-            <li><button class="btn disabled halfy " id="undo" title="undo"><i class="fa fa-chevron-circle-left"
+            <li><button class="btn disabled halfy " id="undo" title="Undo last change" aria-label="Undo last change"><i class="fa fa-chevron-circle-left"
                         aria-hidden="true"></i>
-                    <button class="btn disabled halfy pull-right" id="redo" title="redo"><i class="fa fa-chevron-circle-right"
+                    <button class="btn disabled halfy pull-right" id="redo" title="Redo last change" aria-label="Redo last change"><i class="fa fa-chevron-circle-right"
                             aria-hidden="true"></i></button>
             </li>
             <br/>
-            <li><button class="btn btn-success fully " id="select_mode" style="box-shadow:2px 2px 3px #ccc;"><i
+            <li><button class="btn btn-success fully " id="select_mode" style="box-shadow:2px 2px 3px #ccc;" title="Select and edit plan elements" aria-label="Select and edit plan elements"><i
                         class="fa fa-2x fa-mouse-pointer" aria-hidden="true"></i></button></li>
             <br/>
             <li>
@@ -360,7 +360,7 @@
             <br/>
             <li><button class="btn btn-light shadow fully " id="room_mode">CONFIG. ROOMS</button></li>
             <br/>
-            <li><button class="btn btn-light shadow fully " id="node_mode"><i class="fa fa-2x fa-scissors"
+            <li><button class="btn btn-light shadow fully " id="node_mode" title="Split a wall at the selected point" aria-label="Split a wall at the selected point"><i class="fa fa-2x fa-scissors"
                         aria-hidden="true"></i></button></li>
             <br/>
             <li><button class="btn btn-light shadow fully " id="distance_mode" data-toggle="tooltip" data-placement="right"
@@ -463,14 +463,13 @@
                 </div>
             </div>
 
-            <li><button class="btn btn-light shadow halfy " id="report_mode" title="Show report"><i class="fa fa-calculator"
+            <li><button class="btn btn-light shadow halfy " id="report_mode" title="Open plan and electrical report" aria-label="Open plan and electrical report"><i class="fa fa-calculator"
                         aria-hidden="true"></i>
                     <button class="btn btn-light shadow halfy pull-right"
-                        data-editor-action="enterFullscreen" id="full_mode"
-                        title="Full screen"><i class="fa fa-expand" aria-hidden="true"></i></button>
+                        data-editor-action="enterFullscreen" id="full_mode" title="Enter full-screen view" aria-label="Enter full-screen view"><i class="fa fa-expand" aria-hidden="true"></i></button>
                     <button class="btn btn-light shadow halfy pull-right" style="display:none"
                         data-editor-action="exitFullscreen" id="nofull_mode"
-                        data-toggle="tooltip" data-placement="right" title="Full screen"><i class="fa fa-compress"
+                        data-toggle="tooltip" data-placement="right" title="Exit full-screen view" aria-label="Exit full-screen view"><i class="fa fa-compress"
                             aria-hidden="true"></i></button>
             <li>
 
@@ -495,11 +494,11 @@
                     </div>
                     <div class="w-100 d-flex justify-content-center  flex-column gap-4 flex-md-row">
                         <div class="boxMouseOver"><img src="res/newPlanEmpty.png" class="img-fluid" data-editor-action="newEmptyPlan"
-                                data-editor-dismiss="modal" /></div>
+                                data-editor-dismiss="modal" / alt="Start with an empty plan" title="Start with an empty plan"></div>
                         <div class=" boxMouseOver"><img src="res/newPlanSquare.png" class="img-fluid"
-                                data-editor-action="newSquarePlan" data-editor-dismiss="modal" /></div>
+                                data-editor-action="newSquarePlan" data-editor-dismiss="modal" / alt="Start with a square plan" title="Start with a square plan"></div>
                         <div class=" boxMouseOver"><img src="res/newPlanL.png" class="img-fluid" data-editor-action="newLPlan"
-                                data-editor-dismiss="modal" /></div>
+                                data-editor-dismiss="modal" / alt="Start with an L-shaped plan" title="Start with an L-shaped plan"></div>
                     </div>
                 </div>
                 <!-- <div class="modal-footer">
@@ -567,30 +566,30 @@
     <div id="moveBox"
         style="position:absolute;right:-150px;top:10px;color:#08d;background:transparent;z-index:2;text-align:center;transition-duration: 0.2s;transition-timing-function: ease-in;">
         <p style="margin:0px 0 0 0;font-size:11px" data-editor-action="openProjectPage">
-            <img src="res/1109317.png" width=20px /> Home Editor
+            <img src="res/1109317.png" width=20px alt="Home Editor logo" title="Open the Home Editor project page" /> Home Editor
         </p>
         <div class="pull-right" style="margin:10px">
             <p style="margin:0"><button class="btn btn-xs btn-info zoom" data-zoom="zoomtop"
-                    style="box-shadow:2px 2px 3px #ccc;"><i class="fa fa-arrow-up" aria-hidden="true"></i></button></p>
+                    style="box-shadow:2px 2px 3px #ccc;" title="Pan view up" aria-label="Pan view up"><i class="fa fa-arrow-up" aria-hidden="true"></i></button></p>
             <p style="margin:0">
-                <button class="btn btn-xs btn-info zoom" data-zoom="zoomleft" style="box-shadow:2px 2px 3px #ccc;"><i
+                <button class="btn btn-xs btn-info zoom" data-zoom="zoomleft" style="box-shadow:2px 2px 3px #ccc;" title="Pan view left" aria-label="Pan view left"><i
                         class="fa fa-arrow-left" aria-hidden="true"></i></button>
-                <button class="btn btn-xs btn-light shadow zoom" data-zoom="zoomreset" style="box-shadow:2px 2px 3px #ccc;"><i
+                <button class="btn btn-xs btn-light shadow zoom" data-zoom="zoomreset" style="box-shadow:2px 2px 3px #ccc;" title="Reset view position and zoom" aria-label="Reset view position and zoom"><i
                         class="fa fa-bullseye" aria-hidden="true"></i></button>
-                <button class="btn btn-xs btn-info zoom" data-zoom="zoomright" style="box-shadow:2px 2px 3px #ccc;"><i
+                <button class="btn btn-xs btn-info zoom" data-zoom="zoomright" style="box-shadow:2px 2px 3px #ccc;" title="Pan view right" aria-label="Pan view right"><i
                         class="fa fa-arrow-right" aria-hidden="true"></i></button>
             </p>
             <p style="margin:0"><button class="btn btn-xs btn-info zoom" data-zoom="zoombottom"
-                    style="box-shadow:2px 2px 3px #ccc;"><i class="fa fa-arrow-down" aria-hidden="true"></i></button></p>
+                    style="box-shadow:2px 2px 3px #ccc;" title="Pan view down" aria-label="Pan view down"><i class="fa fa-arrow-down" aria-hidden="true"></i></button></p>
         </div>
     </div>
 
     <div id="zoomBox"
         style="position:absolute;z-index:100;right:-150px;bottom:20px;text-align:center;background:transparent;padding:0px;color:#fff;transition-duration: 0.2s;transition-timing-function: ease-in;">
         <div class="pull-right" style="margin-right:10px">
-            <button class="btn btn btn-light shadow zoom" data-zoom="zoomin" style="box-shadow:2px 2px 3px #ccc;"><i
+            <button class="btn btn btn-light shadow zoom" data-zoom="zoomin" style="box-shadow:2px 2px 3px #ccc;" title="Zoom in" aria-label="Zoom in"><i
                     class="fa fa-plus" aria-hidden="true"></i></button>
-            <button class="btn btn btn-light shadow zoom" data-zoom="zoomout" style="box-shadow:2px 2px 3px #ccc;"><i
+            <button class="btn btn btn-light shadow zoom" data-zoom="zoomout" style="box-shadow:2px 2px 3px #ccc;" title="Zoom out" aria-label="Zoom out"><i
                     class="fa fa-minus" aria-hidden="true"></i></button>
         </div>
         <div style="clear:both"></div>

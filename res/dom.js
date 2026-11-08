@@ -1,4 +1,4 @@
-// Shared DOM operations; no jQuery, plugins, or framework wrappers.
+// Shared DOM operations;
 // Accept actual DOM elements rather than selector strings.
 function setElementVisible(element, visible)
 {

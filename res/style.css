@@ -424,6 +424,23 @@ img, svg { vertical-align: middle; }
     transform: scale(0.8);
     transform-origin: center;
 }
+.fa-trash
+{ 
+    transform: scale(0.8);
+    transform-origin: center;
+}
+
+.fa-cutlery
+{ 
+    transform: scale(0.8);
+    transform-origin: center;
+}
+
+.fa-crop
+{
+    transform: scale(0.8);
+    transform-origin: center;    
+}
 
 .fa-arrow-down::before { content: "\f063"; }
 .fa-arrow-left::before { content: "\f060"; }

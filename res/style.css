@@ -399,7 +399,11 @@ img, svg { vertical-align: middle; }
 .fa-arrow-down,
 .fa-arrow-left,
 .fa-arrow-right,
-.fa-backward,
+.fa-backward
+{
+    transform: scale(0.8);
+    transform-origin: center;
+}
 .fa-chevron-circle-left
 {
     transform: scale(2);

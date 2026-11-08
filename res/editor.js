@@ -57,12 +57,20 @@ function Editor()
         for (var vertice = 0; vertice < WALLS.length; vertice++)
         {
             var wall = WALLS[vertice];
+            // Older plans may contain numeric strings for wall thickness.
+            // Normalize these, but continue rejecting missing or invalid values.
+            var thickness = wall.thick;
+            if (typeof thickness === 'string' && thickness.trim() !== '')
+            {
+                thickness = Number(thickness);
+            }
             if (!wall.start || !wall.end || !Number.isFinite(wall.start.x) ||
                 !Number.isFinite(wall.start.y) || !Number.isFinite(wall.end.x) ||
-                !Number.isFinite(wall.end.y) || !Number.isFinite(wall.thick) || wall.thick <= 0)
+                !Number.isFinite(wall.end.y) || !Number.isFinite(thickness) || thickness <= 0)
             {
                 throw new RangeError('Invalid coordinates or thickness for wall ' + vertice);
             }
+            wall.thick = thickness;
             if (wall.parent != null)
             {
                 if (!isObjectsEquals(wall.parent.start, wall.start) && !isObjectsEquals(wall.parent.end, wall.start))

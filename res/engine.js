@@ -1749,6 +1749,29 @@ function _MOUSEUP(event)
         if (action == 1)
         {
             action = 0;
+            // A click without a drag does not define a measurement. Leave the
+            // tool active and discard any incomplete preview rather than saving it.
+            if (typeof binder === 'undefined' || typeof labelMeasure === 'undefined' ||
+                !Number.isFinite(binder.size) || binder.size <= 0)
+            {
+                if (typeof binder !== 'undefined')
+                {
+                    removeBinderGraphic(binder);
+                    delete binder;
+                }
+                if (typeof labelMeasure !== 'undefined')
+                {
+                    labelMeasure.remove();
+                    delete labelMeasure;
+                }
+                if (typeof cross !== 'undefined')
+                {
+                    cross.remove();
+                    delete cross;
+                }
+                document.getElementById('boxinfo').textContent = 'Drag to measure a distance';
+                return;
+            }
             // MODIFY BBOX FOR BINDER ZONE (TXT)
             var bbox = svgRectFromClientRect(labelMeasure.getBoundingClientRect());
             bbox.origin = { x: bbox.x + (bbox.width / 2), y: bbox.y + (bbox.height / 2) };

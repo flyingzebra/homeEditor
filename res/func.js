@@ -2078,8 +2078,7 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10)
     if (classObj === 'measure')
     {
         construc.params.bindBox = true;
-        pushToConstruc(construc, "M-" + (sizeObj / 2) + ",0 l10,-10 l0,8 l" + (sizeObj - 20) +
-            ",0 l0,-8 l10,10 l-10,10 l0,-8 l-" + (sizeObj - 20) + ",0 l0,8 Z", "#729eeb", "none", '');
+        pushToConstruc(construc, qSVG.measureArrowPath(sizeObj), "#729eeb", "none", '');
     }
 
     if (classObj === 'boundingBox')

@@ -196,6 +196,32 @@ function QSVG()
         return 'M ' + cx + ' ' + cy + ' m -' + r + ', 0 a ' + r + ',' + r + ' 0 1,0 ' + (r * 2) + ',0 a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
     };
 
+    // A measuring arrow must remain valid even before a user drags the pointer.
+    // Explicit absolute coordinates avoid malformed relative commands such as "l--20".
+    this.measureArrowPath = function(length)
+    {
+        if (!Number.isFinite(length) || length <= 0)
+        {
+            return 'M 0,0';
+        }
+
+        var halfLength = length / 2;
+        var headSize = Math.min(10, length / 3);
+        var shaftEnd = halfLength - headSize;
+        var shaftHalfWidth = Math.min(2, headSize / 4);
+
+        return 'M ' + (-halfLength) + ',0' +
+            ' L ' + (-shaftEnd) + ',' + (-headSize) +
+            ' L ' + (-shaftEnd) + ',' + (-shaftHalfWidth) +
+            ' L ' + shaftEnd + ',' + (-shaftHalfWidth) +
+            ' L ' + shaftEnd + ',' + (-headSize) +
+            ' L ' + halfLength + ',0' +
+            ' L ' + shaftEnd + ',' + headSize +
+            ' L ' + shaftEnd + ',' + shaftHalfWidth +
+            ' L ' + (-shaftEnd) + ',' + shaftHalfWidth +
+            ' L ' + (-shaftEnd) + ',' + headSize + ' Z';
+    };
+
     this.createEquation = function(x0, y0, x1, y1)
     {
         if (x1 - x0 == 0)

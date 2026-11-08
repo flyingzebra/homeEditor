@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>homeEditor – measurement arrow regression tests</title>
+</head>
+<body>
+    <h1>Measurement arrow SVG regression tests</h1>
+    <p>Uses the actual res/qSVG.js implementation and runs locally without dependencies.</p>
+    <ol id="results"></ol>
+    <p id="summary" role="status"></p>
+    <svg id="test-svg" xmlns="http://www.w3.org/2000/svg" width="1" height="1" aria-hidden="true"></svg>
+    <script src="../res/qSVG.js"></script>
+    <script>
+        (function()
+        {
+            var lengths = [0, 0.1, 1, 5, 10, 19, 20, 21, 29.9, 30, 60, 150];
+            var passed = 0;
+            var total = 0;
+            function check(name, condition)
+            {
+                total++;
+                if (condition) passed++;
+                var item = document.createElement('li');
+                item.textContent = (condition ? 'PASS — ' : 'FAIL — ') + name;
+                document.getElementById('results').append(item);
+            }
+            lengths.forEach(function(length)
+            {
+                var data = qSVG.measureArrowPath(length);
+                var path = qSVG.create('test-svg', 'path', { d: data });
+                var bbox = path.getBBox();
+                var pathLength = path.getTotalLength();
+                var valid = !/NaN|Infinity|l--|L--/.test(data) &&
+                    Number.isFinite(bbox.width) && Number.isFinite(pathLength) &&
+                    (length === 0 ? bbox.width === 0 : Math.abs(bbox.width - length) < 0.001);
+                check('Valid arrow at ' + length + ' SVG units', valid);
+                path.remove();
+            });
+            [NaN, Infinity, -Infinity, -1, undefined].forEach(function(length)
+            {
+                check('Invalid length returns a harmless empty path: ' + String(length),
+                    qSVG.measureArrowPath(length) === 'M 0,0');
+            });
+            document.getElementById('summary').textContent = passed + ' / ' + total + ' tests passed';
+            document.getElementById('summary').dataset.passed = String(passed === total);
+        })();
+    </script>
+</body>
+</html>

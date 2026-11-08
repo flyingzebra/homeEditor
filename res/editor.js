@@ -37,6 +37,17 @@ function Editor()
         else return nodes;
     };
 
+    // Invalid line intersections can occur for parallel or degenerate joins.
+    // Fall back to the wall's own perpendicular corner instead of drawing NaN coordinates.
+    function resolveWallCorner(intersection, fallback)
+    {
+        if (intersection && Number.isFinite(intersection.x) && Number.isFinite(intersection.y))
+        {
+            return intersection;
+        }
+        return fallback;
+    }
+
     this.wallsComputing = function(WALLS, action = false)
     {
         // IF ACTION == MOVE -> equation2 exist !!!!!
@@ -46,6 +57,12 @@ function Editor()
         for (var vertice = 0; vertice < WALLS.length; vertice++)
         {
             var wall = WALLS[vertice];
+            if (!wall.start || !wall.end || !Number.isFinite(wall.start.x) ||
+                !Number.isFinite(wall.start.y) || !Number.isFinite(wall.end.x) ||
+                !Number.isFinite(wall.end.y) || !Number.isFinite(wall.thick) || wall.thick <= 0)
+            {
+                throw new RangeError('Invalid coordinates or thickness for wall ' + vertice);
+            }
             if (wall.parent != null)
             {
                 if (!isObjectsEquals(wall.parent.start, wall.start) && !isObjectsEquals(wall.parent.end, wall.start))
@@ -173,6 +190,12 @@ function Editor()
                 var eqP = qSVG.perpendicularEquation(eqWallUp, wall.start.x, wall.start.y);
                 var interUp = qSVG.intersectionOfEquations(eqWallUp, eqP, "object");
                 var interDw = qSVG.intersectionOfEquations(eqWallDw, eqP, "object");
+                interUp = resolveWallCorner(interUp, {
+                    x: wall.start.x + wallThickX, y: wall.start.y - wallThickY
+                });
+                interDw = resolveWallCorner(interDw, {
+                    x: wall.start.x - wallThickX, y: wall.start.y + wallThickY
+                });
                 wall.coords = [interUp, interDw];
                 dWay = "M" + interUp.x + "," + interUp.y + " L" + interDw.x + "," + interDw.y + " ";
             }
@@ -198,7 +221,8 @@ function Editor()
                         interDw = { x: wall.start.x - wallThickX, y: wall.start.y + wallThickY };
                     }
 
-                    var miter = qSVG.gap(interUp, { x: previousWallEnd.x, y: previousWallEnd.y });
+                    var miter = interUp && Number.isFinite(interUp.x) && Number.isFinite(interUp.y) ?
+                        qSVG.gap(interUp, { x: previousWallEnd.x, y: previousWallEnd.y }) : Infinity;
                     if (miter > 1000)
                     {
                         var interUp = qSVG.intersectionOfEquations(eqP, eqWallUp, "object");
@@ -210,6 +234,12 @@ function Editor()
                     var interUp = qSVG.intersectionOfEquations(eqP, eqWallUp, "object");
                     var interDw = qSVG.intersectionOfEquations(eqP, eqWallDw, "object");
                 }
+                interUp = resolveWallCorner(interUp, {
+                    x: wall.start.x + wallThickX, y: wall.start.y - wallThickY
+                });
+                interDw = resolveWallCorner(interDw, {
+                    x: wall.start.x - wallThickX, y: wall.start.y + wallThickY
+                });
                 wall.coords = [interUp, interDw];
                 dWay = "M" + interUp.x + "," + interUp.y + " L" + interDw.x + "," + interDw.y + " ";
             }
@@ -220,6 +250,12 @@ function Editor()
                 var eqP = qSVG.perpendicularEquation(eqWallUp, wall.end.x, wall.end.y);
                 var interUp = qSVG.intersectionOfEquations(eqWallUp, eqP, "object");
                 var interDw = qSVG.intersectionOfEquations(eqWallDw, eqP, "object");
+                interUp = resolveWallCorner(interUp, {
+                    x: wall.end.x + wallThickX, y: wall.end.y - wallThickY
+                });
+                interDw = resolveWallCorner(interDw, {
+                    x: wall.end.x - wallThickX, y: wall.end.y + wallThickY
+                });
                 wall.coords.push(interDw, interUp);
                 dWay = dWay + "L" + interDw.x + "," + interDw.y + " L" + interUp.x + "," + interUp.y + " Z";
             }
@@ -245,7 +281,8 @@ function Editor()
                         interDw = { x: wall.end.x - wallThickX, y: wall.end.y + wallThickY };
                     }
 
-                    var miter = qSVG.gap(interUp, { x: nextWallStart.x, y: nextWallStart.y });
+                    var miter = interUp && Number.isFinite(interUp.x) && Number.isFinite(interUp.y) ?
+                        qSVG.gap(interUp, { x: nextWallStart.x, y: nextWallStart.y }) : Infinity;
                     if (miter > 1000)
                     {
                         var interUp = qSVG.intersectionOfEquations(eqWallUp, eqP, "object");
@@ -258,6 +295,12 @@ function Editor()
                     var interDw = qSVG.intersectionOfEquations(eqWallDw, eqP, "object");
                 }
 
+                interUp = resolveWallCorner(interUp, {
+                    x: wall.end.x + wallThickX, y: wall.end.y - wallThickY
+                });
+                interDw = resolveWallCorner(interDw, {
+                    x: wall.end.x - wallThickX, y: wall.end.y + wallThickY
+                });
                 wall.coords.push(interDw, interUp);
                 dWay = dWay + "L" + interDw.x + "," + interDw.y + " L" + interUp.x + "," + interUp.y + " Z";
             }
@@ -307,8 +350,16 @@ function Editor()
     this.visibleWall = function(wallToInvisble = false)
     {
         if (!wallToInvisble) wallToInvisble = binder.wall;
+        // Only a previously hidden wall has a valid thickness to restore.
+        var originalThickness = Number(wallToInvisble.backUp);
+        if (wallToInvisble.type != 'separate' || !Number.isFinite(originalThickness) || originalThickness <= 0)
+        {
+            document.getElementById('boxinfo').textContent =
+                'Cannot restore wall: original thickness is missing.';
+            return false;
+        }
         wallToInvisble.type = "normal";
-        wallToInvisble.thick = wallToInvisble.backUp;
+        wallToInvisble.thick = originalThickness;
         wallToInvisble.backUp = false;
         editor.architect(WALLS);
         mode = "select_mode";

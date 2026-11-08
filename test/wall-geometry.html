@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>homeEditor wall geometry regression tests</title>
+    <style>body { font: 15px system-ui, sans-serif; margin: 2rem; } li { margin: .35rem 0; }</style>
+</head>
+<body>
+    <h1>Wall geometry tests</h1>
+    <p>Checks line intersections, wall restoration and valid SVG paths. No dependencies or server required.</p>
+    <svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" aria-hidden="true">
+        <g id="boxwall"></g><g id="boxArea"></g>
+    </svg>
+    <div id="boxinfo"></div><div id="panel"></div>
+    <ol id="results"></ol><p id="summary" role="status"></p>
+    <script>
+        var WALLS = [];
+        var colorWall = '#666';
+        var mode = 'select_mode';
+        var factor = 1;
+        var offset = { left: 0, top: 0 };
+        var originX_viewbox = 0;
+        var originY_viewbox = 0;
+        function isObjectsEquals(a, b)
+        {
+            if (a === b) return true;
+            if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+            return 'x' in a && 'y' in a && 'x' in b && 'y' in b &&
+                a.x === b.x && a.y === b.y;
+        }
+        function setElementVisible() {}
+        function save() {}
+    </script>
+    <script src="../res/qSVG.js"></script>
+    <script src="../res/editor.js"></script>
+    <script>
+        var results = [];
+        function check(label, condition)
+        {
+            results.push({ label: label, passed: Boolean(condition) });
+            var entry = document.createElement('li');
+            entry.textContent = (condition ? 'PASS: ' : 'FAIL: ') + label;
+            document.getElementById('results').append(entry);
+        }
+        function finiteWalls()
+        {
+            return WALLS.every(function(wall)
+            {
+                return wall.coords.length === 4 && wall.coords.every(function(point)
+                {
+                    return Number.isFinite(point.x) && Number.isFinite(point.y);
+                }) && wall.graph && !/NaN|Infinity|undefined/.test(wall.graph.getAttribute('d'));
+            });
+        }
+        function makeWall(x1, y1, x2, y2, thickness)
+        {
+            return new editor.wall({ x: x1, y: y1 }, { x: x2, y: y2 }, 'normal', thickness);
+        }
+        try
+        {
+            WALLS = [makeWall(447, 100, 447, 744, 20)];
+            editor.wallsComputing(WALLS);
+            check('Isolated vertical wall produces finite SVG corners', finiteWalls());
+
+            WALLS = [makeWall(200, 744, 447, 744, 20), makeWall(447, 744, 447, 300, 20)];
+            editor.wallsComputing(WALLS);
+            check('Perpendicular connected walls preserve valid join geometry', finiteWalls());
+
+            var originalIntersection = qSVG.intersectionOfEquations;
+            qSVG.intersectionOfEquations = function()
+            {
+                return { x: 457, y: NaN };
+            };
+            try
+            {
+                WALLS = [makeWall(447, 100, 447, 744, 20)];
+                editor.wallsComputing(WALLS);
+                check('Non-finite intersection cannot reach an SVG path', finiteWalls());
+                WALLS = [makeWall(200, 744, 447, 744, 20), makeWall(447, 744, 447, 300, 20)];
+                editor.wallsComputing(WALLS);
+                check('Non-finite connected joins fall back to finite end caps', finiteWalls());
+            }
+            finally
+            {
+                qSVG.intersectionOfEquations = originalIntersection;
+            }
+
+            WALLS = [makeWall(447, 100, 447, 744, undefined)];
+            var rejectedInvalidThickness = false;
+            try
+            {
+                editor.wallsComputing(WALLS);
+            }
+            catch (error)
+            {
+                rejectedInvalidThickness = error instanceof RangeError && /thickness/.test(error.message);
+            }
+            check('Invalid wall thickness rejected before constructing SVG', rejectedInvalidThickness);
+
+            var oldArchitect = editor.architect;
+            var redrawCount = 0;
+            editor.architect = function() { redrawCount++; return true; };
+            try
+            {
+                var badWall = makeWall(0, 0, 100, 0, .07);
+                badWall.type = 'separate';
+                badWall.backUp = false;
+                WALLS = [badWall];
+                var result = editor.visibleWall(badWall);
+                check('Restoration without original thickness is rejected safely',
+                    result === false && redrawCount === 0 && badWall.type === 'separate');
+
+                var goodWall = makeWall(0, 0, 100, 0, .07);
+                goodWall.type = 'separate';
+                goodWall.backUp = 20;
+                WALLS = [goodWall];
+                var restored = editor.visibleWall(goodWall);
+                check('Valid hidden wall restores original thickness and rebuilds',
+                    restored === true && goodWall.type === 'normal' && goodWall.thick === 20 && redrawCount === 1);
+            }
+            finally
+            {
+                editor.architect = oldArchitect;
+            }
+        }
+        catch (error)
+        {
+            check('Unexpected error: ' + error.message, false);
+        }
+        var passed = results.filter(function(item) { return item.passed; }).length;
+        var summary = document.getElementById('summary');
+        summary.textContent = passed + '/' + results.length + ' tests passed';
+        summary.dataset.passed = String(passed === results.length);
+    </script>
+</body>
+</html>

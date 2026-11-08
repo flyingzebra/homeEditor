@@ -1859,9 +1859,9 @@ document.getElementById('stair_mode').addEventListener('click', function()
 
 document.getElementById('node_mode').addEventListener('click', function()
 {
-    document.getElementById('boxinfo')
-        .html('Cut a wall<br/><span style=\"font-size:0.7em\">Warning : Cutting the wall of a room can cancel its ' +
-            'configuration</span>');
+    document.getElementById('boxinfo').innerHTML =
+        'Cut a wall<br/><span style="font-size:0.7em">Warning: Cutting a room wall may reset its ' +
+        'configuration.</span>';
     setModeButton('node_mode');
 });
 

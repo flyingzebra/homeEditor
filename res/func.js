@@ -1662,11 +1662,10 @@ function rib(shift = 5)
 
 function cursor(tool)
 {
-    if (tool === 'grab') tool =
-        "url('https://wiki.openmrs.org/s/en_GB/7502/b9217199c27dd617c8d51f6186067d7767c5001b/_/images/icons/emoticons/add.png') 8 8, auto";
-    if (tool === 'scissor') tool = "url('https://maxcdn.icons8.com/windows10/PNG/64/Hands/hand_scissors-64.png'), auto";
-    if (tool === 'trash') tool = "url('https://cdn4.iconfinder.com/data/icons/common-toolbar/36/Cancel-32.png'), auto";
-    if (tool === 'validation') tool = "url('https://images.fatguymedia.com/wp-content/uploads/2015/09/check.png'), auto";
+    if (tool === 'grab') tool = "url('res/add.png') 8 8, auto";
+    if (tool === 'scissor') tool = "url('res/scissors.png'), auto";
+    if (tool === 'trash') tool = "url('res/cancel.png'), auto";
+    if (tool === 'validation') tool = "url('res/check.png'), auto";
     linElement.style.cursor = tool;
 }
 

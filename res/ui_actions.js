@@ -42,6 +42,27 @@ function HomeEditorUI()
         rib();
     };
 
+    // Anchor the ENERGY palette to its trigger instead of a fixed bottom offset.
+    // Both elements are inside #panel, so translate viewport coordinates to its
+    // positioned coordinate system. Keep the palette on-screen on short windows.
+    function positionEnergyMenu()
+    {
+        var panel = document.getElementById('panel');
+        var button = document.getElementById('object_mode');
+        var menu = document.getElementById('energy_list');
+        if (!panel || !button || !menu || window.getComputedStyle(menu).display === 'none') return;
+
+        var panelRect = panel.getBoundingClientRect();
+        var buttonRect = button.getBoundingClientRect();
+        var menuHeight = menu.getBoundingClientRect().height;
+        var margin = 8;
+        var latestTop = Math.max(margin, window.innerHeight - menuHeight - margin);
+        var viewportTop = Math.min(Math.max(buttonRect.top, margin), latestTop);
+
+        menu.style.bottom = 'auto';
+        menu.style.top = (viewportTop - panelRect.top - panel.clientTop) + 'px';
+    }
+
     function toggleSubMenu(targetId)
     {
         var target = document.getElementById(targetId);
@@ -52,6 +73,7 @@ function HomeEditorUI()
             setElementVisible(element, false);
         });
         setElementVisible(target, shouldShow);
+        if (shouldShow && targetId === 'energy_list') positionEnergyMenu();
     }
 
     this.toggleDoors = function() { toggleSubMenu('door_list'); };
@@ -94,6 +116,10 @@ function HomeEditorUI()
 
     this.bind = function()
     {
+        // Reposition an open ENERGY palette after viewport or sidebar movement.
+        window.addEventListener('resize', positionEnergyMenu);
+        window.addEventListener('scroll', positionEnergyMenu, true);
+
         // Bind editor actions directly before delegated modal-dismiss handlers run.
         var ui = this;
         var buttons = document.querySelectorAll('[data-editor-action]');

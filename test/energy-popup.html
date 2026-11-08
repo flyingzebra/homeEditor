@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>homeEditor ENERGY palette placement regression</title>
+<style>
+    body { font: 15px Arial, sans-serif; margin: 0; }
+    #panel { position: absolute; top: 0; left: 0; width: 200px; height: 100vh; padding: 12px; box-sizing: border-box; }
+    #object_mode { position: absolute; top: 80px; left: 12px; width: 180px; height: 46px; }
+    #energy_list { position: absolute; left: 200px; top: 0; display: none; width: 300px;
+        height: 240px; max-height: calc(100vh - 16px); overflow-y: auto;
+        background: white; border: 1px solid #ccc; box-sizing: border-box; }
+    #door_list, #layer_list { display: none; }
+    main { margin-left: 525px; padding: 12px; }
+    .pass { color: green; } .fail { color: red; }
+</style>
+</head>
+<body>
+<div id="panel">
+    <button id="object_mode" data-editor-action="toggleEnergy">ENERGY</button>
+    <div id="energy_list" class="sub">Energy palette</div>
+    <div id="door_list" class="sub">Door palette</div>
+    <div id="layer_list" class="sub">Layer palette</div>
+</div>
+<main><h1>ENERGY popup positioning checks</h1><ol id="results"></ol><p id="summary"></p></main>
+<script src="../res/dom.js"></script>
+<script src="../res/ui_actions.js"></script>
+<script>
+(function () {
+    'use strict';
+    var button = document.getElementById('object_mode');
+    var menu = document.getElementById('energy_list');
+    var results = document.getElementById('results');
+    var passed = 0;
+    var total = 0;
+    function check(description, result) {
+        total++;
+        if (result) passed++;
+        var row = document.createElement('li');
+        row.className = result ? 'pass' : 'fail';
+        row.textContent = (result ? 'PASS: ' : 'FAIL: ') + description;
+        results.append(row);
+    }
+    button.click();
+    check('Palette opens', getComputedStyle(menu).display !== 'none');
+    check('Top aligns with ENERGY when sufficient space', Math.abs(menu.getBoundingClientRect().top - button.getBoundingClientRect().top) < 2);
+    check('Palette opens to the right of sidebar', Math.abs(menu.getBoundingClientRect().left - document.getElementById('panel').getBoundingClientRect().right) < 2);
+    check('No bottom positioning survives', menu.style.bottom === 'auto');
+    button.click();
+    check('Clicking ENERGY again hides palette', getComputedStyle(menu).display === 'none');
+    button.click();
+    button.style.top = (window.innerHeight - 20) + 'px';
+    window.dispatchEvent(new Event('resize'));
+    check('Palette stays within viewport at bottom', menu.getBoundingClientRect().bottom <= innerHeight - 6);
+    check('Palette stays above viewport top', menu.getBoundingClientRect().top >= 6);
+    button.style.top = '80px';
+    window.dispatchEvent(new Event('scroll'));
+    check('Scroll event realigns palette', Math.abs(menu.getBoundingClientRect().top - button.getBoundingClientRect().top) < 2);
+    check('Unrelated menus stay closed', getComputedStyle(document.getElementById('door_list')).display === 'none' &&
+        getComputedStyle(document.getElementById('layer_list')).display === 'none');
+    document.getElementById('summary').textContent = passed + ' / ' + total + ' passed';
+    document.getElementById('summary').dataset.passed = String(passed === total);
+})();
+</script>
+</body>
+</html>

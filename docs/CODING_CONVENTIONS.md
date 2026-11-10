@@ -42,6 +42,14 @@ var response = oAD.LDAP({ operation: "search", filter: "(objectClass=user)" });
 
 This illustrates the **shape** of the API, not a complete LDAP implementation. Each instance must own its own mutable dataset.
 
+**Primary instance naming:** Name the primary object created from a container with a lowercase `o` prefix, followed by the constructor name (preserving its capitalization). For example, `Editor()` should primarily be instantiated as `oEditor`:
+
+```javascript
+var oEditor = new Editor();
+```
+
+A clear established abbreviation (such as `oAD` for `ActiveDirectory`) is also acceptable. For multiple instances, add a descriptive suffix (e.g. `oEditorPreview`). Apply this to new and actively modified code; do not rename existing references solely for style.
+
 **Do not introduce** an IIFE, UMD wrapper, factory, `class`, `prototype` forwarding, `module.exports`, `export default`, or explicit `globalThis` assignment just to define a browser-side object container. A normal `<script src="res/ActiveDirectory.js"></script>` makes the top-level function available to subsequent classic scripts.
 
 ## 2. Braces: Allman for executable blocks
@@ -150,6 +158,7 @@ Rules of thumb:
 | Simple functions | Optional one-line form, normally **under 100 characters** |
 | JSON/object literal braces | Compact data layout; `{` may follow `=` or `:` |
 | Constructor naming | `PascalCase`, e.g. `ActiveDirectory` |
+| Primary object instances | `o` prefix + constructor name, e.g. `oEditor = new Editor()`; existing clear abbreviations such as `oAD` are acceptable |
 | Public methods | `this.camelCase = function(...)`; retain established names such as `this.LDAP` |
 | Public state | `this.property`; retain established names such as `this.DB` |
 | Private helpers | Local named functions inside the constructor |
@@ -174,6 +183,7 @@ Consumers (for example PowerShellJS) should use the **public method** `oAD.LDAP(
 ## 7. Review checklist
 
 - [ ] Named, plain constructor with public members directly on `this`.
+- [ ] Primary object-container instance uses an `o`-prefixed variable name (e.g. `oEditor`).
 - [ ] Inline default dataset; no required external JSON request.
 - [ ] Allman braces for multiline executable blocks.
 - [ ] Short, simple functions remain compact where helpful.

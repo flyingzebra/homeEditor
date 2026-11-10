@@ -36,8 +36,8 @@ function ActiveDirectory()
     };
 }
 
-var oAD = new ActiveDirectory();
-var response = oAD.LDAP({ operation: "search", filter: "(objectClass=user)" });
+var oActiveDirectory = new ActiveDirectory();
+var response = oActiveDirectory.LDAP({ operation: "search", filter: "(objectClass=user)" });
 ```
 
 This illustrates the **shape** of the API, not a complete LDAP implementation. Each instance must own its own mutable dataset.

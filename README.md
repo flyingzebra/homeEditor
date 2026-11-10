@@ -22,6 +22,8 @@ Just have to copy the files into a directory and open the index.html file in you
 - Refine the Historical system (use LocalStorage)
 - Chose an interesting file interchage file format (import/export)
 - Make your own system/functions to export plan to any web/local database
+- Add a command-line terminal allowing access to most object containers and their internal functions.  Only the internal functions issued with a command-line help string should be accessible through the terminal.
+
 
 ## License
 

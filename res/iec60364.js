@@ -177,4 +177,5 @@ function IEC60364Review()
     };
 }
 
-var iec60364Review = new IEC60364Review();
+var oIEC60364Review = new IEC60364Review();
+var iec60364Review = oIEC60364Review; // Compatibility with existing report generation.

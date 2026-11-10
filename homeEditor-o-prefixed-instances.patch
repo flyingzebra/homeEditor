@@ -1,0 +1,67 @@
+diff --git a/res/editor.js b/res/editor.js
+--- a/res/editor.js
++++ b/res/editor.js
+@@ -1236,3 +1236,4 @@
+ }
+ 
+-var editor = new Editor();
++var oEditor = new Editor();
++var editor = oEditor; // Compatibility alias for existing editor integrations.
+diff --git a/res/qSVG.js b/res/qSVG.js
+--- a/res/qSVG.js
++++ b/res/qSVG.js
+@@ -1203,4 +1203,5 @@
+ }
+ 
+-var qSVG = new QSVG();
++var oQSVG = new QSVG();
++var qSVG = oQSVG; // Compatibility alias for existing geometry callers.
+ 
+ //----------------------- END Quick SVG LIBRARY --------------------------------------------------s
+diff --git a/res/iec60364.js b/res/iec60364.js
+--- a/res/iec60364.js
++++ b/res/iec60364.js
+@@ -178,3 +178,4 @@
+ }
+ 
+-var iec60364Review = new IEC60364Review();
++var oIEC60364Review = new IEC60364Review();
++var iec60364Review = oIEC60364Review; // Compatibility with existing report generation.
+diff --git a/res/HomeEditorScript.js b/res/HomeEditorScript.js
+--- a/res/HomeEditorScript.js
++++ b/res/HomeEditorScript.js
+@@ -465,5 +465,6 @@
+         if (!term)
+         {
+-            term = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
++            var oTERMINAL = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
+                 prompt: 'homeEditor', storageKey: 'HomeEditorScriptHistory' });
++            term = oTERMINAL;
+             term.onInput(function(command, params, line)
+@@ -515,3 +515,4 @@
+ }
+ 
+-var homeEditorScript = new HomeEditorScript();
++var oHomeEditorScript = new HomeEditorScript();
++var homeEditorScript = oHomeEditorScript; // Compatibility with existing UI wiring.
+diff --git a/res/ui_actions.js b/res/ui_actions.js
+--- a/res/ui_actions.js
++++ b/res/ui_actions.js
+@@ -148,4 +148,5 @@
+ }
+ 
+-var homeEditorUI = new HomeEditorUI();
+-homeEditorUI.bind();
++var oHomeEditorUI = new HomeEditorUI();
++var homeEditorUI = oHomeEditorUI; // Compatibility with existing callers.
++oHomeEditorUI.bind();
+diff --git a/test/run.js b/test/run.js
+--- a/test/run.js
++++ b/test/run.js
+@@ -5,5 +5,6 @@
+     var secondEditor = new Editor();
+     results.push(recordSmokeTest('Editor uses independent method instances', firstEditor.wall !== secondEditor.wall));
+     results.push(recordSmokeTest('Existing editor singleton remains available', editor instanceof Editor));
++    results.push(recordSmokeTest('Editor primary instance uses o-prefix', oEditor === editor));
+ 
+     var a = new firstEditor.wall({ x: 1, y: 2 }, { x: 4, y: 6 }, 'normal', 20);

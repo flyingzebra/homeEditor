@@ -465,8 +465,9 @@ function HomeEditorScript()
         if (!popup.hidden) { popup.hidden = true; return false; }
         if (!term)
         {
-            term = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
+            var oTERMINAL = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
                 prompt: 'homeEditor', storageKey: 'HomeEditorScriptHistory' });
+            term = oTERMINAL;
             term.onInput(function(command, params, line)
             {
                 try
@@ -514,4 +515,5 @@ function HomeEditorScript()
     this.listRooms.help = { syntax: 'rooms', summary: 'List computed room names and areas.' };
 }
 
-var homeEditorScript = new HomeEditorScript();
+var oHomeEditorScript = new HomeEditorScript();
+var homeEditorScript = oHomeEditorScript; // Compatibility with existing UI wiring.

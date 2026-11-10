@@ -1235,4 +1235,5 @@ function Editor()
     // END EDITOR
 }
 
-var editor = new Editor();
+var oEditor = new Editor();
+var editor = oEditor; // Compatibility alias for existing editor integrations.

@@ -5,6 +5,7 @@ function runSmokeTests()
     var secondEditor = new Editor();
     results.push(recordSmokeTest('Editor uses independent method instances', firstEditor.wall !== secondEditor.wall));
     results.push(recordSmokeTest('Existing editor singleton remains available', editor instanceof Editor));
+    results.push(recordSmokeTest('Editor primary instance uses o-prefix', oEditor === editor));
 
     var a = new firstEditor.wall({ x: 1, y: 2 }, { x: 4, y: 6 }, 'normal', 20);
     var b = new firstEditor.wall({ x: 0, y: 0 }, { x: 5, y: 5 }, 'normal', 8);

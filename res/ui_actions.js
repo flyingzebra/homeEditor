@@ -147,5 +147,6 @@ function HomeEditorUI()
     };
 }
 
-var homeEditorUI = new HomeEditorUI();
-homeEditorUI.bind();
+var oHomeEditorUI = new HomeEditorUI();
+var homeEditorUI = oHomeEditorUI; // Compatibility with existing callers.
+oHomeEditorUI.bind();

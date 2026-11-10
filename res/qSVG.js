@@ -1202,6 +1202,7 @@ function QSVG()
     };
 }
 
-var qSVG = new QSVG();
+var oQSVG = new QSVG();
+var qSVG = oQSVG; // Compatibility alias for existing geometry callers.
 
 //----------------------- END Quick SVG LIBRARY --------------------------------------------------s

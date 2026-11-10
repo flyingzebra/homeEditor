@@ -1157,49 +1157,71 @@ function QSVG()
     };
     // In-object method help is visible through "help qsvg" in the Script terminal.
     this.create.help = {
-        type: 'geometry', syntax: 'qSVG.create(id, shape, attrs)',
+        type: 'geometry', syntax: 'oQSVG.create(id, shape, attrs)',
         summary: 'Create a native SVG element, optionally appending it to an element with the given ID.',
         parameters: [
             { name: 'id', description: 'Destination DOM ID, or "none" for detached creation.' },
             { name: 'shape', description: 'SVG tag such as path, line, circle or g.' },
             { name: 'attrs', description: 'Object of SVG attributes.' }
         ],
-        examples: ['qSVG.create("none", "path", { d: "M0,0 L20,20" })']
+        examples: ['oQSVG.create("none", "path", { d: "M0,0 L20,20" })']
     };
     this.measure.help = {
-        type: 'geometry', syntax: 'qSVG.measure(pointA, pointB)',
+        type: 'geometry', syntax: 'oQSVG.measure(pointA, pointB)',
         summary: 'Return Euclidean distance in SVG units.',
-        examples: ['qSVG.measure({x:0,y:0}, {x:30,y:40})']
+        examples: ['oQSVG.measure({x:0,y:0}, {x:30,y:40})']
     };
     this.gap.help = {
-        type: 'geometry', syntax: 'qSVG.gap(pointA, pointB)',
+        type: 'geometry', syntax: 'oQSVG.gap(pointA, pointB)',
         summary: 'Return squared distance in SVG units squared (no square root).'
     };
     this.createEquation.help = {
-        type: 'geometry', syntax: 'qSVG.createEquation(x0, y0, x1, y1)',
+        type: 'geometry', syntax: 'oQSVG.createEquation(x0, y0, x1, y1)',
         summary: 'Create a 2D line equation in the app\'s {A,B} representation.'
     };
     this.intersectionOfEquations.help = {
-        type: 'geometry', syntax: 'qSVG.intersectionOfEquations(eq1, eq2, [type])',
+        type: 'geometry', syntax: 'oQSVG.intersectionOfEquations(eq1, eq2, [type])',
         summary: 'Intersect two line equations. type="object" returns {x,y}.',
         remarks: ['Parallel or degenerate lines may not have a valid intersection.']
     };
     this.polygonize.help = {
-        type: 'geometry', syntax: 'qSVG.polygonize(WALLS)',
+        type: 'geometry', syntax: 'oQSVG.polygonize(WALLS)',
         summary: 'Detect polygonal rooms bounded by a list of wall segments.'
     };
     this.rayCasting.help = {
-        type: 'geometry', syntax: 'qSVG.rayCasting(point, polygon)',
+        type: 'geometry', syntax: 'oQSVG.rayCasting(point, polygon)',
         summary: 'Check whether an SVG point lies inside a polygon.'
     };
     this.measureArrowPath.help = {
-        type: 'geometry', syntax: 'qSVG.measureArrowPath(length)',
+        type: 'geometry', syntax: 'oQSVG.measureArrowPath(length)',
         summary: 'Create the measurement arrow SVG path for a non-negative length.'
     };
     this.textOnDiv.help = {
-        type: 'geometry', syntax: 'qSVG.textOnDiv(label, pos, styled, div)',
+        type: 'geometry', syntax: 'oQSVG.textOnDiv(label, pos, styled, div)',
         summary: 'Append a styled SVG text element to a named SVG layer.'
     };
+    // Each public method owns .help; the container provides a live catalogue.
+    // The Script CLI can display it with print(oQSVG.help).
+    Object.defineProperty(this, 'help', {
+        enumerable: false,
+        get: function()
+        {
+            var methods = {};
+            var current = this;
+            Object.keys(this).sort().forEach(function(name)
+            {
+                if (typeof current[name] === 'function' && current[name].help)
+                {
+                    methods[name] = current[name].help;
+                }
+            });
+            return {
+                container: 'oQSVG',
+                summary: 'oQSVG public API. Each method carries its own .help descriptor.',
+                methods: methods
+            };
+        }
+    });
 }
 
 var oQSVG = new QSVG();

@@ -1171,20 +1171,21 @@ function Editor()
     // HomeEditorScript discovers these descriptors rather than copying their text.
     this.wall.help = {
         type: 'canvas',
-        syntax: 'new editor.wall(start, end, type, thick)',
-        summary: 'Construct a wall segment. Add it to WALLS, redraw with editor.architect(WALLS), then save().',
+        syntax: 'new oEditor.wall(start, end, type, thick, height)',
+        summary: 'Construct one wall segment. Creating it alone does not change the canvas or history.',
         parameters: [
             { name: 'start', description: 'Start point {x,y} in SVG coordinates.' },
             { name: 'end', description: 'End point {x,y} in SVG coordinates.' },
             { name: 'type', description: 'Wall classification, normally "normal".' },
-            { name: 'thick', description: 'Positive wall thickness (centimetres).' }
+            { name: 'thick', description: 'Positive wall thickness (centimetres).' },
+            { name: 'height', description: 'Optional wall height (centimetres); defaults to 250.' }
         ],
-        remarks: ['Command-line users should prefer wall add, which validates and records changes.'],
-        examples: ['wall add 100 100 300 100 20 250']
+        remarks: ['In the CLI, use wall add (or oHomeEditorScript.addWall in application code) to draw and save.'],
+        examples: ['print(oEditor.wall.help)', 'wall add 100 100 300 100 20 250']
     };
     this.obj2D.help = {
         type: 'canvas',
-        syntax: 'new editor.obj2D(family, classe, type, pos, angle, angleSign, size, hinge, thick, value)',
+        syntax: 'new oEditor.obj2D(family, classe, type, pos, angle, angleSign, size, hinge, thick, value)',
         summary: 'Construct an object (energy symbol, stair, door or annotation). Its graph must be appended to the correct SVG layer and updated.',
         parameters: [
             { name: 'family', description: 'Placement family: free, stick, inWall, etc.' },
@@ -1197,41 +1198,63 @@ function Editor()
         examples: ['object add gtl 250 300']
     };
     this.architect.help = {
-        type: 'canvas', syntax: 'editor.architect(WALLS)',
+        type: 'canvas', syntax: 'oEditor.architect(WALLS)',
         summary: 'Recalculate wall geometry, detect rooms and redraw the working-area SVG.',
         remarks: ['Does not save history automatically; call save() after a successful edit.']
     };
     this.wallsComputing.help = {
-        type: 'canvas', syntax: 'editor.wallsComputing(WALLS, [action])',
+        type: 'canvas', syntax: 'oEditor.wallsComputing(WALLS, [action])',
         summary: 'Build wall corner geometry and SVG path elements for each wall.',
         remarks: ['Rejects invalid wall coordinates and thicknesses.']
     };
     this.makeWall.help = {
-        type: 'canvas', syntax: 'editor.makeWall(path)',
+        type: 'canvas', syntax: 'oEditor.makeWall(path)',
         summary: 'Create an SVG wall path from validated path data.'
     };
     this.roomMaker.help = {
-        type: 'canvas', syntax: 'editor.roomMaker(Rooms)',
+        type: 'canvas', syntax: 'oEditor.roomMaker(Rooms)',
         summary: 'Synchronize detected rooms with ROOM and redraw room labels and surfaces.'
     };
     this.splitWall.help = {
-        type: 'canvas', syntax: 'editor.splitWall([wall])',
+        type: 'canvas', syntax: 'oEditor.splitWall([wall])',
         summary: 'Split a selected wall at intersections, rebuilding and saving the canvas.',
         remarks: ['Requires a valid selected wall binder for the interactive cutting workflow.']
     };
     this.objFromWall.help = {
-        type: 'canvas', syntax: 'editor.objFromWall(wall, [typeObj])',
+        type: 'canvas', syntax: 'oEditor.objFromWall(wall, [typeObj])',
         summary: 'Find doors and windows attached to a wall.',
         remarks: ['Can be used before deleting or changing walls with attached objects.']
     };
     this.invisibleWall.help = {
-        type: 'canvas', syntax: 'editor.invisibleWall([wall])',
+        type: 'canvas', syntax: 'oEditor.invisibleWall([wall])',
         summary: 'Convert a wall to a separation line when no attached opening prevents it.'
     };
     this.visibleWall.help = {
-        type: 'canvas', syntax: 'editor.visibleWall([wall])',
+        type: 'canvas', syntax: 'oEditor.visibleWall([wall])',
         summary: 'Restore the stored thickness of a previously hidden wall.'
     };
+    // Each public method owns .help; the container provides a live catalogue.
+    // The Script CLI can display it with print(oEditor.help).
+    Object.defineProperty(this, 'help', {
+        enumerable: false,
+        get: function()
+        {
+            var methods = {};
+            var current = this;
+            Object.keys(this).sort().forEach(function(name)
+            {
+                if (typeof current[name] === 'function' && current[name].help)
+                {
+                    methods[name] = current[name].help;
+                }
+            });
+            return {
+                container: 'oEditor',
+                summary: 'oEditor public API. Each method carries its own .help descriptor.',
+                methods: methods
+            };
+        }
+    });
     // END EDITOR
 }
 

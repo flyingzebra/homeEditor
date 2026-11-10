@@ -6,7 +6,7 @@
 function HomeEditorScript()
 {
     var self = this;
-    var term = null;
+    var oTERMINAL = null;
     var energyTypes = [
         'gtl','switch','doubleSwitch','dimmer','plug','plug20','plug32',
         'roofLight','wallLight','www','rj45','tv','heater','radiator'
@@ -73,7 +73,7 @@ function HomeEditorScript()
         try
         {
             var result = mutate();
-            editor.architect(WALLS);
+            oEditor.architect(WALLS);
             rib();
             save();
             return result;
@@ -93,7 +93,7 @@ function HomeEditorScript()
                 row.wall.child = row.child;
                 row.wall.backUp = row.backUp;
             });
-            try { editor.architect(WALLS); rib(); } catch (_) {}
+            try { oEditor.architect(WALLS); rib(); } catch (_) {}
             throw error;
         }
     }
@@ -144,6 +144,41 @@ function HomeEditorScript()
         return result;
     }
 
+    // Deliberately limited to read-only help descriptors on known object instances.
+    // No eval, arbitrary method execution, getters on foreign objects or global lookup.
+    function printObjectHelp(expression)
+    {
+        var path = String(expression || '').trim();
+        if (!/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+$/.test(path))
+        {
+            throw new Error('Use print(oEditor.help) or print(oEditor.wall.help).');
+        }
+        var parts = path.split('.');
+        var roots = { oEditor: oEditor, oQSVG: oQSVG, oHomeEditorScript: self };
+        var value = roots[parts.shift()];
+        if (!value) throw new Error('Unknown object container. Use oEditor, oQSVG or oHomeEditorScript.');
+        if (parts.indexOf('help') < 0)
+        {
+            throw new Error('print() only reads .help descriptors. Use walls, objects or status for project data.');
+        }
+        for (var i = 0; i < parts.length; i++)
+        {
+            var key = parts[i];
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype' ||
+                value === null || (typeof value !== 'object' && typeof value !== 'function') ||
+                !Object.prototype.hasOwnProperty.call(value, key))
+            {
+                throw new Error('Unknown documented property: ' + path);
+            }
+            value = value[key];
+        }
+        if (typeof value === 'function')
+        {
+            throw new Error('Functions cannot be printed. Append .help to the method name.');
+        }
+        return value;
+    }
+
     function methodHelp(container, prefix, method)
     {
         var fn = container && container[method];
@@ -189,8 +224,10 @@ function HomeEditorScript()
                 '  object set ID FIELD VALUE     - FIELD: x, y, angle',
                 '  object move ID X Y | object delete ID',
                 '  undo | redo | clear',
-                '  help wall | help object | help editor | help qsvg',
-                '  help editor.wall | help qsvg.create | help script.addWall',
+                '  help wall | help object | help oEditor | help oQSVG',
+                '  help oEditor.wall | help oQSVG.create | help oHomeEditorScript.addWall',
+                '  print(oEditor.help) | print(oEditor.wall.help)',
+                '  print(oQSVG.help) | print(oQSVG.measure.help)',
                 '  No JavaScript eval; changes are recorded in HomeEditor history.'
             ].join('\n');
         }
@@ -205,19 +242,21 @@ function HomeEditorScript()
         {
             return aliases[term].map(function(key) { return formatHelp(self[key].help); }).join('\n\n');
         }
-        if (term === 'editor') return 'Editor: ' + listedHelp(editor).join(', ');
-        if (term === 'qsvg') return 'QSVG: ' + listedHelp(qSVG).join(', ');
-        if (term === 'script') return 'HomeEditorScript: ' + listedHelp(self).join(', ');
+        if (term === 'editor' || term === 'oeditor') return 'oEditor: ' + listedHelp(oEditor).join(', ');
+        if (term === 'qsvg' || term === 'oqsvg') return 'oQSVG: ' + listedHelp(oQSVG).join(', ');
+        if (term === 'script' || term === 'ohomeeditorscript') return 'oHomeEditorScript: ' + listedHelp(self).join(', ');
         var segments = term.split('.');
         if (segments.length === 2)
         {
             var scope = segments[0];
-            var target = scope === 'editor' ? editor : scope === 'qsvg' ? qSVG : scope === 'script' ? self : null;
+            var target = (scope === 'editor' || scope === 'oeditor') ? oEditor :
+                (scope === 'qsvg' || scope === 'oqsvg') ? oQSVG :
+                (scope === 'script' || scope === 'ohomeeditorscript') ? self : null;
             if (!target) throw new Error('Unknown help scope: ' + scope);
             var name = Object.keys(target).find(function(key) { return key.toLowerCase() === segments[1]; });
             return formatHelp(methodHelp(target, scope, name || segments[1]));
         }
-        throw new Error('Unknown topic. Try help, help wall, help editor or help qsvg.');
+        throw new Error('Unknown topic. Try help, help wall, help oEditor or help oQSVG.');
     };
 
     this.status = function()
@@ -246,7 +285,7 @@ function HomeEditorScript()
         }
         return commitWalls(function()
         {
-            var wall = new editor.wall({ x: x1, y: y1 }, { x: x2, y: y2 }, 'normal', thickness);
+            var wall = new oEditor.wall({ x: x1, y: y1 }, { x: x2, y: y2 }, 'normal', thickness);
             wall.height = wallHeight;
             WALLS.push(wall);
             return { index: WALLS.length - 1, wall: describe(wall) };
@@ -260,7 +299,7 @@ function HomeEditorScript()
         var allowed = ['thick','height','x1','y1','x2','y2'];
         if (allowed.indexOf(field) < 0) throw new Error('Wall field must be: ' + allowed.join(', '));
         var n = field === 'thick' || field === 'height' ? positive(value, field) : number(value, field);
-        if (['x1','y1','x2','y2'].indexOf(field) >= 0 && editor.objFromWall(wall).length)
+        if (['x1','y1','x2','y2'].indexOf(field) >= 0 && oEditor.objFromWall(wall).length)
         {
             throw new Error('Cannot change endpoints of a wall containing doors or windows.');
         }
@@ -295,7 +334,7 @@ function HomeEditorScript()
     this.deleteWall = function(id)
     {
         var target = WALLS[index(id, WALLS.length, 'wall')];
-        if (editor.objFromWall(target).length)
+        if (oEditor.objFromWall(target).length)
         {
             throw new Error('Remove doors and windows before deleting their wall.');
         }
@@ -330,7 +369,7 @@ function HomeEditorScript()
         var ny = number(y, 'y');
         var rotation = angle === undefined ? 0 : number(angle, 'angle');
         var classe = objType === 'simpleStair' ? 'stair' : 'energy';
-        var obj = new editor.obj2D('free', classe, objType, { x: nx, y: ny },
+        var obj = new oEditor.obj2D('free', classe, objType, { x: nx, y: ny },
             rotation, 0, 0, 'normal', 0, classe === 'stair' ? 15 : undefined);
         try
         {
@@ -420,7 +459,14 @@ function HomeEditorScript()
 
     this.execute = function(line)
     {
-        var args = commandArguments(String(line || ''));
+        var source = String(line || '').trim();
+        if (/^print\b/i.test(source))
+        {
+            var printed = /^print\s*\(\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+)\s*\)\s*;?$/i.exec(source);
+            if (!printed) throw new Error('Syntax: print(oEditor.help) or print(oEditor.wall.help).');
+            return printObjectHelp(printed[1]);
+        }
+        var args = commandArguments(source);
         var command = (args.shift() || '').toLowerCase();
         var action;
         if (!command) return '';
@@ -429,7 +475,7 @@ function HomeEditorScript()
         if (command === 'walls') return this.listWalls();
         if (command === 'objects') return this.listObjects();
         if (command === 'rooms') return this.listRooms();
-        if (command === 'clear') { if (term) term.clear(); return ''; }
+        if (command === 'clear') { if (oTERMINAL) oTERMINAL.clear(); return ''; }
         if (command === 'undo' || command === 'redo')
         {
             document.getElementById(command).click();
@@ -463,34 +509,33 @@ function HomeEditorScript()
         var popup = document.getElementById('homeScriptPanel');
         if (!popup) return false;
         if (!popup.hidden) { popup.hidden = true; return false; }
-        if (!term)
+        if (!oTERMINAL)
         {
-            var oTERMINAL = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
+            oTERMINAL = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
                 prompt: 'homeEditor', storageKey: 'HomeEditorScriptHistory' });
-            term = oTERMINAL;
-            term.onInput(function(command, params, line)
+            oTERMINAL.onInput(function(command, params, line)
             {
                 try
                 {
                     var value = self.execute(line);
                     if (value !== undefined && value !== '')
                     {
-                        term.write((typeof value === 'string' ? value : JSON.stringify(value, null, 2)) + '\n');
+                        oTERMINAL.write((typeof value === 'string' ? value : JSON.stringify(value, null, 2)) + '\n');
                     }
                 }
-                catch (error) { term.write('[ERROR] ' + error.message + '\n'); }
+                catch (error) { oTERMINAL.write('[ERROR] ' + error.message + '\n'); }
                 return true;
             });
-            term.write(self.help() + '\n');
+            oTERMINAL.write(self.help() + '\n');
         }
         popup.hidden = false;
-        term._o.DOM.input.focus();
+        oTERMINAL._o.DOM.input.focus();
         return true;
     };
 
     // Attach self-documentation to the callable API, following COM_TERM's .help convention.
-    this.help.help = { syntax: 'help [topic]', summary: 'Discover commands and documented Editor/QSVG container methods.',
-        examples: ['help wall','help editor','help editor.obj2D','help qsvg.create'] };
+    this.help.help = { syntax: 'help [topic]', summary: 'Discover methods documented in oEditor, oQSVG and oHomeEditorScript.',
+        examples: ['help wall','help oEditor','print(oEditor.wall.help)','print(oQSVG.help)'] };
     this.status.help = { syntax: 'status', summary: 'Count canvas walls, objects and rooms, and report scale/mode.' };
     this.listWalls.help = { syntax: 'walls', summary: 'List all wall records with indices and geometry.' };
     this.addWall.help = { syntax: 'wall add X1 Y1 X2 Y2 [thickness] [height]', summary: 'Draw and save a new wall.',

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HomeEditor CLI object-help regression</title>
+<style>
+body { font: 15px system-ui,sans-serif; max-width: 850px; margin: 2em auto; padding: 0 1em }
+li { padding: .24em 0 } .pass { color: #176b3e } .fail { color: #ad1e1e }
+</style>
+</head>
+<body>
+<h1>CLI object-container help</h1>
+<ol id="results"></ol><p id="summary" role="status"></p>
+<script>
+var WALLS = [], OBJDATA = [], ROOM = [], meter = 60, wallSize = 20, mode = 'select_mode';
+var saveCount = 0, redrawCount = 0;
+function save() { saveCount++; return true; }
+function rib() {}
+function isObjectsEquals(a,b) { return a===b; }
+</script>
+<script src="../res/qSVG.js"></script>
+<script src="../res/editor.js"></script>
+<script>
+// The real constructors are used. Stub only the SVG-redraw side effect.
+var originalArchitectHelp = oEditor.architect.help;
+oEditor.architect = function(walls)
+{
+    redrawCount++;
+    walls.forEach(function(wall)
+    {
+        if (!Number.isFinite(wall.start.x) || !Number.isFinite(wall.end.x) ||
+            !Number.isFinite(wall.thick) || wall.thick <= 0) throw new RangeError('Invalid wall');
+    });
+    return true;
+};
+oEditor.architect.help = originalArchitectHelp;
+</script>
+<script src="../res/HomeEditorScript.js"></script>
+<script>
+(function()
+{
+    var results = [], root = document.getElementById('results');
+    function check(name, passed)
+    {
+        var li = document.createElement('li');
+        li.className = passed ? 'pass' : 'fail';
+        li.textContent = (passed ? 'PASS: ' : 'FAIL: ') + name;
+        root.appendChild(li);
+        results.push(!!passed);
+    }
+    function fails(line)
+    {
+        try { oHomeEditorScript.execute(line); return false; }
+        catch (_) { return true; }
+    }
+    try
+    {
+        check('Instance catalogue exists', oEditor.help.container === 'oEditor');
+        check('Discovers live method descriptors', !!oEditor.help.methods.wall && !!oEditor.help.methods.architect);
+        check('Original method owns its help', oEditor.wall.help.syntax.indexOf('new oEditor.wall') === 0);
+        check('oEditor.help is printable', oHomeEditorScript.execute('print(oEditor.help)').container === 'oEditor');
+        check('Wall help is printable', oHomeEditorScript.execute('print(oEditor.wall.help)').syntax.includes('height'));
+        check('Nested text property is printable', typeof oHomeEditorScript.execute('print(oEditor.wall.help.summary)') === 'string');
+        check('QSVG help catalogue is live', !!oHomeEditorScript.execute('print(oQSVG.help)').methods.measure);
+        check('QSVG method help uses o-prefix', oHomeEditorScript.execute('print(oQSVG.measure.help)').syntax.includes('oQSVG.measure'));
+        check('Script method help is printable', oHomeEditorScript.execute('print(oHomeEditorScript.addWall.help)').syntax.includes('wall add'));
+        check('Canonical help command works', oHomeEditorScript.execute('help oEditor.wall').includes('new oEditor.wall'));
+        check('Legacy help command still works', oHomeEditorScript.execute('help editor.wall').includes('new oEditor.wall'));
+        check('Read-only print blocks function calls', fails('print(oEditor.wall())'));
+        check('Read-only print blocks globals', fails('print(window.alert)'));
+        check('Read-only print blocks prototype paths', fails('print(oEditor.help.constructor)'));
+        check('Read-only print blocks arbitrary properties', fails('print(oEditor.defaultWallHeight)'));
+        check('Print cannot be used to execute arbitrary code', fails('print(eval("1+1"))'));
+        check('Print does not mutate the plan', WALLS.length === 0 && saveCount === 0);
+        oHomeEditorScript.execute('wall add 100 100 300 100 20 250');
+        check('Legacy wall add still draws', WALLS.length === 1 && redrawCount === 1 && saveCount === 1);
+        oHomeEditorScript.execute('wall set 0 height 280');
+        check('Legacy wall set still saves', WALLS[0].height === 280 && saveCount === 2);
+        check('Historical terminal help stays available', oHomeEditorScript.execute('help wall').includes('wall add'));
+    }
+    catch (error) { check('Unexpected exception: ' + error.message, false); }
+    var passed = results.filter(Boolean).length;
+    document.getElementById('summary').textContent = passed + '/' + results.length + ' checks passed';
+    document.getElementById('summary').dataset.passed = String(passed === results.length);
+}());
+</script>
+</body>
+</html>

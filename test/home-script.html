@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>HomeEditor Script offline regression</title>
+    <style>
+        body { font: 15px system-ui, sans-serif; max-width: 800px; margin: 2rem auto; }
+        .pass { color: #136c35; } .fail { color: #a41919; }
+    </style>
+</head>
+<body>
+<h1>HomeEditor Script offline regression</h1>
+<ol id="results"></ol>
+<p id="summary"></p>
+<script>
+    // Minimal app state; the REAL constructors and command layer are loaded below.
+    var WALLS = [], OBJDATA = [], ROOM = [], meter = 60, wallSize = 20, mode = 'select_mode';
+    var commitCount = 0, redrawCount = 0, ribCount = 0;
+    function save() { commitCount++; return true; }
+    function rib() { ribCount++; }
+    function isObjectsEquals(a,b) { return a===b; }
+</script>
+<script src="../res/qSVG.js"></script>
+<script src="../res/editor.js"></script>
+<script>
+    editor.architect = function(walls)
+    {
+        redrawCount++;
+        for (var i=0; i<walls.length; i++)
+        {
+            var wall = walls[i];
+            if (!Number.isFinite(wall.start.x) || !Number.isFinite(wall.start.y) ||
+                !Number.isFinite(wall.end.x) || !Number.isFinite(wall.end.y) ||
+                !Number.isFinite(wall.thick) || wall.thick <= 0)
+            {
+                throw new RangeError('Invalid wall geometry');
+            }
+        }
+        return true;
+    };
+</script>
+<script src="../res/HomeEditorScript.js"></script>
+<script>
+    var tests = [];
+    function check(name, okay)
+    {
+        var row = document.createElement('li');
+        row.textContent = (okay ? 'PASS: ' : 'FAIL: ') + name;
+        row.className = okay ? 'pass' : 'fail';
+        document.getElementById('results').append(row);
+        tests.push(!!okay);
+    }
+    function fails(command)
+    {
+        try { homeEditorScript.execute(command); return false; }
+        catch (_) { return true; }
+    }
+    check('Editor constructor owns method help strings', !!editor.wall.help && !!editor.architect.help);
+    check('QSVG owns method help strings', !!qSVG.create.help && !!qSVG.polygonize.help);
+    check('Help enumerates live editor functions', homeEditorScript.execute('help editor').includes('obj2D'));
+    check('Help exposes method detail', homeEditorScript.execute('help qsvg.measure').includes('Euclidean'));
+    check('Help exposes Script methods', homeEditorScript.execute('help script.addWall').includes('wall add'));
+    check('Rejects JavaScript evaluation', fails('eval alert(1)'));
+    check('Rejects malformed coordinates', fails('wall add bad 10 100 10'));
+    check('Rejects short walls', fails('wall add 0 0 5 5'));
+    homeEditorScript.execute('wall add 100 100 300 100 20 250');
+    check('Adds wall to app container', WALLS.length===1 && WALLS[0].thick===20);
+    homeEditorScript.execute('wall set 0 thick 24');
+    check('Changes wall thickness numerically', WALLS[0].thick===24);
+    homeEditorScript.execute('wall set 0 height 270');
+    check('Changes wall height metadata', WALLS[0].height===270);
+    homeEditorScript.execute('wall move 0 10 5');
+    check('Moves wall endpoints', WALLS[0].start.x===110 && WALLS[0].end.y===105);
+    check('Rejects invalid wall indexes', fails('wall set 9 thick 20'));
+    check('Rejects invalid thickness', fails('wall set 0 thick -4'));
+    check('Lists wall snapshots', homeEditorScript.execute('walls')[0].height===270);
+    check('Reports live app state', homeEditorScript.execute('status').walls===1);
+    check('Records a save for each valid wall edit', commitCount===4 && ribCount===4);
+    homeEditorScript.execute('wall delete 0');
+    check('Removes a wall', WALLS.length===0);
+    check('Lists available objects', Array.isArray(homeEditorScript.execute('objects')));
+    check('Rejects unknown object type', fails('object add unknown 100 100'));
+    check('Reports unknown help topics', fails('help editor.undefinedMethod'));
+    document.getElementById('summary').textContent = tests.filter(Boolean).length + '/' + tests.length + ' passed';
+</script>
+</body>
+</html>

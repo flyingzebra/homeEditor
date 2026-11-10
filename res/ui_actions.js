@@ -9,6 +9,7 @@ function HomeEditorUI()
         mode = 'select_mode';
     };
 
+    this.toggleScript = function() { homeEditorScript.toggle(); };
     this.splitWall = function() { editor.splitWall(); };
     this.hideWall = function() { editor.invisibleWall(); };
     this.showWall = function() { editor.visibleWall(); };

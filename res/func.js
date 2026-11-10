@@ -370,6 +370,8 @@ function load(index = HISTORY.index, boot = false)
     WALLS = historyTemp.wallData;
     for (let k in WALLS)
     {
+        // Older stored plans have no height property; default to 250 cm.
+        WALLS[k].height = editor.getWallHeight(WALLS[k]);
         if (WALLS[k].child != null)
         {
             WALLS[k].child = WALLS[WALLS[k].child];
@@ -552,6 +554,40 @@ document.getElementById('wallWidth').addEventListener("input", function()
     }
     rib();
     document.getElementById("wallWidthVal").textContent = sliderValue;
+});
+
+// Store numeric wall height separately from 2D thickness and geometry.
+function applyWallHeightFromControls()
+{
+    var field = document.getElementById('wallHeight');
+    var allWalls = document.getElementById('wallHeightAll');
+    var rawValue = field.value.trim();
+    var height = Number(rawValue);
+    if (!rawValue || !Number.isFinite(height) || height < 1 || height > 10000)
+    {
+        field.setCustomValidity('Enter a height between 1 and 10000 cm.');
+        field.reportValidity();
+        return false;
+    }
+    field.setCustomValidity('');
+    if (typeof binder === 'undefined' || !binder.wall ||
+        !editor.setWallHeight(WALLS, binder.wall, height, allWalls.checked))
+    {
+        return false;
+    }
+    document.getElementById('wallHeightVal').textContent = height;
+    save();
+    return true;
+}
+
+document.getElementById('wallHeight').addEventListener('input', function()
+{
+    this.setCustomValidity('');
+});
+document.getElementById('wallHeight').addEventListener('change', applyWallHeightFromControls);
+document.getElementById('wallHeightAll').addEventListener('change', function()
+{
+    if (this.checked && !applyWallHeightFromControls()) this.checked = false;
 });
 
 document.getElementById("bboxTrash").addEventListener("click", function()

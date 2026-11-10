@@ -1524,7 +1524,7 @@ function _MOUSEDOWN(event)
                             var newWall;
                             if (isObjectsEquals(wall.parent.end, wall.start, "1"))
                             {
-                                newWall = new editor.wall(wall.parent.end, wall.start, "normal", wall.thick);
+                                newWall = new editor.wall(wall.parent.end, wall.start, "normal", wall.thick, editor.getWallHeight(wall));
                                 WALLS.push(newWall);
                                 newWall.parent = wall.parent;
                                 newWall.child = wall;
@@ -1534,7 +1534,7 @@ function _MOUSEDOWN(event)
                             }
                             else if (isObjectsEquals(wall.parent.start, wall.start, "2"))
                             {
-                                newWall = new editor.wall(wall.parent.start, wall.start, "normal", wall.thick);
+                                newWall = new editor.wall(wall.parent.start, wall.start, "normal", wall.thick, editor.getWallHeight(wall));
                                 WALLS.push(newWall);
                                 newWall.parent = wall.parent;
                                 newWall.child = wall;
@@ -1593,7 +1593,7 @@ function _MOUSEDOWN(event)
                         {
                             if (isObjectsEquals(wall.child.start, wall.end))
                             {
-                                var newWall = new editor.wall(wall.end, wall.child.start, "new", wall.thick);
+                                var newWall = new editor.wall(wall.end, wall.child.start, "new", wall.thick, editor.getWallHeight(wall));
                                 WALLS.push(newWall);
                                 newWall.parent = wall;
                                 newWall.child = wall.child;
@@ -1603,7 +1603,7 @@ function _MOUSEDOWN(event)
                             }
                             else if (isObjectsEquals(wall.child.end, wall.end))
                             {
-                                var newWall = new editor.wall(wall.end, wall.child.end, "normal", wall.thick);
+                                var newWall = new editor.wall(wall.end, wall.child.end, "normal", wall.thick, editor.getWallHeight(wall));
                                 WALLS.push(newWall);
                                 newWall.parent = wall;
                                 newWall.child = wall.child;
@@ -1846,7 +1846,8 @@ function _MOUSEUP(event)
         if (typeof (binder) != 'undefined')
         {
             // ALSO ON MOUSEUP WITH HAVE CIRCLEBINDER ON ADDPOINT
-            var newWall = new editor.wall({ x: binder.data.x, y: binder.data.y }, binder.data.wall.end, "normal", binder.data.wall.thick);
+            var newWall = new editor.wall({ x: binder.data.x, y: binder.data.y }, binder.data.wall.end, "normal", binder.data.wall.thick,
+                editor.getWallHeight(binder.data.wall));
             WALLS.push(newWall);
             binder.data.wall.end = { x: binder.data.x, y: binder.data.y };
             removeBinderGraphic(binder);
@@ -1893,7 +1894,8 @@ function _MOUSEUP(event)
         if (constructionLine && lengthMeters > 0.3)
         {
             var newWallThickness = mode == 'partition_mode' ? partitionSize : wallSize;
-            var wall = new editor.wall({ x: pox, y: poy }, { x: x, y: y }, "normal", newWallThickness);
+            var wall = new editor.wall({ x: pox, y: poy }, { x: x, y: y }, "normal", newWallThickness,
+                editor.getUniformWallHeight(WALLS));
             WALLS.push(wall);
             editor.architect(WALLS);
 
@@ -1984,6 +1986,13 @@ function _MOUSEUP(event)
                     document.getElementById('wallWidthScale').textContent = "7-50";
                     document.getElementById("wallWidth").value = binder.wall.thick;
                     document.getElementById("wallWidthVal").textContent = binder.wall.thick;
+                    var wallHeightValue = editor.getWallHeight(binder.wall);
+                    document.getElementById('wallHeight').value = wallHeightValue;
+                    document.getElementById('wallHeight').setCustomValidity('');
+                    document.getElementById('wallHeightVal').textContent = wallHeightValue;
+                    // Scope applies to this edit session, not future independent changes.
+                    document.getElementById('wallHeightAll').checked = false;
+                    document.getElementById('wallTools').style.overflowY = 'auto';
                     mode = 'edit_wall_mode';
                 }
                 delete equation1;

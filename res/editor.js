@@ -1,9 +1,51 @@
 function Editor()
 {
+    // Height is metadata for future 3D/quantity calculations; floor-plan geometry remains 2D.
+    this.defaultWallHeight = 250; // centimetres, also used for older plans without height data.
 
-    this.wall = function(start, end, type, thick)
+    function validHeight(value)
+    {
+        if (value === null || typeof value === 'undefined' ||
+            (typeof value === 'string' && value.trim() === '')) return null;
+        var height = Number(value);
+        return Number.isFinite(height) && height >= 1 && height <= 10000 ? height : null;
+    }
+
+    this.getWallHeight = function(wall)
+    {
+        var height = validHeight(wall && wall.height);
+        return height === null ? this.defaultWallHeight : height;
+    };
+
+    // When an entire plan has a single height, new walls inherit that height.
+    this.getUniformWallHeight = function(walls)
+    {
+        if (!Array.isArray(walls) || walls.length === 0) return this.defaultWallHeight;
+        var height = this.getWallHeight(walls[0]);
+        for (var i = 1; i < walls.length; i++)
+        {
+            if (this.getWallHeight(walls[i]) !== height) return this.defaultWallHeight;
+        }
+        return height;
+    };
+
+    this.setWallHeight = function(walls, selectedWall, value, applyToAll)
+    {
+        var height = validHeight(value);
+        if (height === null || !Array.isArray(walls) || walls.indexOf(selectedWall) === -1)
+        {
+            return false;
+        }
+        var targets = applyToAll ? walls : [selectedWall];
+        for (var i = 0; i < targets.length; i++) targets[i].height = height;
+        return true;
+    };
+
+    this.wall = function(start, end, type, thick, height)
     {
         this.thick = thick;
+        var wallHeight = validHeight(height);
+        this.height = wallHeight === null ? 250 : wallHeight;
         this.start = start;
         this.end = end;
         this.type = type;
@@ -408,6 +450,7 @@ function Editor()
         });
         var initCoords = wallToSplit.start;
         var initThick = wallToSplit.thick;
+        var initHeight = editor.getWallHeight(wallToSplit);
         // CLEAR THE WALL BEFORE ROOM REBUILDER
         for (var k in WALLS)
         {
@@ -421,13 +464,13 @@ function Editor()
         var wall;
         for (var k in newWalls)
         {
-            wall = new editor.wall(initCoords, newWalls[k].coords, "normal", initThick);
+            wall = new editor.wall(initCoords, newWalls[k].coords, "normal", initThick, initHeight);
             WALLS.push(wall);
             wall.child = WALLS[WALLS.length];
             initCoords = newWalls[k].coords;
         }
         // LAST WALL ->
-        wall = new editor.wall(initCoords, wallToSplit.end, "normal", initThick);
+        wall = new editor.wall(initCoords, wallToSplit.end, "normal", initThick, initHeight);
         WALLS.push(wall);
         editor.architect(WALLS);
         mode = "select_mode";
@@ -1124,6 +1167,71 @@ function Editor()
         }
     };
 
+    // Human-readable API help lives with the canvas object container itself.
+    // HomeEditorScript discovers these descriptors rather than copying their text.
+    this.wall.help = {
+        type: 'canvas',
+        syntax: 'new editor.wall(start, end, type, thick)',
+        summary: 'Construct a wall segment. Add it to WALLS, redraw with editor.architect(WALLS), then save().',
+        parameters: [
+            { name: 'start', description: 'Start point {x,y} in SVG coordinates.' },
+            { name: 'end', description: 'End point {x,y} in SVG coordinates.' },
+            { name: 'type', description: 'Wall classification, normally "normal".' },
+            { name: 'thick', description: 'Positive wall thickness (centimetres).' }
+        ],
+        remarks: ['Command-line users should prefer wall add, which validates and records changes.'],
+        examples: ['wall add 100 100 300 100 20 250']
+    };
+    this.obj2D.help = {
+        type: 'canvas',
+        syntax: 'new editor.obj2D(family, classe, type, pos, angle, angleSign, size, hinge, thick, value)',
+        summary: 'Construct an object (energy symbol, stair, door or annotation). Its graph must be appended to the correct SVG layer and updated.',
+        parameters: [
+            { name: 'family', description: 'Placement family: free, stick, inWall, etc.' },
+            { name: 'classe', description: 'Object class such as energy or stair.' },
+            { name: 'type', description: 'Symbol type, e.g. gtl, plug, simpleStair.' },
+            { name: 'pos', description: 'Position {x,y} in SVG coordinates.' },
+            { name: 'angle', description: 'Rotation in degrees.' }
+        ],
+        remarks: ['Command-line users should prefer object add for the supported free-standing symbols.'],
+        examples: ['object add gtl 250 300']
+    };
+    this.architect.help = {
+        type: 'canvas', syntax: 'editor.architect(WALLS)',
+        summary: 'Recalculate wall geometry, detect rooms and redraw the working-area SVG.',
+        remarks: ['Does not save history automatically; call save() after a successful edit.']
+    };
+    this.wallsComputing.help = {
+        type: 'canvas', syntax: 'editor.wallsComputing(WALLS, [action])',
+        summary: 'Build wall corner geometry and SVG path elements for each wall.',
+        remarks: ['Rejects invalid wall coordinates and thicknesses.']
+    };
+    this.makeWall.help = {
+        type: 'canvas', syntax: 'editor.makeWall(path)',
+        summary: 'Create an SVG wall path from validated path data.'
+    };
+    this.roomMaker.help = {
+        type: 'canvas', syntax: 'editor.roomMaker(Rooms)',
+        summary: 'Synchronize detected rooms with ROOM and redraw room labels and surfaces.'
+    };
+    this.splitWall.help = {
+        type: 'canvas', syntax: 'editor.splitWall([wall])',
+        summary: 'Split a selected wall at intersections, rebuilding and saving the canvas.',
+        remarks: ['Requires a valid selected wall binder for the interactive cutting workflow.']
+    };
+    this.objFromWall.help = {
+        type: 'canvas', syntax: 'editor.objFromWall(wall, [typeObj])',
+        summary: 'Find doors and windows attached to a wall.',
+        remarks: ['Can be used before deleting or changing walls with attached objects.']
+    };
+    this.invisibleWall.help = {
+        type: 'canvas', syntax: 'editor.invisibleWall([wall])',
+        summary: 'Convert a wall to a separation line when no attached opening prevents it.'
+    };
+    this.visibleWall.help = {
+        type: 'canvas', syntax: 'editor.visibleWall([wall])',
+        summary: 'Restore the stored thickness of a previously hidden wall.'
+    };
     // END EDITOR
 }
 

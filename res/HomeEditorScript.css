@@ -1,0 +1,50 @@
+/* HomeEditor's floating script terminal: no global styles or external assets. */
+.home-script-panel[hidden] { display:none !important; }
+.home-script-panel {
+    position: fixed;
+    top: 10vh;
+    right: 14px;
+    width: min(560px, calc(100vw - 28px));
+    height: min(530px, 75vh);
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    background: #222;
+    color: #eee;
+    z-index: 250;
+    border: 1px solid #667789;
+    border-radius: 7px;
+    box-shadow: 0 9px 30px #0006;
+    overflow: hidden;
+}
+.home-script-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 10px;
+    background: #344250;
+    color: #fff;
+    font: 600 14px system-ui, sans-serif;
+}
+.home-script-header button {
+    border: 1px solid #92a0ae;
+    background: #42596b;
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 9px;
+    cursor: pointer;
+}
+#homeScriptTerminal {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 9px;
+    font-size: 13px;
+}
+#homeScriptTerminal .container { overflow-x: auto; }
+#homeScriptTerminal .serial-stream { white-space: pre-wrap; overflow-wrap: anywhere; }
+#homeScriptTerminal .command { position: sticky; bottom: 0; background: #222; }
+@media(max-width: 620px) {
+    .home-script-panel { top: 8vh; right: 6px; width: calc(100vw - 12px); height: 65vh; }
+}
+@media print { .home-script-panel { display:none !important; } }

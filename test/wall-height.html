@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>homeEditor — wall height tests</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 2rem; }
+        .pass { color: #176b3e; } .fail { color: #ad1e1e; }
+    </style>
+</head>
+<body>
+    <h1>Wall height regression checks</h1>
+    <ol id="results"></ol>
+    <p id="summary" role="status"></p>
+    <script src="../res/editor.js"></script>
+    <script>
+        (function()
+        {
+            var passed = 0;
+            var failed = 0;
+            function check(label, condition)
+            {
+                var item = document.createElement('li');
+                item.className = condition ? 'pass' : 'fail';
+                item.textContent = (condition ? 'PASS: ' : 'FAIL: ') + label;
+                document.getElementById('results').append(item);
+                if (condition) passed++;
+                else failed++;
+            }
+            var freshEditor = new Editor();
+            var a = new freshEditor.wall({ x: 0, y: 0 }, { x: 10, y: 0 }, 'normal', 20);
+            var b = new freshEditor.wall({ x: 10, y: 0 }, { x: 20, y: 0 }, 'normal', 20);
+            var c = new freshEditor.wall({ x: 20, y: 0 }, { x: 30, y: 0 }, 'normal', 20, 315);
+            var walls = [a, b, c];
+            check('New walls default to 250 cm', a.height === 250 && b.height === 250);
+            check('Explicit wall height survives constructor', c.height === 315);
+            check('Old wall without height defaults to 250 cm',
+                freshEditor.getWallHeight({ thick: 20 }) === 250);
+            check('Old numeric-string wall height normalizes',
+                freshEditor.getWallHeight({ height: '280.5' }) === 280.5);
+            check('Selected wall update succeeds',
+                freshEditor.setWallHeight(walls, b, 275, false) &&
+                a.height === 250 && b.height === 275 && c.height === 315);
+            check('Apply-to-all gives all existing walls same height',
+                freshEditor.setWallHeight(walls, b, 300, true) &&
+                walls.every(function(wall) { return wall.height === 300; }));
+            check('Uniform project height is inherited by newly drawn walls',
+                freshEditor.getUniformWallHeight(walls) === 300);
+            check('Mixed project height falls back to default for newly drawn walls',
+                freshEditor.setWallHeight(walls, a, 301, false) &&
+                freshEditor.getUniformWallHeight(walls) === 250);
+            var saved = JSON.parse(JSON.stringify(walls));
+            check('Heights survive history JSON save and reload',
+                saved[0].height === 301 && saved[1].height === 300 && saved[2].height === 300);
+            check('Invalid height is rejected without data changes',
+                !freshEditor.setWallHeight(walls, a, -1, true) &&
+                !freshEditor.setWallHeight(walls, a, 'abc', true) &&
+                !freshEditor.setWallHeight(walls, a, '', true) &&
+                a.height === 301 && b.height === 300);
+            check('Out-of-project selection is rejected',
+                !freshEditor.setWallHeight(walls, { height: 90 }, 320, true));
+            check('Wall thickness remains untouched by height changes',
+                a.thick === 20 && b.thick === 20 && c.thick === 20);
+            document.getElementById('summary').textContent = passed + ' passed, ' + failed + ' failed';
+            document.getElementById('summary').dataset.passed = String(failed === 0);
+        }());
+    </script>
+</body>
+</html>

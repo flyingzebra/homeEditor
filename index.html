@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HOME EDITOR v0.1</title>
     <link rel="stylesheet" href="res/style.css">
+    <link rel="stylesheet" href="res/COM_TERM.css">
+    <link rel="stylesheet" href="res/HomeEditorScript.css">
 </head>
 
 <body style="background:#f2eee5;margin:0;padding:0; ">
@@ -138,6 +140,17 @@
             <p>Width [<span id="wallWidthScale"></span>] : <span id="wallWidthVal"></span> cm</span></p>
             <input type="range" id="wallWidth" step="0.1" class="range" />
         </section>
+        <section id="rangeHeight">
+            <label for="wallHeight">Height: <span id="wallHeightVal">250</span> cm</label>
+            <input type="number" id="wallHeight" class="form-control"
+                   min="1" max="10000" step="0.1" value="250" />
+            <label for="wallHeightAll" style="display:flex;align-items:flex-start;gap:6px;margin-top:12px">
+                <input type="checkbox" id="wallHeightAll" style="margin-top:4px" />
+                <span>Apply this height to all walls in the current project</span>
+            </label>
+            <small>Changing height does not alter the 2D wall thickness.</small>
+        </section>
+        <hr />
         <ul class="list-unstyled">
             <section id="cutWall">
                 <p>Cut the wall :<br/><small>A cut will be made at each wall encountered.</small></p>
@@ -367,6 +380,8 @@
                     title="Add a measurement">MEASURE</button></li>
             <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
                     title="Add text">TEXT</button></li>
+            <li><button class="btn btn-light shadow fully" id="script_mode" data-editor-action="toggleScript"
+                    title="Open the HomeEditor Script terminal" aria-label="Open Script terminal">SCRIPT</button></li>
             <br/>
             <div id="door_list" class="list-unstyled sub"
                 style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;width:150px">
@@ -600,6 +615,14 @@
 
         <div style="clear:both"></div>
     </div>
+    <section id="homeScriptPanel" class="home-script-panel" role="dialog"
+             aria-label="HomeEditor Script terminal" aria-modal="false" hidden>
+        <div class="home-script-header">
+            <span>HomeEditor Script</span>
+            <button type="button" data-editor-action="toggleScript" title="Close Script terminal">Close</button>
+        </div>
+        <div id="homeScriptTerminal" aria-label="Script command line"></div>
+    </section>
 </body>
 <script src="res/dom.js"></script>
 <script src="res/iec60364.js"></script>
@@ -607,6 +630,8 @@
 <script src="res/qSVG.js"></script>
 <script src="res/editor.js"></script>
 <script src="res/engine.js"></script>
+<script src="res/COM_TERM.js"></script>
+<script src="res/HomeEditorScript.js"></script>
 <script src="res/ui_actions.js"></script>
 
 </html>

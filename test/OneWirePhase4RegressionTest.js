@@ -167,6 +167,81 @@ function runOneWirePhase4RegressionTests()
         assert(html.indexOf('Example 1') >= 0, 'Example choice not translated');
     });
 
+    check('Every electrical item and circuit has a text field', function()
+    {
+        var aTypes = ['Bord', 'Kring', 'Splitsing', 'Meerdere verbruikers',
+            'Leeg', 'Vrije tekst', 'Stopcontact', 'Lichtcircuit', 'Boiler',
+            'Diepvriezer', 'Droogkast', 'Elektrische oven', 'Koelkast',
+            'Kookfornuis', 'Microgolfoven', 'Wasmachine', 'Ventilator',
+            'Verwarmingstoestel', 'Vaatwasmachine', 'Transformator'];
+        aTypes.forEach(function(sType)
+        {
+            var oItem = new ElectroItem();
+            oItem.id = 42;
+            oItem.setKey('type', sType);
+            assert(oItem.getKey('text') === '', 'Text missing on ' + sType);
+            assert(oItem.toHTML().indexOf('HL_edit_42_text') >= 0,
+                'Text input missing on ' + sType);
+        });
+    });
+
+    check('Labels reserve spacing and escape XML', function()
+    {
+        var oItem = new ElectroItem();
+        oItem.setKey('type', 'Koelkast');
+        var oBefore = oItem.toSVG(false);
+        oItem.setKey('text', 'Kitchen & storage <north>');
+        var oAfter = oItem.toSVG(false);
+        assert(oAfter.data.indexOf('onewire-element-text') >= 0, 'Element label missing');
+        assert(oAfter.data.indexOf('Kitchen &amp; storage &lt;north&gt;') >= 0, 'Unsafe SVG text');
+        assert(oAfter.yup > oBefore.yup, 'No vertical spacing');
+        assert(oAfter.xleft + oAfter.xright > oBefore.xleft + oBefore.xright,
+            'No horizontal spacing for long text');
+    });
+
+    check('Circuit labels rotate 90 degrees CCW and persist in EDS', function()
+    {
+        reset_all();
+        var oCircuit = oHierarchicalList.data.find(function(oItem)
+        {
+            return oItem.getKey('type') === 'Kring';
+        });
+        assert(!!oCircuit, 'Default diagram has no circuit');
+        oCircuit.setKey('text', 'Office lights & sockets');
+        var sSVG = oHierarchicalList.toSVG(0, 'horizontal').data;
+        assert(sSVG.indexOf('onewire-circuit-text') >= 0, 'Circuit text missing');
+        assert(sSVG.indexOf('rotate(-90') >= 0, 'Text not rotated CCW');
+        assert(sSVG.indexOf('Office lights &amp; sockets') >= 0, 'Circuit text not escaped');
+        var sEDS = JSON.stringify(oHierarchicalList);
+        import_to_structure(sEDS);
+        assert(JSON.stringify(oHierarchicalList) === sEDS, 'EDS round-trip lost text');
+        var oOld = JSON.parse(sEDS);
+        oOld.data.forEach(function(oItem)
+        {
+            oItem.keys = oItem.keys.filter(function(aKey) { return aKey[0] !== 'text'; });
+        });
+        import_to_structure(JSON.stringify(oOld));
+        assert(oHierarchicalList.data.every(function(oItem)
+        {
+            return oItem.getKey('text') === '';
+        }), 'Legacy EDS documents should have blank labels');
+    });
+
+    check('Multiple-load groups render their text above the group', function()
+    {
+        var oCircuit = new ElectroItem();
+        oCircuit.setKey('type', 'Kring');
+        var oTree = new HierarchicalList();
+        oTree.addItem(oCircuit);
+        var oGroup = new ElectroItem(oCircuit);
+        oGroup.setKey('type', 'Meerdere verbruikers');
+        oTree.insertChildAfterId(oGroup, oCircuit.id);
+        oGroup.setKey('text', 'Kitchen group');
+        var sSVG = oTree.toSVG(0, 'horizontal').data;
+        assert(sSVG.indexOf('Kitchen group') >= 0 &&
+            sSVG.indexOf('onewire-element-text') >= 0, 'Group label missing');
+    });
+
     if (console.table)
     {
         console.table(results);

@@ -96,12 +96,14 @@ function runOneWirePhase4RegressionTests()
         assert(document.getElementById('right_col_inner').innerHTML.indexOf('<svg') >= 0, 'Redraw failed');
     });
 
-    check('300px scrolling controls and no drawing version footer', function()
+    check('Unrestricted introduction, 300px scrolling editor and no drawing version footer', function()
     {
         restart_all();
         var oConfiguration = document.getElementById('configsection');
-        assert(getComputedStyle(oConfiguration).height === '300px', 'Configuration area is not 300px high');
-        assert(getComputedStyle(oConfiguration).overflowY === 'auto', 'Configuration is not vertically scrollable');
+        assert(getComputedStyle(oConfiguration).height !== '300px', 'Introduction is incorrectly restricted to 300px');
+        assert(getComputedStyle(oConfiguration).overflowY === 'visible', 'Introduction should use its natural height');
+        assert(getComputedStyle(document.querySelector('.slider_overlay')).overflowY === 'auto',
+            'Long introduction cannot scroll within the page');
 
         reset_all();
         var oEditor = document.getElementById('left_col_inner');

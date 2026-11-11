@@ -424,15 +424,14 @@ function OneWireController()
     strleft += "\n    </select><br><br>\n"+_T("phases_wet")+"<select id=\"aantal_fazen_nat\"><option value=\"2\">2p</option><option value=\"3\">3p</option>"
     +"<option value=\"4\">4p (3p+n)</option></select><br>\n"+_T("differential_wet")+"<input id=\"differentieel_nat\" type=\"text\" size=\"5\" maxlength=\"5\" value=\"30\"><br>\n";
 
-    var strright = "<br><br><br><br>\nDeze tool tekent een &eacute;&eacute;ndraadschema.\nDe tool is in volle ontwikkeling en laat thans toe meer co"
-    +"mplexe\nschakelingen met gesplitste kringen en horizontale aaneenschakelingen\nvan gebruikers (bvb koelkast achter een stopconta"
-    +"ct) uit te voeren.\n<br><br>\nEveneens kunnen de schemas worden opgeslagen en weer ingeladen\nvoor latere aanpassing (zie knoppe"
-    +"n \"export\" en \"bladeren\").\n<br><br>\nOp basis van een screenshot-tool (bvb snipping-tool in Windows) kan het gegenereerde\n"
-    +"&eacute;&eacute;ndraadschema verder verwerkt worden in een meer complete schets.\nEen andere mogelijkheid is het eendraadschema "
-    +"te exporteren (SVG-vector-graphics) en verder te verwerken\nmet een professionele tool zoals Inkscape (open source optie).\n<br>"
-    +"<br>\n Nuttige tips:\n<ul>\n<li>Kies \"meerdere gebruikers\" om horizontale ketens te bouwen, bijvoorbeeld een koelkast na een s"
-    +"topcontact.</li>\n<li>Een schakelbaar stopcontact kan gemaakt worden door onder \"meerdere gebruikers\" eerst een lichtcircuit m"
-    +"et \"0\" lampen gevolgd door een stopcontact te voorzien.</li>\n</ul>\n"
+    var strright = "<br><br><br><br>\nThis tool draws a single-line electrical diagram.\n"
+    + "It supports branched circuits and horizontal chains of appliances, for example a refrigerator connected through a socket outlet.\n<br><br>\n"
+    + "Diagrams can be exported as .eds files and imported again for further editing.\n"
+    + "You can also capture a screenshot or export the SVG vector diagram for further editing in a tool such as Inkscape.\n"
+    + "<br><br>\nUseful tips:\n<ul>\n"
+    + "<li>Choose Multiple loads to build a horizontal chain, such as a refrigerator after a socket outlet.</li>\n"
+    + "<li>For a switched socket outlet, add a lighting circuit with zero lights followed by a socket outlet under Multiple loads.</li>\n"
+    + "</ul>\n";
 
 
     strleft += CONFIGPAGE_RIGHT;
@@ -464,7 +463,7 @@ function OneWireController()
     this.exportJSON = function()
     {
     var filename;
-    filename = "eendraadschema.eds";
+    filename = "single-line-diagram.eds";
     var text = JSON.stringify(oHierarchicalList);
     var element = document.createElement('a');
     element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
@@ -527,11 +526,11 @@ function OneWireController()
     var filename;
     switch (type) {
         case "html": {
-            filename = "eendraadschema.html";
+            filename = "single-line-diagram.html";
             break;
         }
         case "svg": {
-            filename = "eendraadschema.svg";
+            filename = "single-line-diagram.svg";
             break;
         }
     }

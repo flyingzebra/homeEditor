@@ -1,5 +1,5 @@
 <html style='height:100%;font-family:"Arial"'><head>
-    <title>TITLE</title>
+    <title>Single-Line Electrical Diagram</title>
     <meta name="description" content="">
     <meta name="author" content="Freddy Vandriessche">
     <meta charset="utf-8">
@@ -20,40 +20,40 @@ function init_gui(_o)
 
 function Translation()
 {
-  this.t = {get _language(){ return "NL" }
+  this.t = {get _language(){ return "EN" }
   ,"title":document.title
-  ,"menu_new":"Nieuw"
+  ,"menu_new":"New"
   ,"menu_import":"Import"
   ,"menu_export":"Export"
-  ,"menu_info":"Info/Contact"
-  ,"intro":"<b>Eendraadschema ontwerpen: </b>\nKies &eacute;&eacute;n van de opties of start leeg met een aantal kringen (optie 3).\n</font>\n<br><br>\n<font size=\"+1\">\n<i>\n<b>Tip: </b>Eerst een voorbeeldschema laden en aanpassen alvorens leeg te beginnen."
-  ,"title1":"Voorbeeld 1"
-  ,"title2":"Voorbeeld 2"
-  ,"title3":"Leeg schema"
-  ,"title4":"Importeren"
-  ,"description1":"Eenvoudig schema, enkel stopcontacten en lichtpunten."
-  ,"description2":"Iets complexer schema met teleruptoren, verbruikers achter stopcontacten en gesplitste kringen."
+  ,"menu_info":"Info / Contact"
+  ,"intro":"<b>Design a single-line electrical diagram:</b>\nChoose an example or start a blank diagram with the number of circuits you need (option 3).\n</font>\n<br><br>\n<font size=\"+1\">\n<i>\n<b>Tip:</b> Try editing an example before creating a new diagram."
+  ,"title1":"Example 1"
+  ,"title2":"Example 2"
+  ,"title3":"Blank diagram"
+  ,"title4":"Import a diagram"
+  ,"description1":"Simple diagram with socket outlets and lighting points."
+  ,"description2":"More complex diagram with impulse relays, branched circuits and appliances connected to socket outlets."
   ,get description3(){return this["main_differential"]+" <input id=\"differentieel_droog\" type=\"text\" size=\"5\" maxlength=\"5\" value=\"300\"><br>\n"+this["main_fuse"]+" <input id=\"hoofdzekering\" type=\"text\" size=\"4\" maxlength=\"4\" value=\"65\"><br><br>\n"+this["phases"]+"\n<select id=\"aantal_fazen_droog\"><option value=\"2\">2p</option><option value=\"3\">3p</option><option value=\"4\">4p (3p+n)</option></select>\n<br><br>\n"+this["circuits_dry"]+"\n<select id=\"aantal_droge_kringen\">\n"}
-  ,"main_differential":"Hoofddifferentieel (in mA)"
-  ,"main_fuse":"Hoofdzekering (in A)"
-  ,"phases":"Aantal fazen:"
-  ,"phases_wet":"Aantal fazen nat:"
-  ,"circuits_wet":"Aantal kringen nat:"
-  ,"circuits_dry":"Aantal kringen droog:"
-  ,"differential_wet":"Differentieel nat (in mA)"
-  ,"continue_option":"Verdergaan met deze optie"
-  ,"import_notice":"Importeer een vooraf opgeslagen schema (EDS-bestand). Enkel bestanden aangemaakt na 12 juli 2019 worden herkend."
-  ,"add_first_object":"Voeg eerste object toe of kies bovenaan \"opnieuw beginnen\""
-  ,"name":"naam"
+  ,"main_differential":"Main differential protection (mA)"
+  ,"main_fuse":"Main fuse (A)"
+  ,"phases":"Number of poles:"
+  ,"phases_wet":"Number of poles (wet areas):"
+  ,"circuits_wet":"Number of circuits (wet areas):"
+  ,"circuits_dry":"Number of circuits (dry areas):"
+  ,"differential_wet":"Differential protection for wet areas (mA)"
+  ,"continue_option":"Continue with this option"
+  ,"import_notice":"Import a previously saved diagram (.eds file). Only files created after 12 July 2019 are supported."
+  ,"add_first_object":"Add the first component, or select New above."
+  ,"name":"name"
   ,"text":"text"
-  ,"fuse":"zekering"
-  ,"autmatic":"authomatisch"
-  ,"differential":"differentieel"
-  ,"melt":"smelt"
+  ,"fuse":"fuse"
+  ,"autmatic":"automatic"
+  ,"differential":"differential"
+  ,"melt":"fuse link"
   ,"geen":"none"
-  ,"cable":"kabel"
+  ,"cable":"cable"
   ,"type":"type"
-  ,"transfo":"transfo"
+  ,"transfo":"transformer"
   ,"single_pole":"enkelpolig"
   ,"double_pole":"dubbelpolig"
   ,"teleruptor":"teleruptor"
@@ -61,14 +61,14 @@ function Translation()
   ,"relay":"relais"
   ,"motion_switch":"bewegingsschakelaar"
   ,"button_bell":"knop & bel"
-  ,"drawing":"tekening"
-  ,"download_svg":"download als svg"
-  ,"download_html":"download als html"
-  ,"legend":"legende"
-  ,"insert_above":"Item hierboven invoegen (zelfde niveau)"
-  ,"insert_below":"Item hieronder invoegen (zelfde niveau)"
-  ,"insert_child":"Afhankelijk item hieronder toevoegen (niveau dieper)"
-  ,"delete_item":"item verwijderen"
+  ,"drawing":"diagram"
+  ,"download_svg":"download SVG"
+  ,"download_html":"download HTML"
+  ,"legend":"legend"
+  ,"insert_above":"Insert item above (same level)"
+  ,"insert_below":"Insert item below (same level)"
+  ,"insert_child":"Add child item below (one level deeper)"
+  ,"delete_item":"delete item"
   ,"board":"bord"
   ,"splitting":"splitsing"
   ,"multiple_consumers":"meerdere verbruikers"
@@ -87,7 +87,7 @@ function Translation()
   ,"ventilator":"ventilator"
   ,"heather":"verwarmingstoestel"
   ,"washing_machine":"wasmachine"
-  ,"version":"Versie "+CONF_version
+  ,"version":"Version "+CONF_version
   ,"built":"Built "+CONF_builddate
   ,"_COL":
   {
@@ -442,26 +442,26 @@ function ElectroItem(Parent)
                 break;
             case "Stopcontact":
                 output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "Geaard: " + this.checkboxToHTML(1);
-                output += "Kinderveiligheid: " + this.checkboxToHTML(2);
-                output += "Aantal: " + this.selectToHTML(4, ["1", "2", "3", "4", "5", "6"]);
+                output += "Earthed: " + this.checkboxToHTML(1);
+                output += "Child safety: " + this.checkboxToHTML(2);
+                output += "Quantity: " + this.selectToHTML(4, ["1", "2", "3", "4", "5", "6"]);
                 break;
             case "Boiler":
                 output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "Accumulatie: " + this.checkboxToHTML(3);
+                output += "Storage heater: " + this.checkboxToHTML(3);
                 break;
             case "Verwarmingstoestel":
                 output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "Accumulatie: " + this.checkboxToHTML(3);
+                output += "Storage heater: " + this.checkboxToHTML(3);
                 if (this.getKey("accumulatie")) {
-                    output += "Ventilator: " + this.checkboxToHTML(6);
+                    output += "Fan: " + this.checkboxToHTML(6);
                 }
                 break;
             case "Transformator":
               output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
               output += "<br>";
               output += "Voltage: " + this.stringToHTML(14, 8) + ", ";
-              output += "Zekering: " + this.checkboxToHTML(16)
+              output += "Fuse: " + this.checkboxToHTML(16)
               if (this.getKey("transfo_zekering_aanwezig")) {
               output += this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
                   this.selectToHTML(17, ["1", "2"]) + "P" +
@@ -471,23 +471,23 @@ function ElectroItem(Parent)
             case "Lichtcircuit":
                 output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
                 output += "<br>";
-                output += "Transfo: " + this.checkboxToHTML(16)
+                output += "Transformer: " + this.checkboxToHTML(16)
                 if (this.getKey("transfo_zekering_aanwezig")) {
                     output += ", Voltage: " + this.stringToHTML(14, 8)
 
-                    output += ", Zekering: " + this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
+                    output += ", Fuse: " + this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
                         this.selectToHTML(17, ["1", "2"]) + "P" +
                         this.stringToHTML(8, 2) + "A";
                 }
                 output += "<br>";
                 output += "" + this.selectToHTML(5, [_T("single_pole"), _T("double_pole") ,_T("teleruptor"), _T("dimmer"), _T("relay"),_T("motion_switch"),_T("button_bell")]);
-                var str = "Aantal lichtpunten:";
+                var str = "Number of light points:";
                 switch (this.getKey("lichtkring_poligheid")) {
                     case _T("single_pole"):
-                        output += " Aantal schakelaars: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
+                        output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
                         break;
                     case _T("double_pole"):
-                        output += " Aantal schakelaars: " + this.selectToHTML(4, ["0", "1", "2"]);
+                        output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2"]);
                         break;
                     case _T("teleruptor"):
                         break;
@@ -498,8 +498,8 @@ function ElectroItem(Parent)
                     case _T("motion_switch"):
                         break;
                     case _T("button_bell"):
-                        str =  "Aantal belpunten:";
-                        output += " Aantal schakelaars: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
+                        str =  "Number of bell points:";
+                        output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
                         break;
                 }
                 output += " "+str+" " + this.selectToHTML(13, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]);
@@ -1509,6 +1509,7 @@ function iterate(obj)
     }
   }
 </script>
+<script type="text/javascript" src="OneWireEnglish.js"></script>
 <script type="text/javascript" src="config.js"></script>
 </body>
 </html>

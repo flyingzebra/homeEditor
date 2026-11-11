@@ -34,10 +34,10 @@ function runOneWirePhase2SmokeTests()
         var a = new Translation();
         var b = new Translation();
         assert(a.t !== b.t, 'Translation instances share mutable state');
-        assert(_T('menu_new') === 'Nieuw', 'Translation lookup has changed');
-        assert(_T('menu_new', 'cap') === 'Nieuw', 'Capitalization has changed');
+        assert(_T('menu_new') === 'New', 'Translation lookup has changed');
+        assert(_T('menu_new', 'cap') === 'New', 'Capitalization has changed');
         var inverse = _T('', 'inv');
-        assert(inverse.Nieuw === 'menu_new', 'Inverse translation lookup failed');
+        assert(inverse.New === 'menu_new', 'Inverse translation lookup failed');
     });
 
     check('Constructors and independent instances', function()

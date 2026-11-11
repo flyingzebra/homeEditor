@@ -141,6 +141,21 @@ return "<style>"+css+".slider_overlay{height: 85%}</style>";
 }
 */
 
+function _T(idx, mod)
+{
+    return oTranslation.get(idx, mod);
+}
+
+function _D(idx)
+{
+    var sText = _T(idx);
+
+    if (typeof sText === "string")
+    {
+        document.write(sText);
+    }
+}
+
 </script>
 </head>
 

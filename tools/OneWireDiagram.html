@@ -218,6 +218,37 @@
 
     <script>
 
+        // Escape annotation content in HTML inputs and SVG text nodes.
+        function escapeOneWireMarkup(value)
+        {
+            return String(value == null ? "" : value).replace(/[&<>"']/g, function(character)
+            {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;",
+                    '"': "&quot;", "'": "&#39;" }[character];
+            });
+        }
+
+        // Add a label above an item, reserving space in the SVG layout metrics.
+        function addOneWireElementText(oSVG, value)
+        {
+            var sText = String(value == null ? "" : value).trim();
+            if (!sText) return oSVG;
+            var iTopSpace = 25;
+            var iWidth = oSVG.xleft + oSVG.xright;
+            var iPadding = Math.max(0, Math.ceil((Array.from(sText).length * 6 - iWidth) / 2));
+            var iTextX = iPadding + iWidth / 2;
+            oSVG.data = '<g transform="translate(' + iPadding + ',' + iTopSpace + ')">' +
+                oSVG.data + '</g>' +
+                '<text class="onewire-element-text" x="' + iTextX +
+                '" y="15" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"' +
+                ' font-size="10">' + escapeOneWireMarkup(sText) + '</text>';
+            oSVG.xleft += iPadding;
+            oSVG.xright += iPadding;
+            if (typeof oSVG.xrightmin === "number") oSVG.xrightmin += iPadding;
+            oSVG.yup += iTopSpace;
+            return oSVG;
+        }
+
         function ListItem()
         {
 
@@ -251,7 +282,7 @@
                 output += "<input type=\"text\"" + sizestr + " id=\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] +
                     "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" +
                     this.keys[keyid][1] + "\",\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] +
-                    "\") value=\"" + this.keys[keyid][2] + "\">";
+                    "\") value=\"" + escapeOneWireMarkup(this.keys[keyid][2]) + "\">";
                 return (output);
             };
 
@@ -307,6 +338,7 @@
             this.keys.push(["commentaar", "STRING", ""]); //15, extra tekstveld
             this.keys.push(["transfo_zekering_aanwezig", "BOOLEAN", false]); //16
             this.keys.push(["polen", "SELECT", "2"]); //17
+            this.keys.push(["text", "STRING", ""]); //18, circuit/element annotation
 
             this.updateConsumers = function ()
             {
@@ -393,6 +425,7 @@
                 this.keys[15][2] = "";
                 this.keys[16][2] = false; // Transfo_aanwezig
                 this.keys[17][2] = 2; // polen
+                this.keys[18][2] = ""; // text
             }
 
             this.setKey = function (key, setvalue)
@@ -555,6 +588,7 @@
                         output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
                         break;
                 }
+                output += "<br>Text: " + this.stringToHTML(18, 16);
                 //output += "id: " + this.id + " parent: " + this.parent;
                 return (output);
             };
@@ -923,7 +957,8 @@
                 }
 
                 mySVG.data = outputstr + "\n";
-                return (mySVG);
+                return this.getKey("type") == "Kring" ? mySVG :
+                    addOneWireElementText(mySVG, this.getKey("text"));
             };
         }
 
@@ -1188,13 +1223,17 @@
                             case "Kring":
                                 //get image of the entire kring
                                 inSVG[elementCounter] = this.toSVG(this.id[i], "vertical");
+                                var sCircuitText = String(this.data[i].getKey("text") || "").trim();
+                                var iTextStem = sCircuitText ? Array.from(sCircuitText).length * 6 + 18 : 0;
+                                var iConductorStem = Math.max(100, iTextStem);
+                                var iShortStem = Math.max(20, iTextStem);
                                 if (this.data[i].getKey("kabel_aanwezig"))
                                 {
                                     //foresee space for the conductor specifications
                                     inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
                                         " x2=" + inSVG[elementCounter].xleft +
                                         " y1=" + inSVG[elementCounter].yup +
-                                        " y2=" + (inSVG[elementCounter].yup + 100) + " stroke=black />";
+                                        " y2=" + (inSVG[elementCounter].yup + iConductorStem) + " stroke=black />";
                                     inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
                                         " y=" + (inSVG[elementCounter].yup + 80) +
                                         " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
@@ -1202,15 +1241,26 @@
                                         ")'" +
                                         " style=text-anchor:Left font-family='Arial, Helvetica, sans-serif' font-size=10>" +
                                         this.data[i].getKey("kabel") + "</text>";
-                                    inSVG[elementCounter].yup += 100;
+                                    inSVG[elementCounter].yup += iConductorStem;
                                 }
                                 else
                                 {
                                     inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
                                         " x2=" + inSVG[elementCounter].xleft +
                                         " y1=" + inSVG[elementCounter].yup +
-                                        " y2=" + (inSVG[elementCounter].yup + 20) + " stroke=black />";
-                                    inSVG[elementCounter].yup += 20;
+                                        " y2=" + (inSVG[elementCounter].yup + iShortStem) + " stroke=black />";
+                                    inSVG[elementCounter].yup += iShortStem;
+                                }
+                                // 90 degrees CCW, to the left of the lower conductor segment.
+                                if (sCircuitText)
+                                {
+                                    var iCircuitTextX = inSVG[elementCounter].xleft - 14;
+                                    var iCircuitTextY = inSVG[elementCounter].yup - 7;
+                                    inSVG[elementCounter].data += '<text class="onewire-circuit-text" x="' + iCircuitTextX +
+                                        '" y="' + iCircuitTextY + '" transform="rotate(-90 ' + iCircuitTextX +
+                                        ' ' + iCircuitTextY + ')" text-anchor="start"' +
+                                        ' font-family="Arial, Helvetica, sans-serif" font-size="10">' +
+                                        escapeOneWireMarkup(sCircuitText) + '</text>';
                                 }
                                 //add the fuse below
                                 switch (this.data[i].getKey("zekering"))
@@ -1324,6 +1374,13 @@
                                         this.data[i].getKey("naam") + "</text>";
                                 }
 
+                        }
+                        // Compound items render a subtree, not an individual symbol.
+                        var sItemType = this.data[i].getKey("type");
+                        if (sItemType == "Bord" || sItemType == "Splitsing" ||
+                            sItemType == "Meerdere verbruikers")
+                        {
+                            addOneWireElementText(inSVG[elementCounter], this.data[i].getKey("text"));
                         }
                         elementCounter++;
                         //outSVG.xleft = Math.max(outSVG.xleft,inSVG[elementCounter].xleft);

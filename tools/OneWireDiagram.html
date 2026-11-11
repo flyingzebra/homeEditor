@@ -3,9 +3,8 @@
     <meta name="description" content="">
     <meta name="author" content="Freddy Vandriessche">
     <meta charset="utf-8">
-  </head>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.10/pako.min.js"></script>
+<script type="text/javascript" src="vendor/pako.min.js"></script>
 
 
   <script>
@@ -124,6 +123,7 @@ return "<style>"+css+".slider_overlay{height: 85%}</style>"
 
 
 </script>
+</head>
 
    <body class="slider_main" style="background-color:#FFFFFF" onload=init_gui();restart_all()>
 
@@ -153,8 +153,6 @@ return "<style>"+css+".slider_overlay{height: 85%}</style>"
     <input id="importfile" type="file" accept=".eds" onchange="importjson(event)" style="display:none;">
     </div>
     </div>
-</body>
-</html>
 
 
 
@@ -1396,3 +1394,5 @@ function iterate(obj)
   }
 </script>
 <script type="text/javascript" src="config.js"></script>
+</body>
+</html>

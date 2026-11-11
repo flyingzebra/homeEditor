@@ -1,4 +1,11 @@
 // CONFIGURATION
+// Legacy global entry points are retained for inline HTML event handlers.
+// The owning object containers will be introduced in Phase 2.
+var CONFIGPAGE_LEFT, CONFIGPAGE_RIGHT, EXAMPLE0, EXAMPLE1;
+var quotesvg, restart_all, importclicked, importjson, exportjson;
+var popUp, load_schema, download, import_to_structure, HLCollapseExpand;
+var HLDelete, HLAdd, HLInsertBefore, HLInsertAfter, HLInsertChild;
+var HLUpdate, HLRedrawTree, HLRedrawTreeHTML, HLRedrawTreeSVG, SVGelement, reset_all;
 var bytesToString = function(arr) { for (var i=0, str=""; i < arr.length; i++) str += String.fromCharCode(arr[i]); return str }
 var SVG_unpack     = function(pkg) { return btoa(bytesToString(pako.inflateRaw(atob(pkg))))  }
 
@@ -454,16 +461,18 @@ exportjson = function() {
 }
 
 // menu item 'INFO/CONTACT'
-popUp = function(URL) {
-  //day = new Date();
-  //id = day.getTime();
-  id=17993;
-  var w = 800;
-  var h = 500;
-  var left = (screen.width/2)-(w/2);
-  var top = (screen.height/2)-(h/2);
-  eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);");
-}
+popUp = function(URL)
+{
+    var id = 17993;
+    var w = 800;
+    var h = 500;
+    var left = (screen.width / 2) - (w / 2);
+    var top = (screen.height / 2) - (h / 2);
+    var features = "toolbar=no, location=no, directories=no, status=no, menubar=no, " +
+        "scrollbars=no, resizable=no, copyhistory=no, width=" + w +
+        ", height=" + h + ", top=" + top + ", left=" + left;
+    window["page" + id] = window.open(URL, String(id), features);
+};
 
 // schema pre-load buttons
 load_schema = function(nr) {

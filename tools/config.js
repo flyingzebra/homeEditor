@@ -1,6 +1,6 @@
 // CONFIGURATION
 // Legacy global entry points are retained for inline HTML event handlers.
-// The owning object containers will be introduced in Phase 2.
+// Phase 2: legacy global entry points are bound to oOneWireController below.
 var CONFIGPAGE_LEFT, CONFIGPAGE_RIGHT, EXAMPLE0, EXAMPLE1;
 var quotesvg, restart_all, importclicked, importjson, exportjson;
 var popUp, load_schema, download, import_to_structure, HLCollapseExpand;
@@ -9,7 +9,10 @@ var HLUpdate, HLRedrawTree, HLRedrawTreeHTML, HLRedrawTreeSVG, SVGelement, reset
 var bytesToString = function(arr) { for (var i=0, str=""; i < arr.length; i++) str += String.fromCharCode(arr[i]); return str }
 var SVG_unpack     = function(pkg) { return btoa(bytesToString(pako.inflateRaw(atob(pkg))))  }
 
-Hierarchical_List.prototype.outputSVGDefs = function () {
+function DiagramSVGAssets()
+{
+    this.outputSVGDefs = function()
+    {
 
 var toRad = function(angle) { return angle * (Math.PI / 180) }
 var rn2 = function(val) { return Math.round(val * 100) / 100 }
@@ -216,7 +219,9 @@ var output = "<style>.el:hover .dr{ stroke:#ec008c }</style>\n"
 +"</g>\n"
 +"</defs>\n"
 return output;
+    };
 }
+var oDiagramSVGAssets = new DiagramSVGAssets();
 
 
 var C_SVG =
@@ -370,7 +375,9 @@ var C_EXAMPLE1 = "7Z1bb9pYFIX/SpXnIw22gSR9azpRVfU2mlaZkUoVOeSEWBiMjEnVjvrf52DA8c
 +"a+9ZkQGMuVZgWee6NiWIrvR8af5x7/zPwhiv76/x52lPubn24v56j95atDzRl/b/1VO+8g7UvjpQh8rzlBcoz1dBWwUdFXRVYO62lNdRXlt1lXeo/JbyzXN85R8ov638"
 +"QxV4xmGU31F+V/n7yjfPMGvuq8C8jGqrTm4Hs3SRo/d/9cb/Aw=="
 
-quotesvg = function(_str)
+function OneWireController()
+{
+    this.quoteSVG = function(_str)
 {
     var newhtml = null;
     while(_str != newhtml){
@@ -386,7 +393,7 @@ quotesvg = function(_str)
 ////////// GUI EVENT HANDLERS - MAIN MENU AREA //////////
 
 // menu item 'NEW'
-restart_all = function() {
+    this.restartAll = function() {
 
     var strleft = CONFIGPAGE_LEFT;
 
@@ -431,12 +438,12 @@ restart_all = function() {
 }
 
 // menu item 'IMPORT'
-importclicked = function() {
+    this.importClicked = function() {
     document.getElementById('importfile').click();  // file requester triggers importjson
     document.getElementById('importfile').value = "";
 }
 
-importjson = function (event) {
+    this.importJSON = function (event) {
     var input = event.target;
     var reader = new FileReader();
     reader.onload = function () {
@@ -447,10 +454,10 @@ importjson = function (event) {
 }
 
 // menu item 'EXPORT'
-exportjson = function() {
+    this.exportJSON = function() {
     var filename;
     filename = "eendraadschema.eds";
-    var text = JSON.stringify(structure);
+    var text = JSON.stringify(oHierarchicalList);
     var element = document.createElement('a');
     element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
     element.setAttribute("download", filename);
@@ -461,7 +468,7 @@ exportjson = function() {
 }
 
 // menu item 'INFO/CONTACT'
-popUp = function(URL)
+    this.popUp = function(URL)
 {
     var id = 17993;
     var w = 800;
@@ -475,7 +482,7 @@ popUp = function(URL)
 };
 
 // schema pre-load buttons
-load_schema = function(nr) {
+    this.loadSchema = function(nr) {
     switch (nr) {
         case 0:
 						EXAMPLE0 = bytesToString(pako.inflateRaw(atob(C_EXAMPLE0)));
@@ -506,7 +513,7 @@ load_schema = function(nr) {
 ////////// GUI EVENT HANDLERS - DRAWING AREA //////////
 
 // download buttons
-download = function(type) {
+    this.download = function(type) {
     var filename;
     switch (type) {
         case "html": {
@@ -518,7 +525,7 @@ download = function(type) {
             break;
         }
     }
-    var text = structure.toSVG(0, "horizontal").data;
+    var text = oHierarchicalList.toSVG(0, "horizontal").data;
     var element = document.createElement('a');
     element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
     element.setAttribute("download", filename);
@@ -532,101 +539,101 @@ download = function(type) {
 
 
 
-import_to_structure = function(text) {
-    var mystructure = new Hierarchical_List();
-    structure = new Hierarchical_List();
+    this.importToStructure = function(text) {
+    var mystructure = new HierarchicalList();
+    oHierarchicalList = structure = new HierarchicalList();
     var obj = JSON.parse(text);
     Object.assign(mystructure, obj);
     for (var i = 0; i < mystructure.length; i++) {
         if (mystructure.data[i].parent == 0) {
-            structure.addItem(new Electro_Item());
-            structure.data[i].parent = 0;
+            oHierarchicalList.addItem(new ElectroItem());
+            oHierarchicalList.data[i].parent = 0;
         }
         else {
-            structure.addItem(new Electro_Item(structure.data[structure.getOrdinalById(mystructure.data[i].parent)]));
-            structure.data[i].parent = mystructure.data[i].parent;
+            oHierarchicalList.addItem(new ElectroItem(oHierarchicalList.data[oHierarchicalList.getOrdinalById(mystructure.data[i].parent)]));
+            oHierarchicalList.data[i].parent = mystructure.data[i].parent;
         }
-        structure.active[i] = mystructure.active[i];
-        structure.id[i] = mystructure.id[i];
+        oHierarchicalList.active[i] = mystructure.active[i];
+        oHierarchicalList.id[i] = mystructure.id[i];
         for (var j = 0; j < mystructure.data[i].keys.length; j++) {
-            structure.data[i].keys[j] = mystructure.data[i].keys[j];
+            oHierarchicalList.data[i].keys[j] = mystructure.data[i].keys[j];
         }
-        structure.data[i].id = mystructure.data[i].id;
-        structure.data[i].indent = mystructure.data[i].indent;
-        structure.data[i].collapsed = mystructure.data[i].collapsed;
+        oHierarchicalList.data[i].id = mystructure.data[i].id;
+        oHierarchicalList.data[i].indent = mystructure.data[i].indent;
+        oHierarchicalList.data[i].collapsed = mystructure.data[i].collapsed;
         //Parent_Item: List_Item;
     }
     HLRedrawTree();
 }
 
 
-HLCollapseExpand = function(my_id, state) {
+    this.collapseExpand = function(my_id, state) {
     var ordinal;
-    ordinal = structure.getOrdinalById(my_id);
+    ordinal = oHierarchicalList.getOrdinalById(my_id);
     if (state == undefined) {
-        structure.data[ordinal].collapsed = !structure.data[ordinal].collapsed;
+        oHierarchicalList.data[ordinal].collapsed = !oHierarchicalList.data[ordinal].collapsed;
     }
     else {
-        structure.data[ordinal].collapsed = state;
+        oHierarchicalList.data[ordinal].collapsed = state;
     }
     HLRedrawTree();
 }
 
-HLDelete = function(my_id) {
-    structure.deleteById(my_id);
+    this.deleteItem = function(my_id) {
+    oHierarchicalList.deleteById(my_id);
     HLRedrawTree();
 }
-HLAdd = function(my_id) {
-    structure.addItem(new Electro_Item());
+    this.addItem = function(my_id) {
+    oHierarchicalList.addItem(new ElectroItem());
     HLRedrawTree();
 }
-HLInsertBefore = function(my_id) {
-    structure.insertItemBeforeId(new Electro_Item(), my_id);
+    this.insertBefore = function(my_id) {
+    oHierarchicalList.insertItemBeforeId(new ElectroItem(), my_id);
     HLRedrawTree();
 }
-HLInsertAfter = function(my_id) {
-    structure.insertItemAfterId(new Electro_Item(), my_id);
+    this.insertAfter = function(my_id) {
+    oHierarchicalList.insertItemAfterId(new ElectroItem(), my_id);
     HLRedrawTree();
 }
-HLInsertChild = function(my_id) {
-    structure.insertChildAfterId(new Electro_Item(), my_id);
+    this.insertChild = function(my_id) {
+    oHierarchicalList.insertChildAfterId(new ElectroItem(), my_id);
     HLCollapseExpand(my_id, false);
     //No need to call HLRedrawTree as HLCollapseExpand already does that
 }
 
-HLUpdate = function (my_id, key, type, docId) {
+    this.updateItem = function (my_id, key, type, docId) {
     switch (type) {
         case "SELECT":
             var setvalueselect = document.getElementById(docId).value;
-            structure.data[structure.getOrdinalById(my_id)].setKey(key, setvalueselect);
+            oHierarchicalList.data[oHierarchicalList.getOrdinalById(my_id)].setKey(key, setvalueselect);
             HLRedrawTreeHTML();
             break;
         case "STRING":
             var setvaluestr = document.getElementById(docId).value;
-            structure.data[structure.getOrdinalById(my_id)].setKey(key, setvaluestr);
+            oHierarchicalList.data[oHierarchicalList.getOrdinalById(my_id)].setKey(key, setvaluestr);
             break;
         case "BOOLEAN":
             var setvaluebool = document.getElementById(docId).checked;
-            structure.data[structure.getOrdinalById(my_id)].setKey(key, setvaluebool);
+            oHierarchicalList.data[oHierarchicalList.getOrdinalById(my_id)].setKey(key, setvaluebool);
             HLRedrawTreeHTML();
             break;
     }
     HLRedrawTreeSVG();
 }
 
-HLRedrawTree = function() {
+    this.redrawTree = function() {
     HLRedrawTreeHTML();
     HLRedrawTreeSVG();
 }
 
-HLRedrawTreeHTML = function () {
+    this.redrawTreeHTML = function () {
     document.getElementById("configsection").innerHTML = "";
-    document.getElementById("left_col_inner").innerHTML = structure.toHTML(0);
+    document.getElementById("left_col_inner").innerHTML = oHierarchicalList.toHTML(0);
 }
-HLRedrawTreeSVG = function () {
+    this.redrawTreeSVG = function () {
     document.getElementById("right_col_inner").innerHTML = "<b>"+_T("drawing","cap")+": </b><button onclick=download(\"html\")>"+_T("download_html","cap")+"</button>";
     document.getElementById("right_col_inner").innerHTML += "&nbsp;<button onclick=download(\"svg\")>"+_T("download_svg","cap")+"</button><br><br>";
-    document.getElementById("right_col_inner").innerHTML += structure.toSVG(0, "horizontal").data;
+    document.getElementById("right_col_inner").innerHTML += oHierarchicalList.toSVG(0, "horizontal").data;
     document.getElementById("right_col_inner").innerHTML += "\n<h2>"
     +_T("legend","cap")+":</h2>\n<button style=\"background-color:"+_T("_COL").insert_item+";\">&#9650;</button> "
     +_T("insert_above")+"<br>\n<button style=\"background-color:"+_T("_COL").insert_item+";\">&#9660;</button> "
@@ -635,7 +642,17 @@ HLRedrawTreeSVG = function () {
     document.getElementById("right_col_inner").innerHTML += "<i><br><small>"+_T("version","cap")+": " + CONF_builddate + "</small></i><br><br>";
 }
 
-SVGelement = function () {  // @class
+    // Primary instance and legacy alias always refer to the same diagram.
+    this.resetAll = function()
+    {
+        oHierarchicalList = structure = new HierarchicalList();
+        buildNewStructure(oHierarchicalList);
+        HLRedrawTree();
+    };
+}
+
+function DiagramSVG()
+{
     this.data = "";
     this.xleft = 0;
     this.xright = 0;
@@ -645,8 +662,27 @@ SVGelement = function () {  // @class
     return this;
 }
 
-reset_all = function() {
-    structure = new Hierarchical_List();
-    buildNewStructure(structure);
-    HLRedrawTree();
-}
+// Existing inline handlers and integrations retain their original API.
+var oOneWireController = new OneWireController();
+SVGelement = DiagramSVG; // Legacy SVG constructor alias.
+// Compatibility delegates, without duplicating method implementations.
+quotesvg = oOneWireController.quoteSVG.bind(oOneWireController);
+restart_all = oOneWireController.restartAll.bind(oOneWireController);
+importclicked = oOneWireController.importClicked.bind(oOneWireController);
+importjson = oOneWireController.importJSON.bind(oOneWireController);
+exportjson = oOneWireController.exportJSON.bind(oOneWireController);
+popUp = oOneWireController.popUp.bind(oOneWireController);
+load_schema = oOneWireController.loadSchema.bind(oOneWireController);
+download = oOneWireController.download.bind(oOneWireController);
+import_to_structure = oOneWireController.importToStructure.bind(oOneWireController);
+HLCollapseExpand = oOneWireController.collapseExpand.bind(oOneWireController);
+HLDelete = oOneWireController.deleteItem.bind(oOneWireController);
+HLAdd = oOneWireController.addItem.bind(oOneWireController);
+HLInsertBefore = oOneWireController.insertBefore.bind(oOneWireController);
+HLInsertAfter = oOneWireController.insertAfter.bind(oOneWireController);
+HLInsertChild = oOneWireController.insertChild.bind(oOneWireController);
+HLUpdate = oOneWireController.updateItem.bind(oOneWireController);
+HLRedrawTree = oOneWireController.redrawTree.bind(oOneWireController);
+HLRedrawTreeHTML = oOneWireController.redrawTreeHTML.bind(oOneWireController);
+HLRedrawTreeSVG = oOneWireController.redrawTreeSVG.bind(oOneWireController);
+reset_all = oOneWireController.resetAll.bind(oOneWireController);

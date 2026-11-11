@@ -18,7 +18,8 @@ function init_gui(_o)
   document.getElementById('slider_title').outerHTML = _TITLE();
 }
 
-var _T = function _T(idx,mod) {
+function Translation()
+{
   this.t = {get _language(){ return "NL" }
   ,"title":document.title
   ,"menu_new":"Nieuw"
@@ -97,13 +98,27 @@ var _T = function _T(idx,mod) {
   }
   ,get _(){return this}
   }
-  if(idx.length>0 && typeof(this.t[idx])=="undefined") { alert(idx); return "<font color=red>"+idx+"</font>" }
+  this.get = function(idx,mod)
+  {
+    if(idx.length>0 && typeof(this.t[idx])=="undefined") { alert(idx); return "<font color=red>"+idx+"</font>" }
   switch(mod) {
     case "cap": return this.t[idx].charAt(0).toUpperCase()+this.t[idx].substring(1,this.t[idx].length);
-    case "inv": { var j = {}; for(var i in t) { j[ t[i] ] = i }; return j } // inverse associative
+    case "inv":
+    {
+      var j = {};
+      for (var i in this.t)
+      {
+        j[this.t[i]] = i;
+      }
+      return j;
+    }
     default: return this.t[idx];
   }
+  };
 }
+
+var oTranslation = new Translation();
+function _T(idx,mod) { return oTranslation.get(idx,mod); }
 function _D(idx) { if(typeof(_T(idx)=="string")) document.write(_T(idx)) }
 function _TITLE() {
 var css = "#topmenu{width:100%;background-color:#f0f0f0}ul#minitabs{list-style:none;margin:0;padding:3px 0 0 0;border-left:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #ccc;border-bottom:1px solid #ccc;font-weight:700;text-align:left;white-space:nowrap}ul#minitabs li{display:inline;margin:0 3px}ul#minitabs a{text-decoration:none;color:#999}ul#minitabs a#current{border-color:#f60;color:#06f}ul#minitabs a:hover{border-color:#f60;color:#666}"
@@ -177,7 +192,8 @@ return "<style>"+css+".slider_overlay{height: 85%}</style>"
 
 <script>
 
-var List_Item = function () { // @class
+function ListItem()
+{
 
     this.id = 0; //undefined
     this.parent = 0; //no parent
@@ -230,10 +246,11 @@ var List_Item = function () { // @class
         output += "</select>";
         return (output);
     };
-};
+}
 
-var Electro_Item = function(Parent){
-    List_Item.apply(this, arguments);  // Here we inherit all methods from List_Item!
+function ElectroItem(Parent)
+{
+    ListItem.apply(this, arguments);  // Preserve existing base-item initialization.
 
     this.Parent_Item = Parent;
     this.keys.push(["type", "SELECT", ""]); //0
@@ -472,7 +489,7 @@ var Electro_Item = function(Parent){
     };
     this.toSVG = function (hasChild) {
         if (hasChild === void 0) { hasChild = false; }
-        var mySVG = new SVGelement();
+        var mySVG = new DiagramSVG();
         var outputstr = "";
         mySVG.data = "";
         mySVG.xleft = 1; // foresee at least some space for the conductor
@@ -816,7 +833,8 @@ var Electro_Item = function(Parent){
    };
 }
 
-var Hierarchical_List = function () { // @class
+function HierarchicalList()
+{
 
     // properties
     this.length = 0;
@@ -824,6 +842,12 @@ var Hierarchical_List = function () { // @class
     this.active = [];
     this.id = [];
     this.curid = 1;
+
+    // Public instance method: no prototype patching from config.js.
+    this.outputSVGDefs = function()
+    {
+        return oDiagramSVGAssets.outputSVGDefs();
+    };
 
     // methods
     this.getOrdinalById = function (my_id) {
@@ -1128,7 +1152,7 @@ var Hierarchical_List = function () { // @class
                         }
                         break;
                     case "":
-                        inSVG[elementCounter] = new SVGelement();
+                        inSVG[elementCounter] = new DiagramSVG();
                         break;
                     default:
                         //get image of all lowest level elements
@@ -1167,10 +1191,10 @@ var Hierarchical_List = function () { // @class
         }
         //--- If there are no elements, make at least an empty one to avoid problems here below ---
         if (elementCounter == 0) {
-            inSVG[0] = new SVGelement();
+            inSVG[0] = new DiagramSVG();
         }
         //--- Now create the output element ---
-        var outSVG = new SVGelement();
+        var outSVG = new DiagramSVG();
         outSVG.xleft = 0;
         outSVG.xright = 0;
         outSVG.yup = 0;
@@ -1252,6 +1276,11 @@ var Hierarchical_List = function () { // @class
     return this;
 }
 
+// Legacy constructor aliases used by existing call sites and integrations.
+var List_Item = ListItem;
+var Electro_Item = ElectroItem;
+var Hierarchical_List = HierarchicalList;
+
 
 
 function buildNewStructure(structure) {
@@ -1261,7 +1290,7 @@ function buildNewStructure(structure) {
 
     //Eerst het hoofddifferentieel maken
     var itemCounter = 0;
-    structure.addItem(new Electro_Item());
+    structure.addItem(new ElectroItem());
     structure.data[0].setKey("type", "Kring");
     structure.data[0].setKey("naam", "");
     structure.data[0].setKey("zekering", "differentieel");
@@ -1272,12 +1301,12 @@ function buildNewStructure(structure) {
     structure.data[0].setKey("differentieel_waarde", CONF_differentieel_droog);
     itemCounter++;
     //Dan het hoofdbord maken
-    structure.insertChildAfterId(new Electro_Item(structure.data[itemCounter - 1]), itemCounter);
+    structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
     structure.data[itemCounter].setKey("type", "Bord");
     itemCounter++;
     var droogBordCounter = itemCounter;
     //Nat bord voorzien
-    structure.insertChildAfterId(new Electro_Item(structure.data[itemCounter - 1]), itemCounter);
+    structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
     structure.data[itemCounter].setKey("type", "Kring");
     structure.data[itemCounter].setKey("naam", "");
     structure.data[itemCounter].setKey("zekering", "differentieel");
@@ -1287,13 +1316,13 @@ function buildNewStructure(structure) {
     structure.data[itemCounter].setKey("kabel_aanwezig", false);
     structure.data[itemCounter].setKey("differentieel_waarde", CONF_differentieel_nat);
     itemCounter++;
-    structure.insertChildAfterId(new Electro_Item(structure.data[itemCounter - 1]), itemCounter);
+    structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
     structure.data[itemCounter].setKey("type", "Bord");
     itemCounter++;
     //3 kringen toevoegen aan nat bord
     var natBordCounter = itemCounter;
     for (var i = 0; i < aantalNatteKringen; i++) {
-        structure.insertChildAfterId(new Electro_Item(structure.data[natBordCounter - 1]), natBordCounter);
+        structure.insertChildAfterId(new ElectroItem(structure.data[natBordCounter - 1]), natBordCounter);
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen + aantalNatteKringen - i);
         itemCounter++;
@@ -1301,7 +1330,7 @@ function buildNewStructure(structure) {
 
     //7 droge kringen toevoegen aan droog bord
     for (var i = 0; i < aantalDrogeKringen; i++) {
-        structure.insertChildAfterId(new Electro_Item(structure.data[structure.getOrdinalById(droogBordCounter)]), droogBordCounter);
+        structure.insertChildAfterId(new ElectroItem(structure.data[structure.getOrdinalById(droogBordCounter)]), droogBordCounter);
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen - i);
         itemCounter++;
@@ -1345,9 +1374,10 @@ var CONF_aantal_fazen_nat = 2;
 var CONF_hoofdzekering = 65;
 var CONF_differentieel_droog = 300;
 var CONF_differentieel_nat = 30;
-var structure;
+var structure; // Retained for legacy consumers.
+var oHierarchicalList; // Primary active diagram instance.
 
-var nobj = List_Item;
+var nobj = ListItem;
 var _level = 0;
 var _spc = "&nbsp; &nbsp; &nbsp;";
 var level_prop = new Array();

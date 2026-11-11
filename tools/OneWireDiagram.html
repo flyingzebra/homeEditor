@@ -1509,5 +1509,61 @@ function iterate(obj)
 </script>
 <script type="text/javascript" src="../res/OneWireEnglish.js"></script>
 <script type="text/javascript" src="../res/OneWireConfig.js"></script>
+<script>
+// The browser-only regression runner loads suites only when explicitly requested.
+// postMessage works between local file:// documents, even with opaque file origins.
+if (new URLSearchParams(window.location.search).get("oneWireTests") === "1")
+{
+    window.addEventListener("load", function()
+    {
+        var aSuites = [
+            { id: "phase2", source: "../test/OneWirePhase2SmokeTest.js", results: "oneWirePhase2Results" },
+            { id: "phase4", source: "../test/OneWirePhase4RegressionTest.js", results: "oneWirePhase4Results" }
+        ];
+        var sRunId = new URLSearchParams(window.location.search).get("runId");
+
+        function report(sSuite, aResults, sError)
+        {
+            window.parent.postMessage({
+                type: "homeeditor-onewire-tests",
+                runId: sRunId,
+                suite: sSuite,
+                results: aResults,
+                error: sError
+            }, "*");
+        }
+
+        function loadSuite(iIndex)
+        {
+            if (iIndex >= aSuites.length)
+            {
+                return;
+            }
+
+            var oSuite = aSuites[iIndex];
+            var oScript = document.createElement("script");
+            oScript.src = oSuite.source;
+            oScript.onload = function()
+            {
+                var aResults = window[oSuite.results];
+                report(oSuite.id, aResults || null, Array.isArray(aResults) ? null : "Suite did not return results");
+                loadSuite(iIndex + 1);
+            };
+            oScript.onerror = function()
+            {
+                report(oSuite.id, null, "Unable to load " + oSuite.source);
+                loadSuite(iIndex + 1);
+            };
+            document.body.appendChild(oScript);
+        }
+
+        // Let the existing onload initialization finish before testing.
+        window.setTimeout(function()
+        {
+            loadSuite(0);
+        }, 0);
+    });
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OneWireDiagram browser tests</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 940px; margin: 2rem auto; padding: 0 1rem; }
+        section { border: 1px solid #ccc; border-radius: .4rem; margin: 1rem 0; padding: 1rem; }
+        section h2 { margin-top: 0; }
+        li { padding: .2rem 0; }
+        .pass { color: #176b3e; }
+        .fail { color: #ad1e1e; }
+        #diagram-frame { position: absolute; left: -10000px; width: 1px; height: 1px; border: 0; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>OneWireDiagram browser tests</h1>
+        <p>Runs the Phase 2 smoke tests and Phase 4 regression tests against the actual
+        <code>tools/OneWireDiagram.html</code> page in an isolated frame.
+        Open this file directly in a browser; no server, Node.js, or network connection is needed.</p>
+        <button type="button" id="run-tests">Run all tests again</button>
+        <p id="overall-status" role="status" aria-live="polite">Starting tests...</p>
+
+        <section>
+            <h2>Phase 2: Smoke tests</h2>
+            <p id="phase2-summary">Waiting...</p>
+            <ol id="phase2-results"></ol>
+        </section>
+
+        <section>
+            <h2>Phase 4: Regression tests</h2>
+            <p id="phase4-summary">Waiting...</p>
+            <ol id="phase4-results"></ol>
+        </section>
+    </main>
+    <iframe id="diagram-frame" src="about:blank" title="Isolated OneWireDiagram test environment"></iframe>
+
+    <script>
+        function OneWireDiagramTestRunner()
+        {
+            var oFrame = document.getElementById("diagram-frame");
+            var oOverall = document.getElementById("overall-status");
+            var aSuites = ["phase2", "phase4"];
+            var oResults = {};
+            var iRunId = 0;
+            var iTimeout;
+
+            function renderSuite(sSuite, aResults)
+            {
+                var oList = document.getElementById(sSuite + "-results");
+                var oSummary = document.getElementById(sSuite + "-summary");
+                var iPassed = 0;
+                oList.textContent = "";
+
+                aResults.forEach(function(oResult)
+                {
+                    var oItem = document.createElement("li");
+                    var bPassed = oResult.status === "PASS";
+                    if (bPassed)
+                    {
+                        iPassed++;
+                    }
+                    oItem.className = bPassed ? "pass" : "fail";
+                    oItem.textContent = oResult.status + ": " + oResult.test +
+                        (oResult.error ? " — " + oResult.error : "");
+                    oList.appendChild(oItem);
+                });
+
+                oSummary.textContent = iPassed + " / " + aResults.length + " checks passed";
+                oSummary.className = iPassed === aResults.length && aResults.length > 0 ? "pass" : "fail";
+            }
+
+            function updateOverall()
+            {
+                var iPassed = 0;
+                var iTotal = 0;
+                var iPending = 0;
+
+                aSuites.forEach(function(sSuite)
+                {
+                    if (oResults[sSuite] === null)
+                    {
+                        iPending++;
+                        return;
+                    }
+                    oResults[sSuite].forEach(function(oResult)
+                    {
+                        iTotal++;
+                        if (oResult.status === "PASS")
+                        {
+                            iPassed++;
+                        }
+                    });
+                });
+
+                oOverall.textContent = iPending ?
+                    "Running " + (aSuites.length - iPending) + " / " + aSuites.length + " suites..." :
+                    iPassed + " / " + iTotal + " checks passed across both suites";
+                oOverall.className = iPending ? "" : (iPassed === iTotal && iTotal > 0 ? "pass" : "fail");
+
+                if (!iPending)
+                {
+                    window.clearTimeout(iTimeout);
+                }
+            }
+
+            this.receive = function(oEvent)
+            {
+                if (oEvent.source !== oFrame.contentWindow)
+                {
+                    return;
+                }
+
+                var oData = oEvent.data;
+                if (!oData || oData.type !== "homeeditor-onewire-tests" ||
+                    oData.runId !== String(iRunId) || aSuites.indexOf(oData.suite) < 0 ||
+                    oResults[oData.suite] !== null)
+                {
+                    return;
+                }
+
+                var aResults = oData.error ?
+                    [{ test: "Suite setup", status: "FAIL", error: oData.error }] : oData.results;
+                if (!Array.isArray(aResults) || aResults.length === 0)
+                {
+                    aResults = [{ test: "Suite setup", status: "FAIL", error: "No result array returned" }];
+                }
+
+                oResults[oData.suite] = aResults;
+                renderSuite(oData.suite, aResults);
+                updateOverall();
+            };
+
+            this.run = function()
+            {
+                window.clearTimeout(iTimeout);
+                iRunId++;
+                aSuites.forEach(function(sSuite)
+                {
+                    oResults[sSuite] = null;
+                    document.getElementById(sSuite + "-results").textContent = "";
+                    document.getElementById(sSuite + "-summary").textContent = "Waiting...";
+                    document.getElementById(sSuite + "-summary").className = "";
+                });
+                updateOverall();
+
+                oFrame.src = "../tools/OneWireDiagram.html?oneWireTests=1&runId=" + iRunId;
+                iTimeout = window.setTimeout(function()
+                {
+                    aSuites.forEach(function(sSuite)
+                    {
+                        if (oResults[sSuite] === null)
+                        {
+                            var aFailures = [{ test: "Suite setup", status: "FAIL",
+                                error: "Timed out waiting for results. Verify that the diagram page and local scripts load." }];
+                            oResults[sSuite] = aFailures;
+                            renderSuite(sSuite, aFailures);
+                        }
+                    });
+                    updateOverall();
+                }, 15000);
+            };
+        }
+
+        var oOneWireDiagramTestRunner = new OneWireDiagramTestRunner();
+        window.addEventListener("message", function(oEvent)
+        {
+            oOneWireDiagramTestRunner.receive(oEvent);
+        });
+        document.getElementById("run-tests").addEventListener("click", function()
+        {
+            oOneWireDiagramTestRunner.run();
+        });
+        oOneWireDiagramTestRunner.run();
+    </script>
+</body>
+</html>

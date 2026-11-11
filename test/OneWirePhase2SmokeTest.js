@@ -1,7 +1,7 @@
 // homeEditor OneWireDiagram Phase 2 smoke tests.
-// After opening tools/OneWireDiagram.html directly in a browser, inject this
-// optional script through the developer console:
-// var s = document.createElement('script'); s.src = 'OneWirePhase2SmokeTest.js'; document.head.appendChild(s);
+// Run both suites by opening test/OneWireDiagram_tests.html directly in a browser.
+// To run this suite manually from tools/OneWireDiagram.html, inject this script:
+// var s = document.createElement('script'); s.src = '../test/OneWirePhase2SmokeTest.js'; document.head.appendChild(s);
 // No server, third-party test runner, or network connection is required.
 
 function runOneWirePhase2SmokeTests()
@@ -113,4 +113,4 @@ function runOneWirePhase2SmokeTests()
     return results;
 }
 
-runOneWirePhase2SmokeTests();
+window.oneWirePhase2Results = runOneWirePhase2SmokeTests();

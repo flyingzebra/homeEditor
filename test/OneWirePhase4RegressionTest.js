@@ -1,5 +1,6 @@
-// Phase 4: browser-only tests. Run after opening OneWireDiagram.html:
-// var s = document.createElement('script'); s.src = 'OneWirePhase4RegressionTest.js'; document.head.appendChild(s);
+// Phase 4: browser-only tests. Open test/OneWireDiagram_tests.html to run both suites.
+// To run this suite manually from tools/OneWireDiagram.html:
+// var s = document.createElement('script'); s.src = '../test/OneWirePhase4RegressionTest.js'; document.head.appendChild(s);
 // Tests require no Node.js, test framework, server, or network connection.
 function runOneWirePhase4RegressionTests()
 {
@@ -128,4 +129,4 @@ function runOneWirePhase4RegressionTests()
     return results;
 }
 
-runOneWirePhase4RegressionTests();
+window.oneWirePhase4Results = runOneWirePhase4RegressionTests();

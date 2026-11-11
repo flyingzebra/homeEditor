@@ -294,8 +294,10 @@ var C_SVG =
 }
 
 
-CONFIGPAGE_LEFT = "\n<div id=\"needtowrap\">\n<br>\n<font size=\"+1\">\n" + _T("intro") + "\n</i>\n</font>\n</div><br"
-    + ">\n<table border=\"1px\" style=\"border-collapse:collapse\" align=\"center\" width=\"100%\">\n<tr>\n<td width="
+CONFIGPAGE_LEFT =
+    //"\n<div id=\"needtowrap\">\n<br>\n<font size=\"+1\">\n" + _T("intro") + "\n</i>\n</font>\n</div><br>"
+    //+
+    "\n<table border=\"1px\" style=\"border-collapse:collapse\" align=\"center\" width=\"100%\">\n<tr>\n<td width="
     + "\"25%\" align=\"center\" bgcolor=\"LightGrey\">\n<b>" + _T("title1") + "</b>\n</td>\n<td width=\"25%\" ali"
     + "gn=\"center\" bgcolor=\"LightGrey\">\n<b>" + _T("title2") + "</b>\n</td>\n<td width=\"25%\" align=\"center"
     + "\" bgcolor=\"LightGrey\">\n<b>" + _T("title3") + "</b>\n</td>\n<td width=\"25%\" align=\"center\" bgcolor="

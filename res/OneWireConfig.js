@@ -659,14 +659,9 @@ function OneWireController()
     }
     this.redrawTreeSVG = function ()
     {
-        document.getElementById("right_col_inner").innerHTML = "<b>" + _T("drawing", "cap") + ": </b><button onclick=download(\"html\")>" + _T("download_html", "cap") + "</button>";
-        document.getElementById("right_col_inner").innerHTML += "&nbsp;<button onclick=download(\"svg\")>" + _T("download_svg", "cap") + "</button><br><br>";
-        document.getElementById("right_col_inner").innerHTML += oHierarchicalList.toSVG(0, "horizontal").data;
-        document.getElementById("right_col_inner").innerHTML += "\n<h2>"
-            + _T("legend", "cap") + ":</h2>\n<button style=\"background-color:" + _T("_COL").insert_item + ";\">&#9650;</button> "
-            + _T("insert_above") + "<br>\n<button style=\"background-color:" + _T("_COL").insert_item + ";\">&#9660;</button> "
-            + _T("insert_below") + "<br>\n<button style=\"background-color:" + _T("_COL").insert_item + ";\">&#9654;</button> "
-            + _T("insert_child") + "<br>\n<button style=\"background-color:" + _T("_COL").delete_item + ";\">&#9851;</button>" + _T("delete_item") + "<br>\n";
+        var oDrawing = document.getElementById("right_col_inner");
+        oDrawing.innerHTML = "<b>" + _T("drawing", "cap") + ": </b><br><br>" +
+            oHierarchicalList.toSVG(0, "horizontal").data;
         document.getElementById("right_col_inner").innerHTML += "<i><br><small>" + _T("version", "cap") + ": " + CONF_builddate + "</small></i><br><br>";
     }
 

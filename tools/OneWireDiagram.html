@@ -65,8 +65,8 @@
                 , "motion_switch": "bewegingsschakelaar"
                 , "button_bell": "knop & bel"
                 , "drawing": "diagram"
-                , "download_svg": "download SVG"
-                , "download_html": "download HTML"
+                , "download_svg": "Download SVG"
+                , "download_html": "Download HTML"
                 , "legend": "legend"
                 , "insert_above": "Insert item above (same level)"
                 , "insert_below": "Insert item below (same level)"
@@ -145,16 +145,22 @@
     <div class="slider_overlay">
         <div id="topmenu">
             <ul id="minitabs">
-                <li><a href="javascript:restart_all()">
+                <li><a href="javascript:restart_all()" title="Start a new single-line diagram">
                         <script>_D("menu_new")</script>
                     </a></li>
-                <li><a href="javascript:importclicked()">
+                <li><a href="javascript:importclicked()" title="Import a saved .eds diagram">
                         <script>_D("menu_import")</script>
                     </a></li>
-                <li><a href="javascript:exportjson()">
+                <li><a id="export-eds" href="javascript:exportjson()" title="Save the editable diagram as an .eds file">
                         <script>_D("menu_export")</script>
                     </a></li>
-                <li><a href="javascript:popUp('https://ewdiagram.blogspot.com')">
+                <li><a id="download-html" href="javascript:download('html')" title="Download the diagram as an HTML file">
+                        <script>_D("download_html")</script>
+                    </a></li>
+                <li><a id="download-svg" href="javascript:download('svg')" title="Download the diagram as an SVG vector image">
+                        <script>_D("download_svg")</script>
+                    </a></li>
+                <li><a href="javascript:popUp('https://ewdiagram.blogspot.com')" title="Open information and contact details">
                         <script>_D("menu_info")</script>
                     </a></li>
             </ul>
@@ -423,10 +429,18 @@
             this.toHTML = function (Parent)
             {
                 var output = "";
-                output += " <button style=\"background-color:" + _T("_COL").insert_item + ";\" onclick=\"HLInsertBefore(" + this.id + ")\">&#9650;</button>";
-                output += " <button style=\"background-color:" + _T("_COL").insert_item + ";\" onclick=\"HLInsertAfter(" + this.id + ")\">&#9660;</button>";
-                output += " <button style=\"background-color:" + _T("_COL").insert_item + ";\" onclick=\"HLInsertChild(" + this.id + ")\">&#9654;</button>";
-                output += " <button style=\"background-color:" + _T("_COL").delete_item + ";\" onclick=\"HLDelete(" + this.id + ")\">&#9851;</button>";
+                output += " <button type=\"button\" title=\"" + _T("insert_above") +
+                    "\" aria-label=\"" + _T("insert_above") + "\" style=\"background-color:" +
+                    _T("_COL").insert_item + ";\" onclick=\"HLInsertBefore(" + this.id + ")\">&#9650;</button>";
+                output += " <button type=\"button\" title=\"" + _T("insert_below") +
+                    "\" aria-label=\"" + _T("insert_below") + "\" style=\"background-color:" +
+                    _T("_COL").insert_item + ";\" onclick=\"HLInsertAfter(" + this.id + ")\">&#9660;</button>";
+                output += " <button type=\"button\" title=\"" + _T("insert_child") +
+                    "\" aria-label=\"" + _T("insert_child") + "\" style=\"background-color:" +
+                    _T("_COL").insert_item + ";\" onclick=\"HLInsertChild(" + this.id + ")\">&#9654;</button>";
+                output += " <button type=\"button\" title=\"" + _T("delete_item") +
+                    "\" aria-label=\"" + _T("delete_item") + "\" style=\"background-color:" +
+                    _T("_COL").delete_item + ";\" onclick=\"HLDelete(" + this.id + ")\">&#9851;</button>";
                 output += "&nbsp;";
                 this.updateConsumers();
                 output += this.selectToHTML(0, this.consumers);
@@ -1060,7 +1074,8 @@
                 }
                 if ((myParent == 0) && (numberDrawn < 1))
                 {
-                    output += "<button onclick=\"HLAdd()\">" + _T("add_first_object") + "</button>"; //no need for the add button if we have items
+                    output += "<button type=\"button\" title=\"" + _T("add_first_object") +
+                        "\" onclick=\"HLAdd()\">" + _T("add_first_object") + "</button>";
                 }
                 return (output);
             }

@@ -96,6 +96,39 @@ function runOneWirePhase4RegressionTests()
         assert(document.getElementById('right_col_inner').innerHTML.indexOf('<svg') >= 0, 'Redraw failed');
     });
 
+    check('Top-menu downloads, action tooltips and no drawing legend', function()
+    {
+        var oMenu = document.getElementById('minitabs');
+        var aLinks = Array.prototype.slice.call(oMenu.querySelectorAll('a'));
+        var oExport = document.getElementById('export-eds');
+        var oHTML = document.getElementById('download-html');
+        var oSVG = document.getElementById('download-svg');
+        assert(oExport && oHTML && oSVG, 'Top-menu download actions are missing');
+        assert(aLinks.indexOf(oHTML) === aLinks.indexOf(oExport) + 1 &&
+            aLinks.indexOf(oSVG) === aLinks.indexOf(oHTML) + 1, 'Download links are not next to Export');
+        assert(oHTML.getAttribute('href') === "javascript:download('html')", 'HTML download handler changed');
+        assert(oSVG.getAttribute('href') === "javascript:download('svg')", 'SVG download handler changed');
+        aLinks.forEach(function(oLink)
+        {
+            assert(oLink.title.length > 0, 'Missing top-menu tooltip');
+        });
+
+        reset_all();
+        var oDrawing = document.getElementById('right_col_inner');
+        assert(oDrawing.querySelector('svg'), 'Electrical diagram no longer renders');
+        assert(!oDrawing.querySelector('button'), 'Download buttons or legend remain in drawing');
+        assert(!oDrawing.querySelector('h2'), 'Bottom legend heading remains');
+
+        var aButtons = document.querySelectorAll('#left_col_inner button');
+        assert(aButtons.length >= 4, 'Electrical item action buttons are missing');
+        for (var i = 0; i < aButtons.length; i++)
+        {
+            assert(aButtons[i].title.length > 0, 'Missing electrical item button tooltip');
+            assert(aButtons[i].getAttribute('aria-label') === aButtons[i].title,
+                'Electrical item action button accessibility label differs from tooltip');
+        }
+    });
+
     check('Standalone dependencies and controller API', function()
     {
         assert(typeof pako !== 'undefined' && typeof pako.inflateRaw === 'function', 'Local Pako unavailable');

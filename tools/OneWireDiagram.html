@@ -1,192 +1,201 @@
-<html style='height:100%;font-family:"Arial"'><head>
+<html style='height:100%;font-family:"Arial"'>
+
+<head>
     <title>Single-Line Electrical Diagram</title>
     <meta name="description" content="">
     <meta name="author" content="Freddy Vandriessche">
     <meta charset="utf-8">
 
-<script type="text/javascript" src="../res/pako.min.js"></script>
-<script type="text/javascript" src="TOOLS_Header.js"></script>
+    <script type="text/javascript" src="../res/pako.min.js"></script>
+    <script type="text/javascript" src="TOOLS_Header.js"></script>
 
 
-  <script>
-var SPECIAL_THANKS_TO = 'Ivan Goethals (https://ivan.goethals-jacobs.be)';
-var CONF_version="1.1.0";
-var CONF_builddate="20191010-151000";
-function init_gui(_o)
-{
-    if (document.getElementById('slider_title') != null)
-        document.getElementById('slider_title').outerHTML = _TITLE();
-}
+    <script>
+        var SPECIAL_THANKS_TO = 'Ivan Goethals (https://ivan.goethals-jacobs.be)';
+        var CONF_version = "1.1.0";
+        var CONF_builddate = "20191010-151000";
+        function init_gui(_o)
+        {
+            if (document.getElementById('slider_title') != null)
+                document.getElementById('slider_title').outerHTML = _TITLE();
+        }
 
-function Translation()
-{
-  this.t = {get _language(){ return "EN" }
-  ,"title":document.title
-  ,"menu_new":"New"
-  ,"menu_import":"Import"
-  ,"menu_export":"Export"
-  ,"menu_info":"Info / Contact"
-  ,"intro":"<b>Design a single-line electrical diagram:</b>\nChoose an example or start a blank diagram with the number of circuits you need (option 3).\n</font>\n<br><br>\n<font size=\"+1\">\n<i>\n<b>Tip:</b> Try editing an example before creating a new diagram."
-  ,"title1":"Example 1"
-  ,"title2":"Example 2"
-  ,"title3":"Blank diagram"
-  ,"title4":"Import a diagram"
-  ,"description1":"Simple diagram with socket outlets and lighting points."
-  ,"description2":"More complex diagram with impulse relays, branched circuits and appliances connected to socket outlets."
-  ,get description3(){return this["main_differential"]+" <input id=\"differentieel_droog\" type=\"text\" size=\"5\" maxlength=\"5\" value=\"300\"><br>\n"+this["main_fuse"]+" <input id=\"hoofdzekering\" type=\"text\" size=\"4\" maxlength=\"4\" value=\"65\"><br><br>\n"+this["phases"]+"\n<select id=\"aantal_fazen_droog\"><option value=\"2\">2p</option><option value=\"3\">3p</option><option value=\"4\">4p (3p+n)</option></select>\n<br><br>\n"+this["circuits_dry"]+"\n<select id=\"aantal_droge_kringen\">\n"}
-  ,"main_differential":"Main differential protection (mA)"
-  ,"main_fuse":"Main fuse (A)"
-  ,"phases":"Number of poles:"
-  ,"phases_wet":"Number of poles (wet areas):"
-  ,"circuits_wet":"Number of circuits (wet areas):"
-  ,"circuits_dry":"Number of circuits (dry areas):"
-  ,"differential_wet":"Differential protection for wet areas (mA)"
-  ,"continue_option":"Continue with this option"
-  ,"import_notice":"Import a previously saved diagram (.eds file). Only files created after 12 July 2019 are supported."
-  ,"add_first_object":"Add the first component, or select New above."
-  ,"name":"name"
-  ,"text":"text"
-  ,"fuse":"fuse"
-  ,"autmatic":"automatic"
-  ,"differential":"differential"
-  ,"melt":"fuse link"
-  ,"geen":"none"
-  ,"cable":"cable"
-  ,"type":"type"
-  ,"transfo":"transformer"
-  ,"single_pole":"enkelpolig"
-  ,"double_pole":"dubbelpolig"
-  ,"teleruptor":"teleruptor"
-  ,"dimmer":"dimmer"
-  ,"relay":"relais"
-  ,"motion_switch":"bewegingsschakelaar"
-  ,"button_bell":"knop & bel"
-  ,"drawing":"diagram"
-  ,"download_svg":"download SVG"
-  ,"download_html":"download HTML"
-  ,"legend":"legend"
-  ,"insert_above":"Insert item above (same level)"
-  ,"insert_below":"Insert item below (same level)"
-  ,"insert_child":"Add child item below (one level deeper)"
-  ,"delete_item":"delete item"
-  ,"board":"bord"
-  ,"splitting":"splitsing"
-  ,"multiple_consumers":"meerdere verbruikers"
-  ,"empty":"Leeg"
-  ,"freetext":"vrije tekst"
-  ,"outlet":"stopcontact"
-  ,"light_circuit":"lichtcircuit"
-  ,"boiler":"boiler"
-  ,"freezer":"diepvriezer"
-  ,"dryer":"droogkast"
-  ,"electrical_oven":"elektrische oven"
-  ,"fridge":"koelkast"
-  ,"cooker":"kookfornuis"
-  ,"microwave":"microgolfoven"
-  ,"dishwasher":"vaatwasmachine"
-  ,"ventilator":"ventilator"
-  ,"heather":"verwarmingstoestel"
-  ,"washing_machine":"wasmachine"
-  ,"version":"Version "+CONF_version
-  ,"built":"Built "+CONF_builddate
-  ,"_COL":
-  {
-    "tree_collapsed":"#9AC2F4"
-   ,"tree_expanded":"#D0D0D0"
-   ,"delete_item":"red"
-   ,"insert_item":"#40E000"
-  }
-  ,get _(){return this}
-  }
-  this.get = function(idx,mod)
-  {
-    //if(idx.length>0 && typeof(this.t[idx])=="undefined") { alert(idx); return "<font color=red>"+idx+"</font>" }
-  switch(mod)
-  {
-    case "cap": return this.t[idx].charAt(0).toUpperCase()+this.t[idx].substring(1,this.t[idx].length);
-    case "inv":
-    {
-      var j = {};
-      for (var i in this.t)
-      {
-        j[this.t[i]] = i;
-      }
-      return j;
-    }
-    default: return this.t[idx];
-  }
-  };
-}
+        function Translation()
+        {
+            this.t = {
+                get _language() { return "EN" }
+                , "title": document.title
+                , "menu_new": "New"
+                , "menu_import": "Import"
+                , "menu_export": "Export"
+                , "menu_info": "Info / Contact"
+                , "intro": "<b>Design a single-line electrical diagram:</b>\nChoose an example or start a blank diagram with the number of circuits you need (option 3).\n</font>\n<br><br>\n<font size=\"+1\">\n<i>\n<b>Tip:</b> Try editing an example before creating a new diagram."
+                , "title1": "Example 1"
+                , "title2": "Example 2"
+                , "title3": "Blank diagram"
+                , "title4": "Import a diagram"
+                , "description1": "Simple diagram with socket outlets and lighting points."
+                , "description2": "More complex diagram with impulse relays, branched circuits and appliances connected to socket outlets."
+                , get description3() { return this["main_differential"] + " <input id=\"differentieel_droog\" type=\"text\" size=\"5\" maxlength=\"5\" value=\"300\"><br>\n" + this["main_fuse"] + " <input id=\"hoofdzekering\" type=\"text\" size=\"4\" maxlength=\"4\" value=\"65\"><br><br>\n" + this["phases"] + "\n<select id=\"aantal_fazen_droog\"><option value=\"2\">2p</option><option value=\"3\">3p</option><option value=\"4\">4p (3p+n)</option></select>\n<br><br>\n" + this["circuits_dry"] + "\n<select id=\"aantal_droge_kringen\">\n" }
+                , "main_differential": "Main differential protection (mA)"
+                , "main_fuse": "Main fuse (A)"
+                , "phases": "Number of poles:"
+                , "phases_wet": "Number of poles (wet areas):"
+                , "circuits_wet": "Number of circuits (wet areas):"
+                , "circuits_dry": "Number of circuits (dry areas):"
+                , "differential_wet": "Differential protection for wet areas (mA)"
+                , "continue_option": "Continue with this option"
+                , "import_notice": "Import a previously saved diagram (.eds file). Only files created after 12 July 2019 are supported."
+                , "add_first_object": "Add the first component, or select New above."
+                , "name": "name"
+                , "text": "text"
+                , "fuse": "fuse"
+                , "autmatic": "automatic"
+                , "differential": "differential"
+                , "melt": "fuse link"
+                , "geen": "none"
+                , "cable": "cable"
+                , "type": "type"
+                , "transfo": "transformer"
+                , "single_pole": "enkelpolig"
+                , "double_pole": "dubbelpolig"
+                , "teleruptor": "teleruptor"
+                , "dimmer": "dimmer"
+                , "relay": "relais"
+                , "motion_switch": "bewegingsschakelaar"
+                , "button_bell": "knop & bel"
+                , "drawing": "diagram"
+                , "download_svg": "download SVG"
+                , "download_html": "download HTML"
+                , "legend": "legend"
+                , "insert_above": "Insert item above (same level)"
+                , "insert_below": "Insert item below (same level)"
+                , "insert_child": "Add child item below (one level deeper)"
+                , "delete_item": "delete item"
+                , "board": "bord"
+                , "splitting": "splitsing"
+                , "multiple_consumers": "meerdere verbruikers"
+                , "empty": "Leeg"
+                , "freetext": "vrije tekst"
+                , "outlet": "stopcontact"
+                , "light_circuit": "lichtcircuit"
+                , "boiler": "boiler"
+                , "freezer": "diepvriezer"
+                , "dryer": "droogkast"
+                , "electrical_oven": "elektrische oven"
+                , "fridge": "koelkast"
+                , "cooker": "kookfornuis"
+                , "microwave": "microgolfoven"
+                , "dishwasher": "vaatwasmachine"
+                , "ventilator": "ventilator"
+                , "heather": "verwarmingstoestel"
+                , "washing_machine": "wasmachine"
+                , "version": "Version " + CONF_version
+                , "built": "Built " + CONF_builddate
+                , "_COL":
+                {
+                    "tree_collapsed": "#9AC2F4"
+                    , "tree_expanded": "#D0D0D0"
+                    , "delete_item": "red"
+                    , "insert_item": "#40E000"
+                }
+                , get _() { return this }
+            }
+            this.get = function (idx, mod)
+            {
+                //if(idx.length>0 && typeof(this.t[idx])=="undefined") { alert(idx); return "<font color=red>"+idx+"</font>" }
+                switch (mod)
+                {
+                    case "cap": return this.t[idx].charAt(0).toUpperCase() + this.t[idx].substring(1, this.t[idx].length);
+                    case "inv":
+                        {
+                            var j = {};
+                            for (var i in this.t)
+                                j[this.t[i]] = i;
+                            return j;
+                        }
+                    default: return this.t[idx];
+                }
+            };
+        }
 
-var oTranslation = new Translation();
+        var oTranslation = new Translation();
 
-/*
-function _T(idx,mod) { return oTranslation.get(idx,mod); }
-function _D(idx) { if(typeof(_T(idx)=="string")) document.write(_T(idx)) }
-function _TITLE()
-{
-var css = "#topmenu{width:100%;background-color:#f0f0f0}ul#minitabs{list-style:none;margin:0;padding:3px 0 0 0;border-left:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #ccc;border-bottom:1px solid #ccc;font-weight:700;text-align:left;white-space:nowrap}ul#minitabs li{display:inline;margin:0 3px}ul#minitabs a{text-decoration:none;color:#999}ul#minitabs a#current{border-color:#f60;color:#06f}ul#minitabs a:hover{border-color:#f60;color:#666}"
+        /*
+        function _T(idx,mod) { return oTranslation.get(idx,mod); }
+        function _D(idx) { if(typeof(_T(idx)=="string")) document.write(_T(idx)) }
+        function _TITLE()
+        {
+        var css = "#topmenu{width:100%;background-color:#f0f0f0}ul#minitabs{list-style:none;margin:0;padding:3px 0 0 0;border-left:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #ccc;border-bottom:1px solid #ccc;font-weight:700;text-align:left;white-space:nowrap}ul#minitabs li{display:inline;margin:0 3px}ul#minitabs a{text-decoration:none;color:#999}ul#minitabs a#current{border-color:#f60;color:#06f}ul#minitabs a:hover{border-color:#f60;color:#666}"
+        
+        //+"#texturespace {background: #f7f7f7 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEEAYAAAD5YUI9AAAACXBIWXMAAA4mAAAOJgGi7yX8AAAARElEQVQIHWPYyrxTed9eg3UQWkQHQgtaQGg5JgaohAdUoglC8z+A0mFQBYIpUIEXULoOQgvIQRXIBUElMqASShBaWQwApNg4NPAzQGwAAAAASUVORK5CYII=') repeat center top;font: 62.5%/1 sans-serif;height: 100%;width: 100%;}#carvetext {color: transparent;background: #f7f7f7;font: 62.5%/1 sans-serif;stroke: 2px rgba(0,0,0,0.2);background-color: rgba(140,140,140,1);-webkit-background-clip: text;text-shadow: rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;transition: text-shadow .1s ease-out, background-color .2s ease-out;}#carvetext:hover {color: transparent;background-color: rgba(82,96,117,0.5);-webkit-background-clip: text;text-shadow: rgba(255,255,255,0.5) 0 5px 6px;}#carvetext:focus {outline: none;}.slider_main {position: relative;height: 100%; margin:0px; padding:0px  }.slider_overlay {position: absolute;bottom: 0;left: 0;right: 0;background-color: #B0B0B0;overflow: hidden;width: 100%;height: 85%;transition: .5s ease;}.slider_main:hover .slider_overlay {height: 100%;}"
+        
+        
+        return "<style>"+css+".slider_overlay{height: 85%}</style>";
+        
+        +"<div id=texturespace style='height:100%;width:100%'><center><div id='carvetext'>"
+        +"<div style='font-size:5em'>"+(typeof(_T("title"))=="string"?_T("title"):"")+"</div>"
+        +"<div style='font-size:1em'>"+(typeof(_T("version"))=="string"?_T("version"):"")
+        +" &nbsp; "+(typeof(_T("built"))=="string"?_T("built"):"")+"</div>"
+        +"</div></center></div>"
+        
+        }
+        */
 
-//+"#texturespace {background: #f7f7f7 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEEAYAAAD5YUI9AAAACXBIWXMAAA4mAAAOJgGi7yX8AAAARElEQVQIHWPYyrxTed9eg3UQWkQHQgtaQGg5JgaohAdUoglC8z+A0mFQBYIpUIEXULoOQgvIQRXIBUElMqASShBaWQwApNg4NPAzQGwAAAAASUVORK5CYII=') repeat center top;font: 62.5%/1 sans-serif;height: 100%;width: 100%;}#carvetext {color: transparent;background: #f7f7f7;font: 62.5%/1 sans-serif;stroke: 2px rgba(0,0,0,0.2);background-color: rgba(140,140,140,1);-webkit-background-clip: text;text-shadow: rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;transition: text-shadow .1s ease-out, background-color .2s ease-out;}#carvetext:hover {color: transparent;background-color: rgba(82,96,117,0.5);-webkit-background-clip: text;text-shadow: rgba(255,255,255,0.5) 0 5px 6px;}#carvetext:focus {outline: none;}.slider_main {position: relative;height: 100%; margin:0px; padding:0px  }.slider_overlay {position: absolute;bottom: 0;left: 0;right: 0;background-color: #B0B0B0;overflow: hidden;width: 100%;height: 85%;transition: .5s ease;}.slider_main:hover .slider_overlay {height: 100%;}"
+        function _T(idx, mod)
+        {
+            return oTranslation.get(idx, mod);
+        }
 
+        function _D(idx)
+        {
+            var sText = _T(idx);
 
-return "<style>"+css+".slider_overlay{height: 85%}</style>";
+            if (typeof sText === "string")
+            {
+                document.write(sText);
+            }
+        }
 
-+"<div id=texturespace style='height:100%;width:100%'><center><div id='carvetext'>"
-+"<div style='font-size:5em'>"+(typeof(_T("title"))=="string"?_T("title"):"")+"</div>"
-+"<div style='font-size:1em'>"+(typeof(_T("version"))=="string"?_T("version"):"")
-+" &nbsp; "+(typeof(_T("built"))=="string"?_T("built"):"")+"</div>"
-+"</div></center></div>"
-
-}
-*/
-
-function _T(idx, mod)
-{
-    return oTranslation.get(idx, mod);
-}
-
-function _D(idx)
-{
-    var sText = _T(idx);
-
-    if (typeof sText === "string")
-    {
-        document.write(sText);
-    }
-}
-
-</script>
+    </script>
 </head>
 
-   <body class="slider_main" style="background-color:#FFFFFF" onload=init_gui();restart_all()>
+<body class="slider_main" style="background-color:#FFFFFF" onload=init_gui();restart_all()>
 
-  <div id="slider_title"></div>
-   <div class="slider_overlay">
-      <div id="topmenu">
-        <ul id="minitabs">
-        <li><a href="javascript:restart_all()"><script>_D("menu_new")</script></a></li>
-        <li><a href="javascript:importclicked()"><script>_D("menu_import")</script></a></li>
-        <li><a href="javascript:exportjson()"><script>_D("menu_export")</script></a></li>
-        <li><a href="javascript:popUp('https://ewdiagram.blogspot.com')"><script>_D("menu_info")</script></a></li>
-        </ul>
-      </div>
-      <div id=main>
+    <div id="slider_title"></div>
+    <div class="slider_overlay">
+        <div id="topmenu">
+            <ul id="minitabs">
+                <li><a href="javascript:restart_all()">
+                        <script>_D("menu_new")</script>
+                    </a></li>
+                <li><a href="javascript:importclicked()">
+                        <script>_D("menu_import")</script>
+                    </a></li>
+                <li><a href="javascript:exportjson()">
+                        <script>_D("menu_export")</script>
+                    </a></li>
+                <li><a href="javascript:popUp('https://ewdiagram.blogspot.com')">
+                        <script>_D("menu_info")</script>
+                    </a></li>
+            </ul>
+        </div>
+        <div id=main>
 
 
-  <div id="configsection">
-  </div>
-    <div id="canvas_2col">
-      <div id="left_col">
-        <div id="left_col_inner"></div>
-      </div>
-      <div id="right_col">
-        <div id="right_col_inner"></div>
-      </div>
+            <div id="configsection">
+            </div>
+            <div id="canvas_2col">
+                <div id="left_col">
+                    <div id="left_col_inner"></div>
+                </div>
+                <div id="right_col">
+                    <div id="right_col_inner"></div>
+                </div>
+            </div>
+            <input id="importfile" type="file" accept=".eds" onchange="importjson(event)" style="display:none;">
+        </div>
     </div>
-    <input id="importfile" type="file" accept=".eds" onchange="importjson(event)" style="display:none;">
-    </div>
-    </div>
 
 
 
@@ -209,1380 +218,1414 @@ function _D(idx)
 
 
 
-<script>
+    <script>
 
-function ListItem()
-{
-
-    this.id = 0; //undefined
-    this.parent = 0; //no parent
-    this.indent = 0; //at root note, no parent
-    this.collapsed = false; //at the start, nothingh is collapsed
-    this.keys = [];
-
-    this.getKey = function (key)
-    {
-        for (var i = 0; i < this.keys.length; i++)
+        function ListItem()
         {
-            if (this.keys[i][0] == key)
+
+            this.id = 0; //undefined
+            this.parent = 0; //no parent
+            this.indent = 0; //at root note, no parent
+            this.collapsed = false; //at the start, nothingh is collapsed
+            this.keys = [];
+
+            this.getKey = function (key)
             {
-                return (this.keys[i][2]);
-            }
-        }
-    };
-
-    this.stringToHTML = function (keyid, size)
-    {
-        var output = "";
-        var sizestr = "";
-        switch (size)
-        {
-            case null: break;
-            default:
-                sizestr = " size=" + size + " ";
-        }
-        output += "<input type=\"text\"" + sizestr + " id=\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] +
-            "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" +
-            this.keys[keyid][1] + "\",\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] +
-            "\") value=\"" + this.keys[keyid][2] + "\">";
-        return (output);
-    };
-
-    this.checkboxToHTML = function (keyid)
-    {
-        var output = "";
-        output += "<input type=\"checkbox\" id=\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] + "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" + this.keys[keyid][1] + "\",\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] + "\")" + (this.keys[keyid][2] ? " checked" : "") + ">";
-        return (output);
-    };
-
-    this.selectToHTML = function (keyid, items)
-    {
-        var myId = "HL_edit_" + this.id + "_" + this.keys[keyid][0];
-        var myType = this.keys[keyid][1];
-        var output = "";
-        output += "<select id=\"" + myId + "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" + this.keys[keyid][1] + "\",\"" + myId + "\")>";
-        for (var i = 0; i < items.length; i++)
-        {
-            if (this.keys[keyid][2] == items[i])
-            {
-                output += "<option value=\"" + items[i] + "\" selected>" + items[i] + "</option>";
-            }
-            else
-            {
-                output += "<option value=\"" + items[i] + "\">" + items[i] + "</option>";
-            }
-        }
-        output += "</select>";
-        return (output);
-    };
-}
-
-function ElectroItem(Parent)
-{
-    ListItem.apply(this, arguments);  // Preserve existing base-item initialization.
-
-    this.Parent_Item = Parent;
-    this.keys.push(["type", "SELECT", ""]); //0
-    this.keys.push(["geaard", "BOOLEAN", true]); //1
-    this.keys.push(["kinderveiligheid", "BOOLEAN", true]); //2
-    this.keys.push(["accumulatie", "BOOLEAN", false]); //3
-    this.keys.push(["aantal", "SELECT", "1"]); //4
-    this.keys.push(["lichtkring_poligheid", "SELECT", _T("single_pole")]); //5
-    this.keys.push(["ventilator", "BOOLEAN", false]); //6
-    this.keys.push(["zekering", "SELECT", "automatisch"]); //7
-    this.keys.push(["amperage", "STRING", "20"]); //8
-    this.keys.push(["kabel", "STRING", "XVB 3G2,5"]); //9
-    this.keys.push(["naam", "STRING", ""]); //10
-    this.keys.push(["differentieel_waarde", "STRING", "300"]); //11
-    this.keys.push(["kabel_aanwezig", "BOOLEAN", true]); //12
-    this.keys.push(["aantal2", "SELECT", "1"]); //13, a.o. gebruikt voor aantal lampen
-    this.keys.push(["voltage", "STRING", "230V/12V"]); //14, a.o. gebruikt voor aantal lampen
-    this.keys.push(["commentaar", "STRING", ""]); //15, extra tekstveld
-    this.keys.push(["transfo_zekering_aanwezig", "BOOLEAN", false]); //16
-    this.keys.push(["polen", "SELECT", "2"]); //17
-
-    this.updateConsumers = function ()
-    {
-        if (this.Parent_Item == null)
-        {
-            this.consumers = ["", "Bord", "Kring"];
-        }
-        else
-        {
-            switch (this.Parent_Item.getKey("type")) {
-                case "Bord": {
-                    this.consumers = ["", "Kring"];
-                    break;
-                }
-                case "Splitsing": {
-                    this.consumers = ["", "Kring"];
-                    break;
-                }
-
-                case "Kring": {
-                    this.consumers = ["", _T("board","cap"), _T("splitting","cap"), _T("multiple_consumers","cap"), _T("empty","cap"), _T("freetext","cap"), _T("outlet","cap"), _T("light_circuit","cap"), _T("boiler","cap"), _T("freezer","cap"), _T("dryer","cap"), _T("electrical_oven","cap"), _T("fridge","cap"), _T("cooker","cap"), _T("microwave","cap"), _T("washing_machine","cap"), _T("ventilator","cap"), _T("heather","cap")];
-                    break;
-                }
-                case "Meerdere verbruikers": {
-                    this.consumers = ["", "Splitsing", "Vrije tekst", "Stopcontact", "Lichtcircuit", "Boiler", "Diepvriezer", "Droogkast", "Elektrische oven", "Koelkast", "Kookfornuis", "Microgolfoven", "Transformator", "Vaatwasmachine", "Ventilator", "Verwarmingstoestel", "Wasmachine"];
-                    break;
-                }
-                default:
+                for (var i = 0; i < this.keys.length; i++)
                 {
-                    this.consumers = ["Leeg"];
-                    break;
-                }
-            }
-        }
-    };
-    this.updateConsumers();
-
-    this.resetKeys = function ()
-    {
-        this.keys[1][2] = true;
-        this.keys[2][2] = true;
-        this.keys[3][2] = false;
-        this.keys[4][2] = "1";
-        this.keys[5][2] = _T("single_pole");
-        this.keys[6][2] = false;
-        this.keys[7][2] = "automatisch";
-        this.keys[8][2] = "20";
-        this.keys[9][2] = "XVB 3G2,5";
-        switch (this.keys[1][1])
-        { //Naam
-            case "Kring":
-                this.keys[10][2] = "---";
-                break;
-            case "Splitsing":
-                this.keys[10][2] = "";
-            default:
-                //this.keys[10][2] = "";
-                break;
-        }
-
-        this.keys[11][2] = "300"; //Differentieel
-        if (this.Parent_Item == null)
-        {
-            this.keys[12][2] = "true";
-        }
-        else
-        {
-            switch (this.Parent_Item.getKey("type")) { //Kabel_aanwezig
-                case "Splitsing":
-                    this.keys[7][2] = "geen"; //geen zekering per default na splitsing
-                    this.keys[12][2] = false; //geen kabel per default na splitsing
-                    break;
-                default:
-                    this.keys[7][2] = "automatisch"; //wel een zekering na bord
-                    this.keys[12][2] = true; //wel een kabel na bord
-                    break;
-            }
-        }
-
-        this.keys[13][2] = "1";
-        this.keys[14][2] = "230V/12V";
-        this.keys[15][2] = "";
-        this.keys[16][2] = false; // Transfo_aanwezig
-        this.keys[17][2] = 2; // polen
-    }
-
-    this.setKey = function (key, setvalue)
-    {
-
-        // override (do not inherit from List_Item)
-        for (var i = 0; i < this.keys.length; i++)
-        {
-            if (this.keys[i][0] == key)
-            {
-                this.keys[i][2] = setvalue;
-            }
-        }
-
-        //If type of component changed, reset everything
-        if (key == "type") {
-            this.resetKeys();
-        }
-        //Some validation on the input. Do properties still make sense after update
-        switch (this.keys[0][2])
-        {
-            case "Lichtcircuit":
-                if (this.getKey("lichtkring_poligheid") == _T("double_pole")) {
-                    if (this.getKey("aantal") > 2) {
-                        this.setKey("aantal", "2");
+                    if (this.keys[i][0] == key)
+                    {
+                        return (this.keys[i][2]);
                     }
                 }
-                break;
-            case "Verwarmingstoestel":
-                if ((this.getKey("accumulatie") == false) && (this.getKey("ventilator") == true)) {
-                    this.setKey("ventilator", false);
-                }
-                break;
-            case "Kring":
-                if ((this.getKey("aantal") < 2) || (this.getKey("aantal") > 4)) {
-                    this.setKey("aantal", "2");
-                }
-                break;
-        }
-    };
+            };
 
-    this.toHTML = function (Parent)
-    {
-        var output = "";
-        output += " <button style=\"background-color:"+_T("_COL").insert_item+";\" onclick=\"HLInsertBefore(" + this.id + ")\">&#9650;</button>";
-        output += " <button style=\"background-color:"+_T("_COL").insert_item+";\" onclick=\"HLInsertAfter(" + this.id + ")\">&#9660;</button>";
-        output += " <button style=\"background-color:"+_T("_COL").insert_item+";\" onclick=\"HLInsertChild(" + this.id + ")\">&#9654;</button>";
-        output += " <button style=\"background-color:"+_T("_COL").delete_item+";\" onclick=\"HLDelete(" + this.id + ")\">&#9851;</button>";
-        output += "&nbsp;";
-        this.updateConsumers();
-        output += this.selectToHTML(0, this.consumers);
-        switch (this.keys[0][2])
-        {
-            case "Kring":
-                output += "&nbsp;"+_T("name","cap")+": " + this.stringToHTML(10, 5) + "<br>";
-                output += _T("fuse","cap")+": " + this.selectToHTML(7, ["automatisch", "differentieel", "smelt", "geen"]) +
-                    this.selectToHTML(4, ["2", "3", "4"]) +
-                    this.stringToHTML(8, 2) + "A";
-                if (this.getKey("zekering") == "differentieel") {
-                    output += ", \u0394 " + this.stringToHTML(11, 3) + "mA";
-                }
-                output += "<br>";
-                output += _T("cable","cap")+": " + this.checkboxToHTML(12);
-                if (this.getKey("kabel_aanwezig")) {
-                    output += ", "+_T("type","cap")+": " + this.stringToHTML(9, 10);
-                }
-                break;
-            case "Bord":
-                output += "&nbsp;"+_T("name","cap")+": " + this.stringToHTML(10, 5) + ", ";
-                break;
-            case "Vrije tekst":
-                output += "&nbsp;"+_T("text","cap")+": " + this.stringToHTML(15, 5);
-                break;
-            case "Stopcontact":
-                output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "Earthed: " + this.checkboxToHTML(1);
-                output += "Child safety: " + this.checkboxToHTML(2);
-                output += "Quantity: " + this.selectToHTML(4, ["1", "2", "3", "4", "5", "6"]);
-                break;
-            case "Boiler":
-                output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "Storage heater: " + this.checkboxToHTML(3);
-                break;
-            case "Verwarmingstoestel":
-                output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "Storage heater: " + this.checkboxToHTML(3);
-                if (this.getKey("accumulatie")) {
-                    output += "Fan: " + this.checkboxToHTML(6);
-                }
-                break;
-            case "Transformator":
-              output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-              output += "<br>";
-              output += "Voltage: " + this.stringToHTML(14, 8) + ", ";
-              output += "Fuse: " + this.checkboxToHTML(16)
-              if (this.getKey("transfo_zekering_aanwezig")) {
-              output += this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
-                  this.selectToHTML(17, ["1", "2"]) + "P" +
-                  this.stringToHTML(8, 2) + "A";
-              }
-              break;
-            case "Lichtcircuit":
-                output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                output += "<br>";
-                output += "Transformer: " + this.checkboxToHTML(16)
-                if (this.getKey("transfo_zekering_aanwezig")) {
-                    output += ", Voltage: " + this.stringToHTML(14, 8)
-
-                    output += ", Fuse: " + this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
-                        this.selectToHTML(17, ["1", "2"]) + "P" +
-                        this.stringToHTML(8, 2) + "A";
-                }
-                output += "<br>";
-                output += "" + this.selectToHTML(5, [_T("single_pole"), _T("double_pole") ,_T("teleruptor"), _T("dimmer"), _T("relay"),_T("motion_switch"),_T("button_bell")]);
-                var str = "Number of light points:";
-                switch (this.getKey("lichtkring_poligheid")) {
-                    case _T("single_pole"):
-                        output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
-                        break;
-                    case _T("double_pole"):
-                        output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2"]);
-                        break;
-                    case _T("teleruptor"):
-                        break;
-                    case _T("dimmer"):
-                        break;
-                    case _T("relay"):
-                        break;
-                    case _T("motion_switch"):
-                        break;
-                    case _T("button_bell"):
-                        str =  "Number of bell points:";
-                        output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
-                        break;
-                }
-                output += " "+str+" " + this.selectToHTML(13, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]);
-                break;
-            case "Splitsing":
-                break;
-            default:
-                output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
-                break;
-        }
-        //output += "id: " + this.id + " parent: " + this.parent;
-        return (output);
-    };
-    this.toSVG = function (hasChild)
-    {
-        if (hasChild === void 0)
-        {
-            hasChild = false;
-        }
-        var mySVG = new DiagramSVG();
-        var outputstr = "";
-        mySVG.data = "";
-        mySVG.xleft = 1; // foresee at least some space for the conductor
-        mySVG.xright = 20;
-        mySVG.yup = 25;
-        mySVG.ydown = 25;
-        switch (this.keys[0][2])
-        {
-            case "Stopcontact":
-                var startx = 1;
-                for (var i = 0; i < this.getKey("aantal"); i++) {
-                    outputstr += "<use xlink:href=#stopcontact x=" + startx + " y=25></use>";
-                    if (this.getKey("geaard"))
-                        outputstr += "<use xlink:href=#stopcontact_aarding x=" + startx + " y=25></use>";
-                    if (this.getKey("kinderveiligheid"))
-                        outputstr += "<use xlink:href=#stopcontact_kinderveilig x=" + startx + " y=25></use>";
-                    startx += 20;
-                }
-                if (hasChild)
+            this.stringToHTML = function (keyid, size)
+            {
+                var output = "";
+                var sizestr = "";
+                switch (size)
                 {
-                    outputstr += "<line x1=" + startx + " y1=25 x2=" + (startx + 21) + " y2=25 stroke=black />";
+                    case null: break;
+                    default:
+                        sizestr = " size=" + size + " ";
                 }
+                output += "<input type=\"text\"" + sizestr + " id=\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] +
+                    "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" +
+                    this.keys[keyid][1] + "\",\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] +
+                    "\") value=\"" + this.keys[keyid][2] + "\">";
+                return (output);
+            };
 
-                mySVG.xright = 20 + this.getKey("aantal") * 20;
-                break;
-            case "Boiler":
-                outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black></line>";
-                switch (this.getKey("accumulatie")) {
-                    case false:
-                       outputstr += "<use xlink:href=#boiler x=21 y=25></use>";
-                       break;
-                   case true:
-                       outputstr += "<use xlink:href=#boiler_accu x=21 y=25></use>";
-                       break;
-               }
-               mySVG.xright = 60;
-               break;
-           case "Diepvriezer":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#diepvriezer x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Leeg":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#leeg x=21 y=25></use>";
-               mySVG.xright = 35;
-               break;
-           case "Vrije tekst":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#vrije_tekst x=21 y=25></use>";
-               outputstr += "<text x=40 y=28 style=text-anchor:Middle font-family='Arial, Helvetica, sans-serif' font-size=10>" + this.getKey("commentaar") + "</text>";
-               mySVG.xright = 60;
-               break;
-           case "Droogkast":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#droogkast x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Elektrische oven":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#oven x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Koelkast":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#koelkast x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Kookfornuis":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#kookfornuis x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Microgolfoven":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#microgolf x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Transformator":
-
-               var startx = 1;
-               //outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               if(this.getKey("transfo_zekering_aanwezig")) {
-                 switch (this.getKey("zekering")) {
-                     case "automatisch":
-                     endx = startx + 20;
-                     outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                     outputstr += '<use xlink:href="#zekering_automatisch" x="' + endx + '" y="25" '+
-                     ' transform="rotate(90 '+ endx +',25)"" ' +
-                     '/>';
-                     outputstr += '<text x="' + (endx-5) + '" y="' + '43' +
-                         ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
-                         this.getKey("polen") + "P - " +
-                         this.getKey("amperage") + "A" + "</text>";
-                       startx = endx + 28;
-                       break;
-                     case "smelt":
-                       endx = startx + 20;
-                       outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                       outputstr += '<use xlink:href="#zekering_smelt" x="' + endx + '" y="55" ' +
-                       ' transform="rotate(-90 '+ endx +',25)" ' +
-                       '/>';
-                       outputstr += '<text x="' + (endx-5) + '" y="' + '43' +
-                           ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
-                           this.getKey("aantal") + "P - " +
-                           this.getKey("amperage") + "A" + "</text>";
-                       startx = endx + 28;
-                     break;
-                     case "geen":
-                         break;
-                 }
-               }
-               endx = startx + 20;
-               outputstr += "<line x1="+startx+" y1=25 x2="+endx+" y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#transformator x="+(startx+20)+" y=25></use>";
-               outputstr += "<text x="+(startx+35)+" y=43 style=text-anchor:Middle font-family='Arial, Helvetica, sans-serif' font-size=10>" +
-                   this.getKey("voltage") + "</text>";
-               mySVG.xright = 47 + startx;
-               break;
-           case "Vaatwasmachine":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#vaatwasmachine x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Ventilator":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#ventilator x=21 y=25></use>";
-               mySVG.xright = 50;
-               break;
-           case "Verwarmingstoestel":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               mySVG.xright = 70;
-               switch (this.getKey("accumulatie")) {
-                   case false:
-                       outputstr += "<use xlink:href=#verwarmingstoestel x=21 y=25></use>";
-                       break;
-                   case true:
-                       switch (this.getKey("ventilator")) {
-                           case false:
-                               outputstr += "<use xlink:href=#verwarmingstoestel_accu x=21 y=25></use>";
-                               break;
-                           case true:
-                               outputstr += "<use xlink:href=#verwarmingstoestel_accu_ventilator x=21 y=25></use>";
-                               mySVG.xright = 95;
-                               break;
-                       }
-                       break;
-               }
-               break;
-           case "Wasmachine":
-               outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
-               outputstr += "<use xlink:href=#wasmachine x=21 y=25></use>";
-               mySVG.xright = 60;
-               break;
-           case "Lichtcircuit":
-               var elements = [];
-               switch (this.getKey("lichtkring_poligheid")) {
-                   case "teleruptor":
-                       elements.push("teleruptor");
-                       break;
-                   case "dimmer":
-                       elements.push("dimmer");
-                       break;
-                   case "relais":
-                       elements.push("relais");
-                       break;
-                   case "bewegingsschakelaar":
-                       elements.push("bewegingsschakelaar");
-                       break;
-                   case "knop & bel":
-                       if (this.getKey("transfo_zekering_aanwezig")) {
-                            elements.push("zekering");
-                            elements.push("transformator");
-                       }
-                       for (var i = 0; i < this.getKey("aantal"); i++) elements.push("drukknop");
-                       for (var i = 0; i < this.getKey("aantal2"); i++) elements.push("bel");
-                       break;
-                   default:
-                       switch (this.getKey("aantal")) {
-                          case "0":
-                          break;
-                          case "1":
-                            if (this.getKey("aantal") == "1") {
-                               if (this.getKey("lichtkring_poligheid") == _T("single_pole")) {
-                                   elements.push("enkel");
-                               }
-                               else
-                               {
-                                   elements.push("dubbel");
-                               }
-                            }
-                            break;
-                          default:
-                            if (this.getKey("lichtkring_poligheid") == _T("single_pole")) {
-                               elements.push("wissel_enkel");
-                               for (i = 2; i < this.getKey("aantal"); i++) {
-                                   elements.push("kruis_enkel");
-                               }
-                               elements.push("wissel_enkel");
-                            }
-                            else
-                            {
-                               elements.push("wissel_dubbel");
-                               elements.push("wissel_dubbel");
-                            }
-                            break;
-                     }
-               }
-
-               if(this.getKey("lichtkring_poligheid") != "knop & bel") {
-                 if (this.getKey("transfo_zekering_aanwezig")) {
-                      elements.push("zekering");
-                      elements.push("transformator");
-                 }
-                 for (var i = 0; i < this.getKey("aantal2"); i++) elements.push("lamp");
-               }
-
-               var startx = 1;
-               var endx = 0;
-               for (i = 0; i < elements.length; i++)
-               {
-                   switch (elements[i])
-                   {
-                       case "enkel":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + (endx) + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#schakelaar_enkel x=" + (endx+5) + " y=25 />";
-                           startx = endx + 10;
-                           break;
-                       case "dubbel":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#schakelaar_dubbel x=" + (endx+5) + " y=25 />";
-                           startx = endx + 10;
-                           break;
-                       case "wissel_enkel":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#schakelaar_wissel_enkel x=" + (endx+5) + " y=25 />";
-                           startx = endx + 10;
-                           break;
-                       case "wissel_dubbel":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#schakelaar_wissel_dubbel x=" + (endx+5) + " y=25 />";
-                           startx = endx + 10;
-                           break;
-                       case "kruis_enkel":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#schakelaar_kruis_enkel x=" + (endx+5) + " y=25 />";
-                           startx = endx + 10;
-                           break;
-                       case "drukknop":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + (endx) + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#schakelaar_druk x=" + (endx+10) + " y=25 />";
-                           startx = endx + 20;
-                           break;
-                       case "teleruptor":
-                           endx = startx + 20;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#teleruptor x=" + endx + " y=25 />";
-                           startx = endx + 40;
-                           break;
-                       case "dimmer":
-                           endx = startx + 20;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#dimmer x=" + endx + " y=25 />";
-                           startx = endx + 40;
-                           break;
-                       case "relais":
-                           endx = startx + 20;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#relais x=" + endx + " y=25 />";
-                           startx = endx + 40;
-                           break;
-                       case "bewegingsschakelaar":
-                           endx = startx + 20;
-                           outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                           outputstr += '<use xlink:href="#bewegingsschakelaar" x="' + endx + '" y="25" />';
-                           startx = endx + 40;
-                           break;
-                       case "transformator":
-                           endx = startx + 20;
-                           outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                           outputstr += '<use xlink:href="#transformator" x="' + endx + '" y="25" />';
-                           outputstr += '<text x="' + (endx + 15) + '" y="43" style="text-anchor:Middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
-                               this.getKey("voltage") + "</text>";
-                           startx = endx + 28;
-                           break;
-                       case "zekering":
-                           switch (this.getKey("zekering")) {
-                               case "automatisch":
-                               endx = startx + 20;
-                               outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                               outputstr += '<use xlink:href="#zekering_automatisch" x="' + endx + '" y="25" '+
-                               ' transform="rotate(90 '+ endx +',25)"" ' +
-                               '/>';
-                               outputstr += '<text x="' + (endx-5) + '" y="' + '43' +
-                                   ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
-                                   this.getKey("polen") + "P - " +
-                                   this.getKey("amperage") + "A" + "</text>";
-                                 startx = endx + 28;
-                                 break;
-                               case "smelt":
-                                 endx = startx + 20;
-                                 outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                                 outputstr += '<use xlink:href="#zekering_smelt" x="' + endx + '" y="55" ' +
-                                 ' transform="rotate(-90 '+ endx +',25)" ' +
-                                 '/>';
-                                 outputstr += '<text x="' + (endx-5) + '" y="' + '43' +
-                                     ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
-                                     this.getKey("aantal") + "P - " +
-                                     this.getKey("amperage") + "A" + "</text>";
-                                 startx = endx + 28;
-                               break;
-                               case "geen":
-                                   break;
-                           }
-                           break;
-                       case "lamp":
-                           endx = startx + 30;
-                           outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
-                           outputstr += "<use xlink:href=#lamp x=" + endx + " y=25 />";
-                           if ((i < elements.length - 1) || ((i == elements.length - 1) && (hasChild)))
-                           {
-                               outputstr += "<line x1=" + endx + " y1=25 x2=" + (endx + 10) + " y2=25 stroke=black />";
-                           }
-                           startx = endx + 10;
-                           break;
-                       case "bel":
-                           endx = startx + 20;
-                           outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
-                           outputstr += '<use xlink:href="#bel" x="' + endx + '" y="25" />';
-                           startx = endx + 20;
-                           break;
-                   }
-               }
-               //mySVG.xright = 10 + elements.length*35 - 1; //we take off "1" as xleft is already "1"
-               endx = startx - 2;
-               mySVG.xright = endx;
-               break;
-       }
-
-       mySVG.data = outputstr + "\n";
-       return (mySVG);
-   };
-}
-
-function HierarchicalList()
-{
-
-    // properties
-    this.length = 0;
-    this.data = [];
-    this.active = [];
-    this.id = [];
-    this.curid = 1;
-
-    // Public instance method: no prototype patching from config.js.
-    this.outputSVGDefs = function()
-    {
-        return oDiagramSVGAssets.outputSVGDefs();
-    };
-
-    // methods
-    this.getOrdinalById = function (my_id)
-    {
-        for (var i = 0; i < this.length; i++)
-        {
-            if (this.id[i] == my_id)
+            this.checkboxToHTML = function (keyid)
             {
-                return (i);
-            }
-        }
-    }
+                var output = "";
+                output += "<input type=\"checkbox\" id=\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] + "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" + this.keys[keyid][1] + "\",\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] + "\")" + (this.keys[keyid][2] ? " checked" : "") + ">";
+                return (output);
+            };
 
-    this.addItem = function (my_item)
-    {
-        //First set the correct identifyer
-        my_item.id = this.curid;
-        my_item.parent = 0;
-        my_item.indent = 0;
-        //Then push the data into the queue
-        this.data.push(my_item);
-        this.active.push(true);
-        this.id.push(this.curid);
-        //Adjust length of the queue and future identifyer
-        this.curid += 1;
-        this.length += 1;
-    }
-
-    this.insertItemBeforeId = function (my_item, my_id)
-    {
-        for (var i = 0; i < this.length; i++)
-        {
-            if (this.id[i] == my_id)
+            this.selectToHTML = function (keyid, items)
             {
-                //First set the correct identifyer
-                my_item.id = this.curid;
-                my_item.parent = this.data[i].parent;
-                my_item.indent = this.data[i].indent;
-                my_item.Parent_Item = this.data[this.getOrdinalById(my_item.parent)];
-                my_item.collapsed = false;
-                //my_item.updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
-                //Insert the data
-                this.data.splice(i, 0, my_item);
-                this.active.splice(i, 0, true);
-                this.id.splice(i, 0, this.curid);
-                //Adjust length of the queue and future identifyer
-                this.curid += 1;
-                this.length += 1;
-                break;
-            }
-        }
-    }
-
-    this.insertItemAfterId = function (my_item, my_id)
-    {
-        for (var i = 0; i < this.length; i++)
-        {
-            if (this.id[i] == my_id)
-            {
-                //First set the correct identifyer
-                my_item.id = this.curid;
-                my_item.parent = this.data[i].parent;
-                my_item.indent = this.data[i].indent;
-                my_item.Parent_Item = this.data[this.getOrdinalById(my_item.parent)];
-                my_item.collapsed = false;
-                //my_item.updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
-                //Insert the data
-                this.data.splice(i + 1, 0, my_item);
-                this.active.splice(i + 1, 0, true);
-                this.id.splice(i + 1, 0, this.curid);
-                //Adjust length of the queue and future identifyer
-                this.curid += 1;
-                this.length += 1;
-                return (i + 1);
-                break;
-            }
-        }
-    }
-
-    this.insertChildAfterId = function (my_item, my_id)
-    {
-        var ordinal = this.insertItemAfterId(my_item, my_id);
-        this.data[ordinal].parent = my_id;
-        this.data[ordinal].indent = this.data[ordinal - 1].indent + 1;
-        this.data[ordinal].Parent_Item = this.data[this.getOrdinalById(my_id)];
-        //this.data[ordinal].resetKeys();
-        //this.data[ordinal].updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
-    }
-
-    this.deleteById = function (my_id)
-    {
-        for (var i = 0; i < this.length; i++)
-        {
-            if (this.id[i] == my_id)
-            {
-                this.active[i] = false;
-                for (var j = 0; j < this.length; j++)
+                var myId = "HL_edit_" + this.id + "_" + this.keys[keyid][0];
+                var myType = this.keys[keyid][1];
+                var output = "";
+                output += "<select id=\"" + myId + "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" + this.keys[keyid][1] + "\",\"" + myId + "\")>";
+                for (var i = 0; i < items.length; i++)
                 {
-                    if (this.data[j].parent == my_id)
-                        this.deleteById(this.id[j]);
+                    if (this.keys[keyid][2] == items[i])
+                    {
+                        output += "<option value=\"" + items[i] + "\" selected>" + items[i] + "</option>";
+                    }
+                    else
+                    {
+                        output += "<option value=\"" + items[i] + "\">" + items[i] + "</option>";
+                    }
                 }
-            }
+                output += "</select>";
+                return (output);
+            };
         }
-        //alert("Deleted id: " + my_id);
-    }
 
-    this.toHTML = function (myParent)
-    {
-        var output = "";
-        var numberDrawn = 0;
-        for (var i = 0; i < this.length; i++)
+        function ElectroItem(Parent)
         {
-            if (this.active[i] && (this.data[i].parent == myParent))
+            ListItem.apply(this, arguments);  // Preserve existing base-item initialization.
+
+            this.Parent_Item = Parent;
+            this.keys.push(["type", "SELECT", ""]); //0
+            this.keys.push(["geaard", "BOOLEAN", true]); //1
+            this.keys.push(["kinderveiligheid", "BOOLEAN", true]); //2
+            this.keys.push(["accumulatie", "BOOLEAN", false]); //3
+            this.keys.push(["aantal", "SELECT", "1"]); //4
+            this.keys.push(["lichtkring_poligheid", "SELECT", _T("single_pole")]); //5
+            this.keys.push(["ventilator", "BOOLEAN", false]); //6
+            this.keys.push(["zekering", "SELECT", "automatisch"]); //7
+            this.keys.push(["amperage", "STRING", "20"]); //8
+            this.keys.push(["kabel", "STRING", "XVB 3G2,5"]); //9
+            this.keys.push(["naam", "STRING", ""]); //10
+            this.keys.push(["differentieel_waarde", "STRING", "300"]); //11
+            this.keys.push(["kabel_aanwezig", "BOOLEAN", true]); //12
+            this.keys.push(["aantal2", "SELECT", "1"]); //13, a.o. gebruikt voor aantal lampen
+            this.keys.push(["voltage", "STRING", "230V/12V"]); //14, a.o. gebruikt voor aantal lampen
+            this.keys.push(["commentaar", "STRING", ""]); //15, extra tekstveld
+            this.keys.push(["transfo_zekering_aanwezig", "BOOLEAN", false]); //16
+            this.keys.push(["polen", "SELECT", "2"]); //17
+
+            this.updateConsumers = function ()
             {
-                numberDrawn++;
-                if (this.data[i].collapsed)
+                if (this.Parent_Item == null)
                 {
-                    output += "<table class=html_edit_table><tr><td bgcolor="+_T("_COL").tree_collapsed+" onclick=HLCollapseExpand(" + this.data[i].id + ") valign=top>&#x229E;</td><td width=100%>";
+                    this.consumers = ["", "Bord", "Kring"];
                 }
                 else
                 {
-                    output += "<table class=html_edit_table><tr><td bgcolor="+_T("_COL").tree_expanded+" onclick=HLCollapseExpand(" + this.data[i].id + ") valign=top>&#x229F;</td><td width=100%>";
-                }
-                switch (myParent)
-                {
-                    case 0:
+                    switch (this.Parent_Item.getKey("type"))
                     {
-                        output += this.data[i].toHTML() + "<br>";
-                        break;
-                    }
-                    default:
-                    {
-                        output += this.data[i].toHTML(this.data[myParent]) + "<br>";
-                        break;
-                    }
-                }
-                if (!this.data[i].collapsed)
-                {
-                    output += this.toHTML(this.id[i]);
-                }
-                output += "</td></tr></table>";
-            }
-        }
-        if ((myParent == 0) && (numberDrawn < 1))
-        {
-            output += "<button onclick=\"HLAdd()\">"+_T("add_first_object")+"</button>"; //no need for the add button if we have items
-        }
-        return (output);
-    }
-
-    this.toSVG = function (myParent, stack)
-    {
-        //--- First read all underlying elements in an Array called inSVG ---
-        var inSVG = []; //Results from nested calls will be added here
-        var elementCounter = 0;
-        var lastChildOrdinal = 0;
-        for (var i = 0; i < this.length; i++)
-        {
-            if (this.active[i] && (this.data[i].parent == myParent))
-                lastChildOrdinal = i;
-        }
-        for (var i = 0; i < this.length; i++)
-        {
-            if (this.active[i] && (this.data[i].parent == myParent))
-            {
-                switch (this.data[i].getKey("type")) {
-                    case "Bord":
-                        //get image of the entire bord
-                        inSVG[elementCounter] = this.toSVG(this.id[i], "horizontal");
-                        if (inSVG[elementCounter].xright <= 10)
-                            inSVG[elementCounter].xright = 10;
-                        if (inSVG[elementCounter].xleft <= 30)
-                            inSVG[elementCounter].xleft = 30;
-                        //Ensure there is enough space to draw the bottom line
-                        inSVG[elementCounter].ydown = Math.max(inSVG[elementCounter].ydown, 1);
-                        //Draw the bottom line
-                        inSVG[elementCounter].data = inSVG[elementCounter].data +
-                            "<line x1=4 x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xright - 6) +
-                            " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black stroke-width=3 />";
-                        //Add name of the board
-                        if (this.data[i].getKey("naam") !== "") {
-                            inSVG[elementCounter].data += "<text x=" + (0) + " y=" + (inSVG[elementCounter].yup + 13) + " style=text-anchor:left font-family='Arial, Helvetica, sans-serif' font-weight=bold font-size=10 >&lt;" +
-                                this.data[i].getKey("naam") + "&gt;</text>";
+                        case "Bord": {
+                            this.consumers = ["", "Kring"];
+                            break;
+                        }
+                        case "Splitsing": {
+                            this.consumers = ["", "Kring"];
+                            break;
                         }
 
+                        case "Kring": {
+                            this.consumers = ["", _T("board", "cap"), _T("splitting", "cap"), _T("multiple_consumers", "cap"), _T("empty", "cap"), _T("freetext", "cap"), _T("outlet", "cap"), _T("light_circuit", "cap"), _T("boiler", "cap"), _T("freezer", "cap"), _T("dryer", "cap"), _T("electrical_oven", "cap"), _T("fridge", "cap"), _T("cooker", "cap"), _T("microwave", "cap"), _T("washing_machine", "cap"), _T("ventilator", "cap"), _T("heather", "cap")];
+                            break;
+                        }
+                        case "Meerdere verbruikers": {
+                            this.consumers = ["", "Splitsing", "Vrije tekst", "Stopcontact", "Lichtcircuit", "Boiler", "Diepvriezer", "Droogkast", "Elektrische oven", "Koelkast", "Kookfornuis", "Microgolfoven", "Transformator", "Vaatwasmachine", "Ventilator", "Verwarmingstoestel", "Wasmachine"];
+                            break;
+                        }
+                        default:
+                            {
+                                this.consumers = ["Leeg"];
+                                break;
+                            }
+                    }
+                }
+            };
+            this.updateConsumers();
+
+            this.resetKeys = function ()
+            {
+                this.keys[1][2] = true;
+                this.keys[2][2] = true;
+                this.keys[3][2] = false;
+                this.keys[4][2] = "1";
+                this.keys[5][2] = _T("single_pole");
+                this.keys[6][2] = false;
+                this.keys[7][2] = "automatisch";
+                this.keys[8][2] = "20";
+                this.keys[9][2] = "XVB 3G2,5";
+                switch (this.keys[1][1])
+                { //Naam
+                    case "Kring":
+                        this.keys[10][2] = "---";
                         break;
                     case "Splitsing":
-                        //Algoritme werkt gelijkaardig aan een "Bord", eerst maken we een tekening van het geheel
-                        inSVG[elementCounter] = this.toSVG(this.id[i], "horizontal");
-                        if (inSVG[elementCounter].xright <= 0)
-                            inSVG[elementCounter].xright = 15; // ensure we see there is a "splitsing"
-                        if (inSVG[elementCounter].xleft <= 0)
-                            inSVG[elementCounter].xleft = 0;
-                        //Ensure there is enough space to draw the bottom line
-                        inSVG[elementCounter].ydown = Math.max(inSVG[elementCounter].ydown, 0);
-                        //Draw the bottom-line
-                        //If child of "meerdere verbruikers, shift everything by 25 pixels to the right
-                        if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Meerdere verbruikers") {
-                            inSVG[elementCounter].data = inSVG[elementCounter].data +
-                                "<line x1=" + (0) + " x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xrightmin) +
-                                " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black />";
-                            inSVG[elementCounter].xleft = 1;
-                            inSVG[elementCounter].xright += 24;
-                        }
-                        else
-                        {
-                            inSVG[elementCounter].data = inSVG[elementCounter].data +
-                                "<line x1=" + (inSVG[elementCounter].xleft) + " x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xrightmin) +
-                                " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black />";
-                        }
-                        break;
-                    case "Meerdere verbruikers":
-                        //Algoritme werkt gelijkaardig aan een "Bord", eerst maken we een tekening van het geheel
-                        inSVG[elementCounter] = this.toSVG(this.id[i], "horizontal");
-                        //If direct child of a Kring, put a vertical pipe and "nr" at the left
-                        if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Kring") {
-                            var y1, y2;
-                            if (i !== lastChildOrdinal)
-                            {
-                                y1 = 0;
-                                y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
-                            }
-                            else
-                            {
-                                y1 = inSVG[elementCounter].yup;
-                                y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
-                            }
-                            inSVG[elementCounter].data = inSVG[elementCounter].data +
-                                "<line x1=" + inSVG[elementCounter].xleft +
-                                " x2=" + inSVG[elementCounter].xleft +
-                                " y1=" + y1 + " y2=" + y2 + " stroke=black />";
-                            inSVG[elementCounter].data +=
-                                "<text x=" + (inSVG[elementCounter].xleft + 9) + " y=" + (inSVG[elementCounter].yup - 5) +
-                                    " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10>" +
-                                    this.data[i].getKey("naam") + "</text>";
-                        }
-
-                        break;
-                    case "Kring":
-                        //get image of the entire kring
-                        inSVG[elementCounter] = this.toSVG(this.id[i], "vertical");
-                        if (this.data[i].getKey("kabel_aanwezig")) {
-                            //foresee space for the conductor specifications
-                            inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
-                                " x2=" + inSVG[elementCounter].xleft +
-                                " y1=" + inSVG[elementCounter].yup +
-                                " y2=" + (inSVG[elementCounter].yup + 100) + " stroke=black />";
-                            inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
-                                " y=" + (inSVG[elementCounter].yup + 80) +
-                                " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
-                                "," + (inSVG[elementCounter].yup + 80) +
-                                ")'" +
-                                " style=text-anchor:Left font-family='Arial, Helvetica, sans-serif' font-size=10>" +
-                                this.data[i].getKey("kabel") + "</text>";
-                            inSVG[elementCounter].yup += 100;
-                        }
-                        else
-                        {
-                            inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
-                                " x2=" + inSVG[elementCounter].xleft +
-                                " y1=" + inSVG[elementCounter].yup +
-                                " y2=" + (inSVG[elementCounter].yup + 20) + " stroke=black />";
-                            inSVG[elementCounter].yup += 20;
-                        }
-                        //add the fuse below
-                        switch (this.data[i].getKey("zekering")) {
-                            case "automatisch":
-                                inSVG[elementCounter].yup += 30;
-                                inSVG[elementCounter].data +=
-                                    "<use xlink:href=#zekering_automatisch x=" + inSVG[elementCounter].xleft +
-                                        " y=" + inSVG[elementCounter].yup + " />";
-                                inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
-                                    " y=" + (inSVG[elementCounter].yup - 10) +
-                                    " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
-                                    "," + (inSVG[elementCounter].yup - 10) +
-                                    ")'" +
-                                    " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
-                                    this.data[i].getKey("aantal") + "P - " +
-                                    this.data[i].getKey("amperage") + "A" + "</text>";
-                                break;
-                            case "differentieel":
-                                inSVG[elementCounter].yup += 30;
-                                inSVG[elementCounter].data +=
-                                    "<use xlink:href=#zekering_automatisch x=" + inSVG[elementCounter].xleft +
-                                        " y=" + inSVG[elementCounter].yup + " />";
-                                inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 25) +
-                                    " y=" + (inSVG[elementCounter].yup - 10) +
-                                    " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 25) +
-                                    "," + (inSVG[elementCounter].yup - 10) +
-                                    ")'" +
-                                    " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10>" +
-                                    this.data[i].getKey("aantal") + "P - " +
-                                    this.data[i].getKey("amperage") + "A" + "</text>";
-                                inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
-                                    " y=" + (inSVG[elementCounter].yup - 10) +
-                                    " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
-                                    "," + (inSVG[elementCounter].yup - 10) +
-                                    ")'" +
-                                    " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
-                                    "\u0394" + this.data[i].getKey("differentieel_waarde") + "mA" + "</text>";
-                                break;
-                            case "smelt":
-                                inSVG[elementCounter].yup += 30;
-                                inSVG[elementCounter].data +=
-                                    "<use xlink:href=#zekering_smelt x=" + inSVG[elementCounter].xleft +
-                                        " y=" + inSVG[elementCounter].yup + " />";
-                                inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
-                                    " y=" + (inSVG[elementCounter].yup - 10) +
-                                    " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
-                                    "," + (inSVG[elementCounter].yup - 10) +
-                                    ")'" +
-                                    " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
-                                    this.data[i].getKey("aantal") + "P - " +
-                                    this.data[i].getKey("amperage") + "A" + "</text>";
-                                break;
-                            case "geen":
-                                inSVG[elementCounter].yup += 0;
-                                break;
-                        }
-                        inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft - 6) +
-                            " y=" + (inSVG[elementCounter].yup + 3) +
-                            " style=text-anchor:end font-family='Arial, Helvetica, sans-serif' font-weight=bold font-size=12 >" +
-                            this.data[i].getKey("naam") + "</text>";
-                        inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
-                            " x2=" + inSVG[elementCounter].xleft +
-                            " y1=" + inSVG[elementCounter].yup +
-                            " y2=" + (inSVG[elementCounter].yup + 15) + " stroke=black />";
-                        inSVG[elementCounter].yup += 15;
-                        //if there is nothing, still draw an empty one
-                        if (inSVG[elementCounter].yup <= 0)
-                        {
-                            inSVG[elementCounter].xleft = 20;
-                            inSVG[elementCounter].xright = 20;
-                            inSVG[elementCounter].yup = 50;
-                            inSVG[elementCounter].ydown = 0;
-                        }
-                        break;
-                    case "":
-                        inSVG[elementCounter] = new DiagramSVG();
-                        break;
+                        this.keys[10][2] = "";
                     default:
-                        //get image of all lowest level elements
-                        //First get the image itself
-                        if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Meerdere verbruikers") {
-                            inSVG[elementCounter] = this.data[i].toSVG(i !== lastChildOrdinal);
-                        }
-                        else
-                        {
-                            inSVG[elementCounter] = this.data[i].toSVG(false);
-                        }
-                        //If direct child of a Kring, put a vertical pipe and "nr" at the left
-                        if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Kring") {
-                            var y1, y2;
-                            if (i !== lastChildOrdinal)
-                            {
-                                y1 = 0;
-                                y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
-                            }
-                            else
-                            {
-                                y1 = inSVG[elementCounter].yup;
-                                y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
-                            }
-                            inSVG[elementCounter].data = inSVG[elementCounter].data +
-                                "<line x1=" + inSVG[elementCounter].xleft +
-                                " x2=" + inSVG[elementCounter].xleft +
-                                " y1=" + y1 + " y2=" + y2 + " stroke=black />";
-                            inSVG[elementCounter].data +=
-                                "<text x=" + (inSVG[elementCounter].xleft + 9) + " y=" + (inSVG[elementCounter].yup - 5) +
-                                    " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
-                                    this.data[i].getKey("naam") + "</text>";
-                        }
+                        //this.keys[10][2] = "";
+                        break;
+                }
 
-                }
-                elementCounter++;
-                //outSVG.xleft = Math.max(outSVG.xleft,inSVG[elementCounter].xleft);
-            }
-        }
-        //--- If there are no elements, make at least an empty one to avoid problems here below ---
-        if (elementCounter == 0)
-        {
-            inSVG[0] = new DiagramSVG();
-        }
-        //--- Now create the output element ---
-        var outSVG = new DiagramSVG();
-        outSVG.xleft = 0;
-        outSVG.xright = 0;
-        outSVG.yup = 0;
-        outSVG.ydown = 0;
-        outSVG.data = "";
-        var width = 0; //How wide is the structure?
-        var height = 0; //How high is the structure?
-        switch (stack)
-        {
-            case "horizontal":
-                var max_yup = 0; //What is the maximal distance above the horizontal line?
-                var max_ydown = 0; //What is the maximal distance below the horizontal line?
-                //analyse the size of the structure. Build horizontally
-                for (var i = 0; i < elementCounter; i++)
+                this.keys[11][2] = "300"; //Differentieel
+                if (this.Parent_Item == null)
                 {
-                    width = width + inSVG[i].xleft + inSVG[i].xright;
-                    max_yup = Math.max(max_yup, inSVG[i].yup);
-                    max_ydown = Math.max(max_ydown, inSVG[i].ydown);
-                }
-                height = max_yup + max_ydown;
-                //decide on the output structure
-                if (elementCounter > 0)
-                {
-                    outSVG.xleft = inSVG[0].xleft; //Leave space of the first element at the left
-                    outSVG.xright = width - outSVG.xleft;
-                    outSVG.xrightmin = outSVG.xright - inSVG[elementCounter - 1].xright;
+                    this.keys[12][2] = "true";
                 }
                 else
                 {
-                    outSVG.xleft = 0;
-                    outSVG.xright = 0;
-                    outSVG.xrightmin = 0;
+                    switch (this.Parent_Item.getKey("type"))
+                    { //Kabel_aanwezig
+                        case "Splitsing":
+                            this.keys[7][2] = "geen"; //geen zekering per default na splitsing
+                            this.keys[12][2] = false; //geen kabel per default na splitsing
+                            break;
+                        default:
+                            this.keys[7][2] = "automatisch"; //wel een zekering na bord
+                            this.keys[12][2] = true; //wel een kabel na bord
+                            break;
+                    }
                 }
 
-                outSVG.yup = max_yup;
-                outSVG.ydown = max_ydown;
-                //--Create the output data--
-                var xpos = 0;
-                for (var i = 0; i < elementCounter; i++)
+                this.keys[13][2] = "1";
+                this.keys[14][2] = "230V/12V";
+                this.keys[15][2] = "";
+                this.keys[16][2] = false; // Transfo_aanwezig
+                this.keys[17][2] = 2; // polen
+            }
+
+            this.setKey = function (key, setvalue)
+            {
+
+                // override (do not inherit from List_Item)
+                for (var i = 0; i < this.keys.length; i++)
                 {
-                    outSVG.data += "<svg x=" + xpos + " y=" + (max_yup - inSVG[i].yup) + ">";
-                    outSVG.data += inSVG[i].data;
-                    outSVG.data += "</svg>";
-                    xpos += inSVG[i].xleft + inSVG[i].xright;
+                    if (this.keys[i][0] == key)
+                    {
+                        this.keys[i][2] = setvalue;
+                    }
                 }
-                break;
-            case "vertical":
-                var max_xleft = 0; //What is the maximal distance left of the vertical line?
-                var max_xright = 0; //What is the maximal distance right of the vertical line?
-                //analyse the size of the structure. Build vertically
-                for (var i = 0; i < elementCounter; i++)
+
+                //If type of component changed, reset everything
+                if (key == "type")
                 {
-                    height = height + inSVG[i].yup + inSVG[i].ydown;
-                    max_xleft = Math.max(max_xleft, inSVG[i].xleft);
-                    max_xright = Math.max(max_xright, inSVG[i].xright);
+                    this.resetKeys();
                 }
-                width = max_xleft + max_xright;
-                //decide on the output structure
-                outSVG.yup = height; //As a general rule, there is no ydown, but to be confirmed
+                //Some validation on the input. Do properties still make sense after update
+                switch (this.keys[0][2])
+                {
+                    case "Lichtcircuit":
+                        if (this.getKey("lichtkring_poligheid") == _T("double_pole"))
+                        {
+                            if (this.getKey("aantal") > 2)
+                            {
+                                this.setKey("aantal", "2");
+                            }
+                        }
+                        break;
+                    case "Verwarmingstoestel":
+                        if ((this.getKey("accumulatie") == false) && (this.getKey("ventilator") == true))
+                        {
+                            this.setKey("ventilator", false);
+                        }
+                        break;
+                    case "Kring":
+                        if ((this.getKey("aantal") < 2) || (this.getKey("aantal") > 4))
+                        {
+                            this.setKey("aantal", "2");
+                        }
+                        break;
+                }
+            };
+
+            this.toHTML = function (Parent)
+            {
+                var output = "";
+                output += " <button style=\"background-color:" + _T("_COL").insert_item + ";\" onclick=\"HLInsertBefore(" + this.id + ")\">&#9650;</button>";
+                output += " <button style=\"background-color:" + _T("_COL").insert_item + ";\" onclick=\"HLInsertAfter(" + this.id + ")\">&#9660;</button>";
+                output += " <button style=\"background-color:" + _T("_COL").insert_item + ";\" onclick=\"HLInsertChild(" + this.id + ")\">&#9654;</button>";
+                output += " <button style=\"background-color:" + _T("_COL").delete_item + ";\" onclick=\"HLDelete(" + this.id + ")\">&#9851;</button>";
+                output += "&nbsp;";
+                this.updateConsumers();
+                output += this.selectToHTML(0, this.consumers);
+                switch (this.keys[0][2])
+                {
+                    case "Kring":
+                        output += "&nbsp;" + _T("name", "cap") + ": " + this.stringToHTML(10, 5) + "<br>";
+                        output += _T("fuse", "cap") + ": " + this.selectToHTML(7, ["automatisch", "differentieel", "smelt", "geen"]) +
+                            this.selectToHTML(4, ["2", "3", "4"]) +
+                            this.stringToHTML(8, 2) + "A";
+                        if (this.getKey("zekering") == "differentieel")
+                        {
+                            output += ", \u0394 " + this.stringToHTML(11, 3) + "mA";
+                        }
+                        output += "<br>";
+                        output += _T("cable", "cap") + ": " + this.checkboxToHTML(12);
+                        if (this.getKey("kabel_aanwezig"))
+                        {
+                            output += ", " + _T("type", "cap") + ": " + this.stringToHTML(9, 10);
+                        }
+                        break;
+                    case "Bord":
+                        output += "&nbsp;" + _T("name", "cap") + ": " + this.stringToHTML(10, 5) + ", ";
+                        break;
+                    case "Vrije tekst":
+                        output += "&nbsp;" + _T("text", "cap") + ": " + this.stringToHTML(15, 5);
+                        break;
+                    case "Stopcontact":
+                        output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
+                        output += "Earthed: " + this.checkboxToHTML(1);
+                        output += "Child safety: " + this.checkboxToHTML(2);
+                        output += "Quantity: " + this.selectToHTML(4, ["1", "2", "3", "4", "5", "6"]);
+                        break;
+                    case "Boiler":
+                        output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
+                        output += "Storage heater: " + this.checkboxToHTML(3);
+                        break;
+                    case "Verwarmingstoestel":
+                        output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
+                        output += "Storage heater: " + this.checkboxToHTML(3);
+                        if (this.getKey("accumulatie"))
+                        {
+                            output += "Fan: " + this.checkboxToHTML(6);
+                        }
+                        break;
+                    case "Transformator":
+                        output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
+                        output += "<br>";
+                        output += "Voltage: " + this.stringToHTML(14, 8) + ", ";
+                        output += "Fuse: " + this.checkboxToHTML(16)
+                        if (this.getKey("transfo_zekering_aanwezig"))
+                        {
+                            output += this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
+                                this.selectToHTML(17, ["1", "2"]) + "P" +
+                                this.stringToHTML(8, 2) + "A";
+                        }
+                        break;
+                    case "Lichtcircuit":
+                        output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
+                        output += "<br>";
+                        output += "Transformer: " + this.checkboxToHTML(16)
+                        if (this.getKey("transfo_zekering_aanwezig"))
+                        {
+                            output += ", Voltage: " + this.stringToHTML(14, 8)
+
+                            output += ", Fuse: " + this.selectToHTML(7, ["automatisch", "smelt", "geen"]) +
+                                this.selectToHTML(17, ["1", "2"]) + "P" +
+                                this.stringToHTML(8, 2) + "A";
+                        }
+                        output += "<br>";
+                        output += "" + this.selectToHTML(5, [_T("single_pole"), _T("double_pole"), _T("teleruptor"), _T("dimmer"), _T("relay"), _T("motion_switch"), _T("button_bell")]);
+                        var str = "Number of light points:";
+                        switch (this.getKey("lichtkring_poligheid"))
+                        {
+                            case _T("single_pole"):
+                                output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
+                                break;
+                            case _T("double_pole"):
+                                output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2"]);
+                                break;
+                            case _T("teleruptor"):
+                                break;
+                            case _T("dimmer"):
+                                break;
+                            case _T("relay"):
+                                break;
+                            case _T("motion_switch"):
+                                break;
+                            case _T("button_bell"):
+                                str = "Number of bell points:";
+                                output += " Number of switches: " + this.selectToHTML(4, ["0", "1", "2", "3", "4", "5"]);
+                                break;
+                        }
+                        output += " " + str + " " + this.selectToHTML(13, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]);
+                        break;
+                    case "Splitsing":
+                        break;
+                    default:
+                        output += "&nbsp;Nr: " + this.stringToHTML(10, 5) + ", ";
+                        break;
+                }
+                //output += "id: " + this.id + " parent: " + this.parent;
+                return (output);
+            };
+            this.toSVG = function (hasChild)
+            {
+                if (hasChild === void 0)
+                {
+                    hasChild = false;
+                }
+                var mySVG = new DiagramSVG();
+                var outputstr = "";
+                mySVG.data = "";
+                mySVG.xleft = 1; // foresee at least some space for the conductor
+                mySVG.xright = 20;
+                mySVG.yup = 25;
+                mySVG.ydown = 25;
+                switch (this.keys[0][2])
+                {
+                    case "Stopcontact":
+                        var startx = 1;
+                        for (var i = 0; i < this.getKey("aantal"); i++)
+                        {
+                            outputstr += "<use xlink:href=#stopcontact x=" + startx + " y=25></use>";
+                            if (this.getKey("geaard"))
+                                outputstr += "<use xlink:href=#stopcontact_aarding x=" + startx + " y=25></use>";
+                            if (this.getKey("kinderveiligheid"))
+                                outputstr += "<use xlink:href=#stopcontact_kinderveilig x=" + startx + " y=25></use>";
+                            startx += 20;
+                        }
+                        if (hasChild)
+                        {
+                            outputstr += "<line x1=" + startx + " y1=25 x2=" + (startx + 21) + " y2=25 stroke=black />";
+                        }
+
+                        mySVG.xright = 20 + this.getKey("aantal") * 20;
+                        break;
+                    case "Boiler":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black></line>";
+                        switch (this.getKey("accumulatie"))
+                        {
+                            case false:
+                                outputstr += "<use xlink:href=#boiler x=21 y=25></use>";
+                                break;
+                            case true:
+                                outputstr += "<use xlink:href=#boiler_accu x=21 y=25></use>";
+                                break;
+                        }
+                        mySVG.xright = 60;
+                        break;
+                    case "Diepvriezer":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#diepvriezer x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Leeg":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#leeg x=21 y=25></use>";
+                        mySVG.xright = 35;
+                        break;
+                    case "Vrije tekst":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#vrije_tekst x=21 y=25></use>";
+                        outputstr += "<text x=40 y=28 style=text-anchor:Middle font-family='Arial, Helvetica, sans-serif' font-size=10>" + this.getKey("commentaar") + "</text>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Droogkast":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#droogkast x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Elektrische oven":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#oven x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Koelkast":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#koelkast x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Kookfornuis":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#kookfornuis x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Microgolfoven":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#microgolf x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Transformator":
+
+                        var startx = 1;
+                        //outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        if (this.getKey("transfo_zekering_aanwezig"))
+                        {
+                            switch (this.getKey("zekering"))
+                            {
+                                case "automatisch":
+                                    endx = startx + 20;
+                                    outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                    outputstr += '<use xlink:href="#zekering_automatisch" x="' + endx + '" y="25" ' +
+                                        ' transform="rotate(90 ' + endx + ',25)"" ' +
+                                        '/>';
+                                    outputstr += '<text x="' + (endx - 5) + '" y="' + '43' +
+                                        ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
+                                        this.getKey("polen") + "P - " +
+                                        this.getKey("amperage") + "A" + "</text>";
+                                    startx = endx + 28;
+                                    break;
+                                case "smelt":
+                                    endx = startx + 20;
+                                    outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                    outputstr += '<use xlink:href="#zekering_smelt" x="' + endx + '" y="55" ' +
+                                        ' transform="rotate(-90 ' + endx + ',25)" ' +
+                                        '/>';
+                                    outputstr += '<text x="' + (endx - 5) + '" y="' + '43' +
+                                        ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
+                                        this.getKey("aantal") + "P - " +
+                                        this.getKey("amperage") + "A" + "</text>";
+                                    startx = endx + 28;
+                                    break;
+                                case "geen":
+                                    break;
+                            }
+                        }
+                        endx = startx + 20;
+                        outputstr += "<line x1=" + startx + " y1=25 x2=" + endx + " y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#transformator x=" + (startx + 20) + " y=25></use>";
+                        outputstr += "<text x=" + (startx + 35) + " y=43 style=text-anchor:Middle font-family='Arial, Helvetica, sans-serif' font-size=10>" +
+                            this.getKey("voltage") + "</text>";
+                        mySVG.xright = 47 + startx;
+                        break;
+                    case "Vaatwasmachine":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#vaatwasmachine x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Ventilator":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#ventilator x=21 y=25></use>";
+                        mySVG.xright = 50;
+                        break;
+                    case "Verwarmingstoestel":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        mySVG.xright = 70;
+                        switch (this.getKey("accumulatie"))
+                        {
+                            case false:
+                                outputstr += "<use xlink:href=#verwarmingstoestel x=21 y=25></use>";
+                                break;
+                            case true:
+                                switch (this.getKey("ventilator"))
+                                {
+                                    case false:
+                                        outputstr += "<use xlink:href=#verwarmingstoestel_accu x=21 y=25></use>";
+                                        break;
+                                    case true:
+                                        outputstr += "<use xlink:href=#verwarmingstoestel_accu_ventilator x=21 y=25></use>";
+                                        mySVG.xright = 95;
+                                        break;
+                                }
+                                break;
+                        }
+                        break;
+                    case "Wasmachine":
+                        outputstr += "<line x1=1 y1=25 x2=21 y2=25 stroke=black ></line>";
+                        outputstr += "<use xlink:href=#wasmachine x=21 y=25></use>";
+                        mySVG.xright = 60;
+                        break;
+                    case "Lichtcircuit":
+                        var elements = [];
+                        switch (this.getKey("lichtkring_poligheid"))
+                        {
+                            case "teleruptor":
+                                elements.push("teleruptor");
+                                break;
+                            case "dimmer":
+                                elements.push("dimmer");
+                                break;
+                            case "relais":
+                                elements.push("relais");
+                                break;
+                            case "bewegingsschakelaar":
+                                elements.push("bewegingsschakelaar");
+                                break;
+                            case "knop & bel":
+                                if (this.getKey("transfo_zekering_aanwezig"))
+                                {
+                                    elements.push("zekering");
+                                    elements.push("transformator");
+                                }
+                                for (var i = 0; i < this.getKey("aantal"); i++) elements.push("drukknop");
+                                for (var i = 0; i < this.getKey("aantal2"); i++) elements.push("bel");
+                                break;
+                            default:
+                                switch (this.getKey("aantal"))
+                                {
+                                    case "0":
+                                        break;
+                                    case "1":
+                                        if (this.getKey("aantal") == "1")
+                                        {
+                                            if (this.getKey("lichtkring_poligheid") == _T("single_pole"))
+                                                elements.push("enkel");
+                                            else
+                                                elements.push("dubbel");
+                                        }
+                                        break;
+                                    default:
+                                        if (this.getKey("lichtkring_poligheid") == _T("single_pole"))
+                                        {
+                                            elements.push("wissel_enkel");
+                                            for (i = 2; i < this.getKey("aantal"); i++)
+                                            {
+                                                elements.push("kruis_enkel");
+                                            }
+                                            elements.push("wissel_enkel");
+                                        }
+                                        else
+                                        {
+                                            elements.push("wissel_dubbel");
+                                            elements.push("wissel_dubbel");
+                                        }
+                                        break;
+                                }
+                        }
+
+                        if (this.getKey("lichtkring_poligheid") != "knop & bel")
+                        {
+                            if (this.getKey("transfo_zekering_aanwezig"))
+                            {
+                                elements.push("zekering");
+                                elements.push("transformator");
+                            }
+                            for (var i = 0; i < this.getKey("aantal2"); i++) elements.push("lamp");
+                        }
+
+                        var startx = 1;
+                        var endx = 0;
+                        for (i = 0; i < elements.length; i++)
+                        {
+                            switch (elements[i])
+                            {
+                                case "enkel":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + (endx) + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#schakelaar_enkel x=" + (endx + 5) + " y=25 />";
+                                    startx = endx + 10;
+                                    break;
+                                case "dubbel":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#schakelaar_dubbel x=" + (endx + 5) + " y=25 />";
+                                    startx = endx + 10;
+                                    break;
+                                case "wissel_enkel":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#schakelaar_wissel_enkel x=" + (endx + 5) + " y=25 />";
+                                    startx = endx + 10;
+                                    break;
+                                case "wissel_dubbel":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#schakelaar_wissel_dubbel x=" + (endx + 5) + " y=25 />";
+                                    startx = endx + 10;
+                                    break;
+                                case "kruis_enkel":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#schakelaar_kruis_enkel x=" + (endx + 5) + " y=25 />";
+                                    startx = endx + 10;
+                                    break;
+                                case "drukknop":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + (endx) + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#schakelaar_druk x=" + (endx + 10) + " y=25 />";
+                                    startx = endx + 20;
+                                    break;
+                                case "teleruptor":
+                                    endx = startx + 20;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#teleruptor x=" + endx + " y=25 />";
+                                    startx = endx + 40;
+                                    break;
+                                case "dimmer":
+                                    endx = startx + 20;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#dimmer x=" + endx + " y=25 />";
+                                    startx = endx + 40;
+                                    break;
+                                case "relais":
+                                    endx = startx + 20;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#relais x=" + endx + " y=25 />";
+                                    startx = endx + 40;
+                                    break;
+                                case "bewegingsschakelaar":
+                                    endx = startx + 20;
+                                    outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                    outputstr += '<use xlink:href="#bewegingsschakelaar" x="' + endx + '" y="25" />';
+                                    startx = endx + 40;
+                                    break;
+                                case "transformator":
+                                    endx = startx + 20;
+                                    outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                    outputstr += '<use xlink:href="#transformator" x="' + endx + '" y="25" />';
+                                    outputstr += '<text x="' + (endx + 15) + '" y="43" style="text-anchor:Middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
+                                        this.getKey("voltage") + "</text>";
+                                    startx = endx + 28;
+                                    break;
+                                case "zekering":
+                                    switch (this.getKey("zekering"))
+                                    {
+                                        case "automatisch":
+                                            endx = startx + 20;
+                                            outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                            outputstr += '<use xlink:href="#zekering_automatisch" x="' + endx + '" y="25" ' +
+                                                ' transform="rotate(90 ' + endx + ',25)"" ' +
+                                                '/>';
+                                            outputstr += '<text x="' + (endx - 5) + '" y="' + '43' +
+                                                ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
+                                                this.getKey("polen") + "P - " +
+                                                this.getKey("amperage") + "A" + "</text>";
+                                            startx = endx + 28;
+                                            break;
+                                        case "smelt":
+                                            endx = startx + 20;
+                                            outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                            outputstr += '<use xlink:href="#zekering_smelt" x="' + endx + '" y="55" ' +
+                                                ' transform="rotate(-90 ' + endx + ',25)" ' +
+                                                '/>';
+                                            outputstr += '<text x="' + (endx - 5) + '" y="' + '43' +
+                                                ' style="text-anchor:middle" font-family="Arial, Helvetica, sans-serif" font-size="10">' +
+                                                this.getKey("aantal") + "P - " +
+                                                this.getKey("amperage") + "A" + "</text>";
+                                            startx = endx + 28;
+                                            break;
+                                        case "geen":
+                                            break;
+                                    }
+                                    break;
+                                case "lamp":
+                                    endx = startx + 30;
+                                    outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
+                                    outputstr += "<use xlink:href=#lamp x=" + endx + " y=25 />";
+                                    if ((i < elements.length - 1) || ((i == elements.length - 1) && (hasChild)))
+                                    {
+                                        outputstr += "<line x1=" + endx + " y1=25 x2=" + (endx + 10) + " y2=25 stroke=black />";
+                                    }
+                                    startx = endx + 10;
+                                    break;
+                                case "bel":
+                                    endx = startx + 20;
+                                    outputstr += '<path d="M' + startx + ' 25 L' + endx + ' 25" stroke="black" />';
+                                    outputstr += '<use xlink:href="#bel" x="' + endx + '" y="25" />';
+                                    startx = endx + 20;
+                                    break;
+                            }
+                        }
+                        //mySVG.xright = 10 + elements.length*35 - 1; //we take off "1" as xleft is already "1"
+                        endx = startx - 2;
+                        mySVG.xright = endx;
+                        break;
+                }
+
+                mySVG.data = outputstr + "\n";
+                return (mySVG);
+            };
+        }
+
+        function HierarchicalList()
+        {
+
+            // properties
+            this.length = 0;
+            this.data = [];
+            this.active = [];
+            this.id = [];
+            this.curid = 1;
+
+            // Public instance method: no prototype patching from config.js.
+            this.outputSVGDefs = function ()
+            {
+                return oDiagramSVGAssets.outputSVGDefs();
+            };
+
+            // methods
+            this.getOrdinalById = function (my_id)
+            {
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.id[i] == my_id)
+                    {
+                        return (i);
+                    }
+                }
+            }
+
+            this.addItem = function (my_item)
+            {
+                //First set the correct identifyer
+                my_item.id = this.curid;
+                my_item.parent = 0;
+                my_item.indent = 0;
+                //Then push the data into the queue
+                this.data.push(my_item);
+                this.active.push(true);
+                this.id.push(this.curid);
+                //Adjust length of the queue and future identifyer
+                this.curid += 1;
+                this.length += 1;
+            }
+
+            this.insertItemBeforeId = function (my_item, my_id)
+            {
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.id[i] == my_id)
+                    {
+                        //First set the correct identifyer
+                        my_item.id = this.curid;
+                        my_item.parent = this.data[i].parent;
+                        my_item.indent = this.data[i].indent;
+                        my_item.Parent_Item = this.data[this.getOrdinalById(my_item.parent)];
+                        my_item.collapsed = false;
+                        //my_item.updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
+                        //Insert the data
+                        this.data.splice(i, 0, my_item);
+                        this.active.splice(i, 0, true);
+                        this.id.splice(i, 0, this.curid);
+                        //Adjust length of the queue and future identifyer
+                        this.curid += 1;
+                        this.length += 1;
+                        break;
+                    }
+                }
+            }
+
+            this.insertItemAfterId = function (my_item, my_id)
+            {
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.id[i] == my_id)
+                    {
+                        //First set the correct identifyer
+                        my_item.id = this.curid;
+                        my_item.parent = this.data[i].parent;
+                        my_item.indent = this.data[i].indent;
+                        my_item.Parent_Item = this.data[this.getOrdinalById(my_item.parent)];
+                        my_item.collapsed = false;
+                        //my_item.updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
+                        //Insert the data
+                        this.data.splice(i + 1, 0, my_item);
+                        this.active.splice(i + 1, 0, true);
+                        this.id.splice(i + 1, 0, this.curid);
+                        //Adjust length of the queue and future identifyer
+                        this.curid += 1;
+                        this.length += 1;
+                        return (i + 1);
+                        break;
+                    }
+                }
+            }
+
+            this.insertChildAfterId = function (my_item, my_id)
+            {
+                var ordinal = this.insertItemAfterId(my_item, my_id);
+                this.data[ordinal].parent = my_id;
+                this.data[ordinal].indent = this.data[ordinal - 1].indent + 1;
+                this.data[ordinal].Parent_Item = this.data[this.getOrdinalById(my_id)];
+                //this.data[ordinal].resetKeys();
+                //this.data[ordinal].updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
+            }
+
+            this.deleteById = function (my_id)
+            {
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.id[i] == my_id)
+                    {
+                        this.active[i] = false;
+                        for (var j = 0; j < this.length; j++)
+                        {
+                            if (this.data[j].parent == my_id)
+                                this.deleteById(this.id[j]);
+                        }
+                    }
+                }
+                //alert("Deleted id: " + my_id);
+            }
+
+            this.toHTML = function (myParent)
+            {
+                var output = "";
+                var numberDrawn = 0;
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.active[i] && (this.data[i].parent == myParent))
+                    {
+                        numberDrawn++;
+                        if (this.data[i].collapsed)
+                        {
+                            output += "<table class=html_edit_table><tr><td bgcolor=" + _T("_COL").tree_collapsed + " onclick=HLCollapseExpand(" + this.data[i].id + ") valign=top>&#x229E;</td><td width=100%>";
+                        }
+                        else
+                        {
+                            output += "<table class=html_edit_table><tr><td bgcolor=" + _T("_COL").tree_expanded + " onclick=HLCollapseExpand(" + this.data[i].id + ") valign=top>&#x229F;</td><td width=100%>";
+                        }
+                        switch (myParent)
+                        {
+                            case 0:
+                                {
+                                    output += this.data[i].toHTML() + "<br>";
+                                    break;
+                                }
+                            default:
+                                {
+                                    output += this.data[i].toHTML(this.data[myParent]) + "<br>";
+                                    break;
+                                }
+                        }
+                        if (!this.data[i].collapsed)
+                        {
+                            output += this.toHTML(this.id[i]);
+                        }
+                        output += "</td></tr></table>";
+                    }
+                }
+                if ((myParent == 0) && (numberDrawn < 1))
+                {
+                    output += "<button onclick=\"HLAdd()\">" + _T("add_first_object") + "</button>"; //no need for the add button if we have items
+                }
+                return (output);
+            }
+
+            this.toSVG = function (myParent, stack)
+            {
+                //--- First read all underlying elements in an Array called inSVG ---
+                var inSVG = []; //Results from nested calls will be added here
+                var elementCounter = 0;
+                var lastChildOrdinal = 0;
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.active[i] && (this.data[i].parent == myParent))
+                        lastChildOrdinal = i;
+                }
+                for (var i = 0; i < this.length; i++)
+                {
+                    if (this.active[i] && (this.data[i].parent == myParent))
+                    {
+                        switch (this.data[i].getKey("type"))
+                        {
+                            case "Bord":
+                                //get image of the entire bord
+                                inSVG[elementCounter] = this.toSVG(this.id[i], "horizontal");
+                                if (inSVG[elementCounter].xright <= 10)
+                                    inSVG[elementCounter].xright = 10;
+                                if (inSVG[elementCounter].xleft <= 30)
+                                    inSVG[elementCounter].xleft = 30;
+                                //Ensure there is enough space to draw the bottom line
+                                inSVG[elementCounter].ydown = Math.max(inSVG[elementCounter].ydown, 1);
+                                //Draw the bottom line
+                                inSVG[elementCounter].data = inSVG[elementCounter].data +
+                                    "<line x1=4 x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xright - 6) +
+                                    " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black stroke-width=3 />";
+                                //Add name of the board
+                                if (this.data[i].getKey("naam") !== "")
+                                {
+                                    inSVG[elementCounter].data += "<text x=" + (0) + " y=" + (inSVG[elementCounter].yup + 13) + " style=text-anchor:left font-family='Arial, Helvetica, sans-serif' font-weight=bold font-size=10 >&lt;" +
+                                        this.data[i].getKey("naam") + "&gt;</text>";
+                                }
+
+                                break;
+                            case "Splitsing":
+                                //Algoritme werkt gelijkaardig aan een "Bord", eerst maken we een tekening van het geheel
+                                inSVG[elementCounter] = this.toSVG(this.id[i], "horizontal");
+                                if (inSVG[elementCounter].xright <= 0)
+                                    inSVG[elementCounter].xright = 15; // ensure we see there is a "splitsing"
+                                if (inSVG[elementCounter].xleft <= 0)
+                                    inSVG[elementCounter].xleft = 0;
+                                //Ensure there is enough space to draw the bottom line
+                                inSVG[elementCounter].ydown = Math.max(inSVG[elementCounter].ydown, 0);
+                                //Draw the bottom-line
+                                //If child of "meerdere verbruikers, shift everything by 25 pixels to the right
+                                if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Meerdere verbruikers")
+                                {
+                                    inSVG[elementCounter].data = inSVG[elementCounter].data +
+                                        "<line x1=" + (0) + " x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xrightmin) +
+                                        " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black />";
+                                    inSVG[elementCounter].xleft = 1;
+                                    inSVG[elementCounter].xright += 24;
+                                }
+                                else
+                                {
+                                    inSVG[elementCounter].data = inSVG[elementCounter].data +
+                                        "<line x1=" + (inSVG[elementCounter].xleft) + " x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xrightmin) +
+                                        " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black />";
+                                }
+                                break;
+                            case "Meerdere verbruikers":
+                                //Algoritme werkt gelijkaardig aan een "Bord", eerst maken we een tekening van het geheel
+                                inSVG[elementCounter] = this.toSVG(this.id[i], "horizontal");
+                                //If direct child of a Kring, put a vertical pipe and "nr" at the left
+                                if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Kring")
+                                {
+                                    var y1, y2;
+                                    if (i !== lastChildOrdinal)
+                                    {
+                                        y1 = 0;
+                                        y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
+                                    }
+                                    else
+                                    {
+                                        y1 = inSVG[elementCounter].yup;
+                                        y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
+                                    }
+                                    inSVG[elementCounter].data = inSVG[elementCounter].data +
+                                        "<line x1=" + inSVG[elementCounter].xleft +
+                                        " x2=" + inSVG[elementCounter].xleft +
+                                        " y1=" + y1 + " y2=" + y2 + " stroke=black />";
+                                    inSVG[elementCounter].data +=
+                                        "<text x=" + (inSVG[elementCounter].xleft + 9) + " y=" + (inSVG[elementCounter].yup - 5) +
+                                        " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10>" +
+                                        this.data[i].getKey("naam") + "</text>";
+                                }
+
+                                break;
+                            case "Kring":
+                                //get image of the entire kring
+                                inSVG[elementCounter] = this.toSVG(this.id[i], "vertical");
+                                if (this.data[i].getKey("kabel_aanwezig"))
+                                {
+                                    //foresee space for the conductor specifications
+                                    inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
+                                        " x2=" + inSVG[elementCounter].xleft +
+                                        " y1=" + inSVG[elementCounter].yup +
+                                        " y2=" + (inSVG[elementCounter].yup + 100) + " stroke=black />";
+                                    inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
+                                        " y=" + (inSVG[elementCounter].yup + 80) +
+                                        " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
+                                        "," + (inSVG[elementCounter].yup + 80) +
+                                        ")'" +
+                                        " style=text-anchor:Left font-family='Arial, Helvetica, sans-serif' font-size=10>" +
+                                        this.data[i].getKey("kabel") + "</text>";
+                                    inSVG[elementCounter].yup += 100;
+                                }
+                                else
+                                {
+                                    inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
+                                        " x2=" + inSVG[elementCounter].xleft +
+                                        " y1=" + inSVG[elementCounter].yup +
+                                        " y2=" + (inSVG[elementCounter].yup + 20) + " stroke=black />";
+                                    inSVG[elementCounter].yup += 20;
+                                }
+                                //add the fuse below
+                                switch (this.data[i].getKey("zekering"))
+                                {
+                                    case "automatisch":
+                                        inSVG[elementCounter].yup += 30;
+                                        inSVG[elementCounter].data +=
+                                            "<use xlink:href=#zekering_automatisch x=" + inSVG[elementCounter].xleft +
+                                            " y=" + inSVG[elementCounter].yup + " />";
+                                        inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
+                                            " y=" + (inSVG[elementCounter].yup - 10) +
+                                            " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
+                                            "," + (inSVG[elementCounter].yup - 10) +
+                                            ")'" +
+                                            " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
+                                            this.data[i].getKey("aantal") + "P - " +
+                                            this.data[i].getKey("amperage") + "A" + "</text>";
+                                        break;
+                                    case "differentieel":
+                                        inSVG[elementCounter].yup += 30;
+                                        inSVG[elementCounter].data +=
+                                            "<use xlink:href=#zekering_automatisch x=" + inSVG[elementCounter].xleft +
+                                            " y=" + inSVG[elementCounter].yup + " />";
+                                        inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 25) +
+                                            " y=" + (inSVG[elementCounter].yup - 10) +
+                                            " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 25) +
+                                            "," + (inSVG[elementCounter].yup - 10) +
+                                            ")'" +
+                                            " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10>" +
+                                            this.data[i].getKey("aantal") + "P - " +
+                                            this.data[i].getKey("amperage") + "A" + "</text>";
+                                        inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
+                                            " y=" + (inSVG[elementCounter].yup - 10) +
+                                            " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
+                                            "," + (inSVG[elementCounter].yup - 10) +
+                                            ")'" +
+                                            " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
+                                            "\u0394" + this.data[i].getKey("differentieel_waarde") + "mA" + "</text>";
+                                        break;
+                                    case "smelt":
+                                        inSVG[elementCounter].yup += 30;
+                                        inSVG[elementCounter].data +=
+                                            "<use xlink:href=#zekering_smelt x=" + inSVG[elementCounter].xleft +
+                                            " y=" + inSVG[elementCounter].yup + " />";
+                                        inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft + 15) +
+                                            " y=" + (inSVG[elementCounter].yup - 10) +
+                                            " transform='rotate(-90 " + (inSVG[elementCounter].xleft + 15) +
+                                            "," + (inSVG[elementCounter].yup - 10) +
+                                            ")'" +
+                                            " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
+                                            this.data[i].getKey("aantal") + "P - " +
+                                            this.data[i].getKey("amperage") + "A" + "</text>";
+                                        break;
+                                    case "geen":
+                                        inSVG[elementCounter].yup += 0;
+                                        break;
+                                }
+                                inSVG[elementCounter].data += "<text x=" + (inSVG[elementCounter].xleft - 6) +
+                                    " y=" + (inSVG[elementCounter].yup + 3) +
+                                    " style=text-anchor:end font-family='Arial, Helvetica, sans-serif' font-weight=bold font-size=12 >" +
+                                    this.data[i].getKey("naam") + "</text>";
+                                inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
+                                    " x2=" + inSVG[elementCounter].xleft +
+                                    " y1=" + inSVG[elementCounter].yup +
+                                    " y2=" + (inSVG[elementCounter].yup + 15) + " stroke=black />";
+                                inSVG[elementCounter].yup += 15;
+                                //if there is nothing, still draw an empty one
+                                if (inSVG[elementCounter].yup <= 0)
+                                {
+                                    inSVG[elementCounter].xleft = 20;
+                                    inSVG[elementCounter].xright = 20;
+                                    inSVG[elementCounter].yup = 50;
+                                    inSVG[elementCounter].ydown = 0;
+                                }
+                                break;
+                            case "":
+                                inSVG[elementCounter] = new DiagramSVG();
+                                break;
+                            default:
+                                //get image of all lowest level elements
+                                //First get the image itself
+                                if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Meerdere verbruikers")
+                                {
+                                    inSVG[elementCounter] = this.data[i].toSVG(i !== lastChildOrdinal);
+                                }
+                                else
+                                {
+                                    inSVG[elementCounter] = this.data[i].toSVG(false);
+                                }
+                                //If direct child of a Kring, put a vertical pipe and "nr" at the left
+                                if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Kring")
+                                {
+                                    var y1, y2;
+                                    if (i !== lastChildOrdinal)
+                                    {
+                                        y1 = 0;
+                                        y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
+                                    }
+                                    else
+                                    {
+                                        y1 = inSVG[elementCounter].yup;
+                                        y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
+                                    }
+                                    inSVG[elementCounter].data = inSVG[elementCounter].data +
+                                        "<line x1=" + inSVG[elementCounter].xleft +
+                                        " x2=" + inSVG[elementCounter].xleft +
+                                        " y1=" + y1 + " y2=" + y2 + " stroke=black />";
+                                    inSVG[elementCounter].data +=
+                                        "<text x=" + (inSVG[elementCounter].xleft + 9) + " y=" + (inSVG[elementCounter].yup - 5) +
+                                        " style=text-anchor:middle font-family='Arial, Helvetica, sans-serif' font-size=10 >" +
+                                        this.data[i].getKey("naam") + "</text>";
+                                }
+
+                        }
+                        elementCounter++;
+                        //outSVG.xleft = Math.max(outSVG.xleft,inSVG[elementCounter].xleft);
+                    }
+                }
+                //--- If there are no elements, make at least an empty one to avoid problems here below ---
+                if (elementCounter == 0)
+                {
+                    inSVG[0] = new DiagramSVG();
+                }
+                //--- Now create the output element ---
+                var outSVG = new DiagramSVG();
+                outSVG.xleft = 0;
+                outSVG.xright = 0;
+                outSVG.yup = 0;
                 outSVG.ydown = 0;
-                outSVG.xleft = Math.max(max_xleft, 25); // foresee at least 25 at the left
-                outSVG.xright = Math.max(max_xright, 25); // foresee at least 15 at the right
-                //create the output data
-                var ypos = 0;
-                for (var i = elementCounter - 1; i >= 0; i--)
+                outSVG.data = "";
+                var width = 0; //How wide is the structure?
+                var height = 0; //How high is the structure?
+                switch (stack)
                 {
-                    outSVG.data += "<svg x=" + (outSVG.xleft - inSVG[i].xleft) + " y=" + ypos + ">";
-                    outSVG.data += inSVG[i].data;
-                    outSVG.data += "</svg>";
-                    ypos += inSVG[i].yup + inSVG[i].ydown;
+                    case "horizontal":
+                        var max_yup = 0; //What is the maximal distance above the horizontal line?
+                        var max_ydown = 0; //What is the maximal distance below the horizontal line?
+                        //analyse the size of the structure. Build horizontally
+                        for (var i = 0; i < elementCounter; i++)
+                        {
+                            width = width + inSVG[i].xleft + inSVG[i].xright;
+                            max_yup = Math.max(max_yup, inSVG[i].yup);
+                            max_ydown = Math.max(max_ydown, inSVG[i].ydown);
+                        }
+                        height = max_yup + max_ydown;
+                        //decide on the output structure
+                        if (elementCounter > 0)
+                        {
+                            outSVG.xleft = inSVG[0].xleft; //Leave space of the first element at the left
+                            outSVG.xright = width - outSVG.xleft;
+                            outSVG.xrightmin = outSVG.xright - inSVG[elementCounter - 1].xright;
+                        }
+                        else
+                        {
+                            outSVG.xleft = 0;
+                            outSVG.xright = 0;
+                            outSVG.xrightmin = 0;
+                        }
+
+                        outSVG.yup = max_yup;
+                        outSVG.ydown = max_ydown;
+                        //--Create the output data--
+                        var xpos = 0;
+                        for (var i = 0; i < elementCounter; i++)
+                        {
+                            outSVG.data += "<svg x=" + xpos + " y=" + (max_yup - inSVG[i].yup) + ">";
+                            outSVG.data += inSVG[i].data;
+                            outSVG.data += "</svg>";
+                            xpos += inSVG[i].xleft + inSVG[i].xright;
+                        }
+                        break;
+                    case "vertical":
+                        var max_xleft = 0; //What is the maximal distance left of the vertical line?
+                        var max_xright = 0; //What is the maximal distance right of the vertical line?
+                        //analyse the size of the structure. Build vertically
+                        for (var i = 0; i < elementCounter; i++)
+                        {
+                            height = height + inSVG[i].yup + inSVG[i].ydown;
+                            max_xleft = Math.max(max_xleft, inSVG[i].xleft);
+                            max_xright = Math.max(max_xright, inSVG[i].xright);
+                        }
+                        width = max_xleft + max_xright;
+                        //decide on the output structure
+                        outSVG.yup = height; //As a general rule, there is no ydown, but to be confirmed
+                        outSVG.ydown = 0;
+                        outSVG.xleft = Math.max(max_xleft, 25); // foresee at least 25 at the left
+                        outSVG.xright = Math.max(max_xright, 25); // foresee at least 15 at the right
+                        //create the output data
+                        var ypos = 0;
+                        for (var i = elementCounter - 1; i >= 0; i--)
+                        {
+                            outSVG.data += "<svg x=" + (outSVG.xleft - inSVG[i].xleft) + " y=" + ypos + ">";
+                            outSVG.data += inSVG[i].data;
+                            outSVG.data += "</svg>";
+                            ypos += inSVG[i].yup + inSVG[i].ydown;
+                        }
+                        break;
                 }
-                break;
-        }
-        //alert("stack = " + stack + " width = " + width + "height = " + height  + " yup = " + outSVG.yup + "ydown = " + outSVG.ydown);
-        outSVG.data += "\n";
-        if (myParent == 0)
-        {
-            var header = "<svg xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink transform=scale(1,1) width=" + width + " height=" + height + ">";
-            header += this.outputSVGDefs();
-            var footer = "</svg>";
-            outSVG.data = quotesvg(header + outSVG.data + footer);
-        }
+                //alert("stack = " + stack + " width = " + width + "height = " + height  + " yup = " + outSVG.yup + "ydown = " + outSVG.ydown);
+                outSVG.data += "\n";
+                if (myParent == 0)
+                {
+                    var header = "<svg xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink transform=scale(1,1) width=" + width + " height=" + height + ">";
+                    header += this.outputSVGDefs();
+                    var footer = "</svg>";
+                    outSVG.data = quotesvg(header + outSVG.data + footer);
+                }
 
-        return (outSVG);
-    }
-
-    return this;
-}
-
-// Legacy constructor aliases used by existing call sites and integrations.
-var List_Item = ListItem;
-var Electro_Item = ElectroItem;
-var Hierarchical_List = HierarchicalList;
-
-
-
-function buildNewStructure(structure)
-{
-    //Paremeterisation of the electro board
-    var aantalDrogeKringen = CONF_aantal_droge_kringen;
-    var aantalNatteKringen = CONF_aantal_natte_kringen;
-
-    //Eerst het hoofddifferentieel maken
-    var itemCounter = 0;
-    structure.addItem(new ElectroItem());
-    structure.data[0].setKey("type", "Kring");
-    structure.data[0].setKey("naam", "");
-    structure.data[0].setKey("zekering", "differentieel");
-    structure.data[0].setKey("aantal", CONF_aantal_fazen_droog);
-    structure.data[0].setKey("amperage", CONF_hoofdzekering);
-    structure.data[0].setKey("kabel", "");
-    structure.data[0].setKey("kabel_aanwezig", false);
-    structure.data[0].setKey("differentieel_waarde", CONF_differentieel_droog);
-    itemCounter++;
-    //Dan het hoofdbord maken
-    structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
-    structure.data[itemCounter].setKey("type", "Bord");
-    itemCounter++;
-    var droogBordCounter = itemCounter;
-    //Nat bord voorzien
-    structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
-    structure.data[itemCounter].setKey("type", "Kring");
-    structure.data[itemCounter].setKey("naam", "");
-    structure.data[itemCounter].setKey("zekering", "differentieel");
-    structure.data[itemCounter].setKey("aantal", CONF_aantal_fazen_nat);
-    structure.data[itemCounter].setKey("amperage", CONF_hoofdzekering);
-    structure.data[itemCounter].setKey("kabel", "");
-    structure.data[itemCounter].setKey("kabel_aanwezig", false);
-    structure.data[itemCounter].setKey("differentieel_waarde", CONF_differentieel_nat);
-    itemCounter++;
-    structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
-    structure.data[itemCounter].setKey("type", "Bord");
-    itemCounter++;
-    //3 kringen toevoegen aan nat bord
-    var natBordCounter = itemCounter;
-    for (var i = 0; i < aantalNatteKringen; i++)
-    {
-        structure.insertChildAfterId(new ElectroItem(structure.data[natBordCounter - 1]), natBordCounter);
-        structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
-        structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen + aantalNatteKringen - i);
-        itemCounter++;
-    }
-
-    //7 droge kringen toevoegen aan droog bord
-    for (var i = 0; i < aantalDrogeKringen; i++)
-    {
-        structure.insertChildAfterId(new ElectroItem(structure.data[structure.getOrdinalById(droogBordCounter)]), droogBordCounter);
-        structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
-        structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen - i);
-        itemCounter++;
-    }
-}
-
-
-var HLCollapseExpand;
-var HLDelete;
-var HLAdd;
-var HLInsertBefore;
-var HLInsertAfter;
-var HLInsertChild;
-var HLUpdate;
-var HLRedrawTree;
-var HLRedrawTreeHTML;
-var HLRedrawTreeSVG;
-
-var SVGelement;
-var restart_all;
-var popUp;
-var import_to_structure
-var importjson;
-var importclicked;
-var download;
-var exportjson;
-var load_example;
-var read_settings;
-var reset_all;
-var quotesvg;
-
-var CONFIGPAGE_LEFT = "";
-var CONFIGPAGE_RIGHT = "";
-var EXAMPLE0 = "";
-var EXAMPLE1 = "";
-
-var CONF_aantal_droge_kringen = 7;
-var CONF_aantal_natte_kringen = 3;
-var CONF_aantal_fazen_droog = 2;
-var CONF_aantal_fazen_nat = 2;
-var CONF_hoofdzekering = 65;
-var CONF_differentieel_droog = 300;
-var CONF_differentieel_nat = 30;
-var structure; // Retained for legacy consumers.
-var oHierarchicalList; // Primary active diagram instance.
-
-var nobj = ListItem;
-var _level = 0;
-var _spc = "&nbsp; &nbsp; &nbsp;";
-var level_prop = new Array();
-
-iterate(nobj);
-
-function iterate(obj)
-{
-  var _prefix = "";
-  for(var _n=0;_n<_level;_n++)
-    _prefix += _spc
-
-    for (var property in obj)
-    {
-        if (obj.hasOwnProperty(property))
-        {
-            if (typeof(obj[property]) != "object")
-                disp(_level,_prefix,property,obj[property]);
-            else
-            {
-              disp(_level,_prefix,property,obj[property]);
-              _level++;
-              if(_level<7)
-                  iterate(obj[property]);
-              _level--;
-            }
-        }
-    }
-  }
-
-  function disp(_level,_prefix,property,obj_property)
-  {
-    level_prop[_level] = property
-    var s = _level + ":" + property;
-
-    switch(s)
-    {
-      case "2:ID":
-        document.write("<b>"+ _level +" "+ _prefix + property + " :  " + obj_property + "</b><br>");
-      break;
-      default:
-        document.write( _level +" "+ _prefix + property + " :  " + obj_property + "<br>");
-    }
-  }
-</script>
-<script type="text/javascript" src="../res/OneWireEnglish.js"></script>
-<script type="text/javascript" src="../res/OneWireConfig.js"></script>
-<script>
-// The browser-only regression runner loads suites only when explicitly requested.
-// postMessage works between local file:// documents, even with opaque file origins.
-if (new URLSearchParams(window.location.search).get("oneWireTests") === "1")
-{
-    window.addEventListener("load", function()
-    {
-        var aSuites = [
-            { id: "phase2", source: "../test/OneWirePhase2SmokeTest.js", results: "oneWirePhase2Results" },
-            { id: "phase4", source: "../test/OneWirePhase4RegressionTest.js", results: "oneWirePhase4Results" }
-        ];
-        var sRunId = new URLSearchParams(window.location.search).get("runId");
-
-        function report(sSuite, aResults, sError)
-        {
-            window.parent.postMessage({
-                type: "homeeditor-onewire-tests",
-                runId: sRunId,
-                suite: sSuite,
-                results: aResults,
-                error: sError
-            }, "*");
-        }
-
-        function loadSuite(iIndex)
-        {
-            if (iIndex >= aSuites.length)
-            {
-                return;
+                return (outSVG);
             }
 
-            var oSuite = aSuites[iIndex];
-            var oScript = document.createElement("script");
-            oScript.src = oSuite.source;
-            oScript.onload = function()
-            {
-                var aResults = window[oSuite.results];
-                report(oSuite.id, aResults || null, Array.isArray(aResults) ? null : "Suite did not return results");
-                loadSuite(iIndex + 1);
-            };
-            oScript.onerror = function()
-            {
-                report(oSuite.id, null, "Unable to load " + oSuite.source);
-                loadSuite(iIndex + 1);
-            };
-            document.body.appendChild(oScript);
+            return this;
         }
 
-        // Let the existing onload initialization finish before testing.
-        window.setTimeout(function()
+        // Legacy constructor aliases used by existing call sites and integrations.
+        var List_Item = ListItem;
+        var Electro_Item = ElectroItem;
+        var Hierarchical_List = HierarchicalList;
+
+
+
+        function buildNewStructure(structure)
         {
-            loadSuite(0);
-        }, 0);
-    });
-}
-</script>
+            //Paremeterisation of the electro board
+            var aantalDrogeKringen = CONF_aantal_droge_kringen;
+            var aantalNatteKringen = CONF_aantal_natte_kringen;
+
+            //Eerst het hoofddifferentieel maken
+            var itemCounter = 0;
+            structure.addItem(new ElectroItem());
+            structure.data[0].setKey("type", "Kring");
+            structure.data[0].setKey("naam", "");
+            structure.data[0].setKey("zekering", "differentieel");
+            structure.data[0].setKey("aantal", CONF_aantal_fazen_droog);
+            structure.data[0].setKey("amperage", CONF_hoofdzekering);
+            structure.data[0].setKey("kabel", "");
+            structure.data[0].setKey("kabel_aanwezig", false);
+            structure.data[0].setKey("differentieel_waarde", CONF_differentieel_droog);
+            itemCounter++;
+            //Dan het hoofdbord maken
+            structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
+            structure.data[itemCounter].setKey("type", "Bord");
+            itemCounter++;
+            var droogBordCounter = itemCounter;
+            //Nat bord voorzien
+            structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
+            structure.data[itemCounter].setKey("type", "Kring");
+            structure.data[itemCounter].setKey("naam", "");
+            structure.data[itemCounter].setKey("zekering", "differentieel");
+            structure.data[itemCounter].setKey("aantal", CONF_aantal_fazen_nat);
+            structure.data[itemCounter].setKey("amperage", CONF_hoofdzekering);
+            structure.data[itemCounter].setKey("kabel", "");
+            structure.data[itemCounter].setKey("kabel_aanwezig", false);
+            structure.data[itemCounter].setKey("differentieel_waarde", CONF_differentieel_nat);
+            itemCounter++;
+            structure.insertChildAfterId(new ElectroItem(structure.data[itemCounter - 1]), itemCounter);
+            structure.data[itemCounter].setKey("type", "Bord");
+            itemCounter++;
+            //3 kringen toevoegen aan nat bord
+            var natBordCounter = itemCounter;
+            for (var i = 0; i < aantalNatteKringen; i++)
+            {
+                structure.insertChildAfterId(new ElectroItem(structure.data[natBordCounter - 1]), natBordCounter);
+                structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
+                structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen + aantalNatteKringen - i);
+                itemCounter++;
+            }
+
+            //7 droge kringen toevoegen aan droog bord
+            for (var i = 0; i < aantalDrogeKringen; i++)
+            {
+                structure.insertChildAfterId(new ElectroItem(structure.data[structure.getOrdinalById(droogBordCounter)]), droogBordCounter);
+                structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
+                structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen - i);
+                itemCounter++;
+            }
+        }
+
+
+        var HLCollapseExpand;
+        var HLDelete;
+        var HLAdd;
+        var HLInsertBefore;
+        var HLInsertAfter;
+        var HLInsertChild;
+        var HLUpdate;
+        var HLRedrawTree;
+        var HLRedrawTreeHTML;
+        var HLRedrawTreeSVG;
+
+        var SVGelement;
+        var restart_all;
+        var popUp;
+        var import_to_structure
+        var importjson;
+        var importclicked;
+        var download;
+        var exportjson;
+        var load_example;
+        var read_settings;
+        var reset_all;
+        var quotesvg;
+
+        var CONFIGPAGE_LEFT = "";
+        var CONFIGPAGE_RIGHT = "";
+        var EXAMPLE0 = "";
+        var EXAMPLE1 = "";
+
+        var CONF_aantal_droge_kringen = 7;
+        var CONF_aantal_natte_kringen = 3;
+        var CONF_aantal_fazen_droog = 2;
+        var CONF_aantal_fazen_nat = 2;
+        var CONF_hoofdzekering = 65;
+        var CONF_differentieel_droog = 300;
+        var CONF_differentieel_nat = 30;
+        var structure; // Retained for legacy consumers.
+        var oHierarchicalList; // Primary active diagram instance.
+
+        var nobj = ListItem;
+        var _level = 0;
+        var _spc = "&nbsp; &nbsp; &nbsp;";
+        var level_prop = new Array();
+
+        iterate(nobj);
+
+        function iterate(obj)
+        {
+            var _prefix = "";
+            for (var _n = 0; _n < _level; _n++)
+                _prefix += _spc
+
+            for (var property in obj)
+            {
+                if (obj.hasOwnProperty(property))
+                {
+                    if (typeof (obj[property]) != "object")
+                        disp(_level, _prefix, property, obj[property]);
+                    else
+                    {
+                        disp(_level, _prefix, property, obj[property]);
+                        _level++;
+                        if (_level < 7)
+                            iterate(obj[property]);
+                        _level--;
+                    }
+                }
+            }
+        }
+
+        function disp(_level, _prefix, property, obj_property)
+        {
+            level_prop[_level] = property
+            var s = _level + ":" + property;
+
+            switch (s)
+            {
+                case "2:ID":
+                    document.write("<b>" + _level + " " + _prefix + property + " :  " + obj_property + "</b><br>");
+                    break;
+                default:
+                    document.write(_level + " " + _prefix + property + " :  " + obj_property + "<br>");
+            }
+        }
+    </script>
+    <script type="text/javascript" src="../res/OneWireEnglish.js"></script>
+    <script type="text/javascript" src="../res/OneWireConfig.js"></script>
+    <script>
+        // The browser-only regression runner loads suites only when explicitly requested.
+        // postMessage works between local file:// documents, even with opaque file origins.
+        if (new URLSearchParams(window.location.search).get("oneWireTests") === "1")
+        {
+            window.addEventListener("load", function ()
+            {
+                var aSuites = [
+                    { id: "phase2", source: "../test/OneWirePhase2SmokeTest.js", results: "oneWirePhase2Results" },
+                    { id: "phase4", source: "../test/OneWirePhase4RegressionTest.js", results: "oneWirePhase4Results" }
+                ];
+                var sRunId = new URLSearchParams(window.location.search).get("runId");
+
+                function report(sSuite, aResults, sError)
+                {
+                    window.parent.postMessage({
+                        type: "homeeditor-onewire-tests",
+                        runId: sRunId,
+                        suite: sSuite,
+                        results: aResults,
+                        error: sError
+                    }, "*");
+                }
+
+                function loadSuite(iIndex)
+                {
+                    if (iIndex >= aSuites.length)
+                    {
+                        return;
+                    }
+
+                    var oSuite = aSuites[iIndex];
+                    var oScript = document.createElement("script");
+                    oScript.src = oSuite.source;
+                    oScript.onload = function ()
+                    {
+                        var aResults = window[oSuite.results];
+                        report(oSuite.id, aResults || null, Array.isArray(aResults) ? null : "Suite did not return results");
+                        loadSuite(iIndex + 1);
+                    };
+                    oScript.onerror = function ()
+                    {
+                        report(oSuite.id, null, "Unable to load " + oSuite.source);
+                        loadSuite(iIndex + 1);
+                    };
+                    document.body.appendChild(oScript);
+                }
+
+                // Let the existing onload initialization finish before testing.
+                window.setTimeout(function ()
+                {
+                    loadSuite(0);
+                }, 0);
+            });
+        }
+    </script>
 </body>
+
 </html>

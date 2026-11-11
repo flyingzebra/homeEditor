@@ -850,6 +850,19 @@ function Editor()
         }
     };
 
+    // Reverse the side faced by an in-wall door/window without changing its hinges.
+    this.reverseDoorWindowDirection = function(objTarget)
+    {
+        if (!objTarget || objTarget.class !== 'doorWindow' ||
+            typeof objTarget.update !== 'function') return false;
+        var angle = Number(objTarget.angle);
+        if (!Number.isFinite(angle)) return false;
+        objTarget.angle = (angle + 180) % 360;
+        objTarget.angleSign = objTarget.angleSign === 1 ? 0 : 1;
+        objTarget.update();
+        return true;
+    };
+
     this.roomMaker = function(Rooms)
     {
         globalArea = 0;
@@ -1196,6 +1209,16 @@ function Editor()
         ],
         remarks: ['Command-line users should prefer object add for the supported free-standing symbols.'],
         examples: ['object add gtl 250 300']
+    };
+    this.reverseDoorWindowDirection.help = {
+        type: 'canvas', syntax: 'oEditor.reverseDoorWindowDirection(objTarget)',
+        summary: 'Turn a door/window to face the opposite side of its wall (180 degrees).',
+        parameters: [
+            { name: 'objTarget', description: 'An existing doorWindow object in OBJDATA.' }
+        ],
+        remarks: ['Updates angle and angleSign together, preserving hinge and position.',
+            'Call save() to record the edit in project history.'],
+        examples: ['print(oEditor.reverseDoorWindowDirection.help)']
     };
     this.architect.help = {
         type: 'canvas', syntax: 'oEditor.architect(WALLS)',

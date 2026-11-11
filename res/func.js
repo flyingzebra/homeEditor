@@ -361,7 +361,7 @@ function load(index = HISTORY.index, boot = false)
         let obj = new editor.obj2D(OO.family, OO.class, OO.type, {
             x: OO.x,
             y: OO.y
-        }, OO.angle, OO.angleSign, OO.size, OO.hinge = 'normal', OO.thick, OO.value);
+        }, OO.angle, OO.angleSign, OO.size, OO.hinge || 'normal', OO.thick, OO.value);
         obj.limit = OO.limit;
         OBJDATA.push(obj);
         document.getElementById('boxcarpentry').append(OBJDATA[OBJDATA.length - 1].graph);
@@ -686,6 +686,7 @@ document.getElementById('doorWindowWidth').addEventListener("input", function()
 
 document.getElementById("objToolsHinge").addEventListener("click", function()
 {
+    if (typeof binder === 'undefined' || !binder.obj) return;
     let objTarget = binder.obj;
     let hingeStatus = objTarget.hinge; // normal - reverse
     if (hingeStatus === 'normal')
@@ -694,6 +695,20 @@ document.getElementById("objToolsHinge").addEventListener("click", function()
     }
     else objTarget.hinge = 'normal';
     objTarget.update();
+    save();
+});
+
+document.getElementById('objToolsDirection').addEventListener('click', function()
+{
+    if (typeof binder === 'undefined' || !binder.obj) return;
+    var objTarget = binder.obj;
+    if (!editor.reverseDoorWindowDirection(objTarget)) return;
+
+    // Keep the temporary selection graphic in sync with the edited object.
+    binder.angle = objTarget.angle;
+    binder.angleSign = objTarget.angleSign;
+    binder.update();
+    save();
 });
 
 window.addEventListener("load", function()

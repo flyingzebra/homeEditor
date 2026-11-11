@@ -24,22 +24,30 @@ function HomeEditorUI()
 
     this.closeBoundingBox = function()
     {
+        // Changing mode can dispose the temporary binder. Remove it first.
+        if (typeof binder !== 'undefined')
+        {
+            removeBinderGraphic(binder);
+            delete binder;
+        }
         setModeButton('select_mode');
         document.getElementById('boxinfo').innerHTML = ('Selection mode');
         setElementVisible(document.getElementById('objBoundingBox'), false);
         setElementVisible(document.getElementById('panel'), true);
-        binder.graph.remove();
-        delete binder;
     };
 
     this.closeObjectTools = function()
     {
+        // The selected door/window is stored in OBJDATA, not in the binder.
+        if (typeof binder !== 'undefined')
+        {
+            removeBinderGraphic(binder);
+            delete binder;
+        }
         setModeButton('select_mode');
         document.getElementById('boxinfo').innerHTML = ('Selection mode');
         setElementVisible(document.getElementById('objTools'), false);
         setElementVisible(document.getElementById('panel'), true);
-        binder.graph.remove();
-        delete binder;
         rib();
     };
 

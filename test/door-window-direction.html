@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Door/window direction regression</title></head>
+<body>
+<h1>Door/window direction and close-button regression</h1>
+<ol id="results"></ol><p id="summary"></p>
+<div id="panel"></div><div id="objTools"></div>
+<div id="objBoundingBox"></div><div id="boxinfo"></div>
+<button id="closeDoor" data-editor-action="closeObjectTools">Close door/window</button>
+<button id="closeObject" data-editor-action="closeBoundingBox">Close object</button>
+<script>
+    var results = [];
+    var mode = 'edit_door_mode', saves = 0, ribs = 0, removed = 0;
+    function check(name, value)
+    {
+        results.push(Boolean(value));
+        var el = document.createElement('li');
+        el.textContent = (value ? 'PASS: ' : 'FAIL: ') + name;
+        el.style.color = value ? 'green' : 'red';
+        document.getElementById('results').appendChild(el);
+    }
+    function removeBinderGraphic(target)
+    {
+        if (target && target.graph) target.graph.remove();
+    }
+    function setModeButton(next)
+    {
+        // Simulate the existing mode helper that also deletes binder.
+        mode = next;
+        if (typeof binder !== 'undefined')
+        {
+            removeBinderGraphic(binder);
+            delete window.binder;
+        }
+        saves++;
+    }
+    function setElementVisible(el, visible) { el.hidden = !visible; }
+    function rib() { ribs++; }
+</script>
+<script src="../res/qSVG.js"></script>
+<script src="../res/editor.js"></script>
+<script src="../res/ui_actions.js"></script>
+<script>
+    var changeCount = 0;
+    var door = { class: 'doorWindow', angle: 45, angleSign: 0,
+        hinge: 'reverse', update: function() { changeCount++; } };
+    check('Direction method has CLI help',
+        !!oEditor.reverseDoorWindowDirection.help &&
+        oEditor.reverseDoorWindowDirection.help.syntax.includes('oEditor.'));
+    check('Reverse direction succeeds', oEditor.reverseDoorWindowDirection(door));
+    check('Direction is rotated 180 degrees', door.angle === 225 && door.angleSign === 1);
+    check('Hinges remain unchanged', door.hinge === 'reverse');
+    check('Second reversal restores original direction',
+        oEditor.reverseDoorWindowDirection(door) && door.angle === 45 && door.angleSign === 0);
+    check('Both reversals redraw object', changeCount === 2);
+    check('Invalid target is ignored', !oEditor.reverseDoorWindowDirection(null));
+    check('Unrelated object is ignored',
+        !oEditor.reverseDoorWindowDirection({class:'energy',update:function(){}}));
+    check('Invalid angle is rejected', !oEditor.reverseDoorWindowDirection({class:'doorWindow',angle:NaN,update:function(){}}));
+    window.binder = {graph: {remove: function() { removed++; }}};
+    document.getElementById('closeDoor').click();
+    check('Close door tools removes binder before mode switch', removed === 1);
+    check('Close door tools returns to selection', mode === 'select_mode' && ribs === 1);
+    check('Close door tools tolerates no binder', (function() {
+        try { document.getElementById('closeDoor').click(); return true; }
+        catch(error) { return false; }
+    })());
+    mode = 'edit_boundingBox_mode';
+    window.binder = {graph: {remove: function() { removed++; }}};
+    document.getElementById('closeObject').click();
+    check('Close object tools removes binder', removed === 2 && mode === 'select_mode');
+    check('Close object tools tolerates no binder', (function() {
+        try { document.getElementById('closeObject').click(); return true; }
+        catch(error) { return false; }
+    })());
+    document.getElementById('summary').textContent =
+        results.filter(Boolean).length + '/' + results.length + ' passed';
+</script>
+</body>
+</html>

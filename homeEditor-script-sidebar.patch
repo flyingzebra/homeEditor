@@ -1,0 +1,231 @@
+diff --git a/docs/HOMEEDITOR_SCRIPT.md b/docs/HOMEEDITOR_SCRIPT.md
+index 7ea91ed..b1c7999 100644
+--- a/docs/HOMEEDITOR_SCRIPT.md
++++ b/docs/HOMEEDITOR_SCRIPT.md
+@@ -1,5 +1,5 @@
+ # HomeEditor Script terminal
+ 
+-The **SCRIPT** button in HomeEditor's main toolbar opens a floating console powered by the existing `res/COM_TERM.js` and `res/COM_TERM.css`. No network, Node.js or additional libraries are needed. It works directly from `file://`.
++The **SCRIPT** button is the first item in HomeEditor's main toolbar. It switches the left navigation pane to a full-height CLI terminal, with a **◀ TOOLS** button to return to the normal menu. The terminal is powered by the existing `res/COM_TERM.js` and `res/COM_TERM.css`. No network, Node.js or additional libraries are needed. It works directly from `file://`.
+ 
+ The terminal executes a **restricted set of commands** using HomeEditor's live `WALLS`, `OBJDATA` and `ROOM` containers, `editor` constructors, SVG rendering (`editor.architect`) and the existing `save()` history. It intentionally does **not** use `eval()` or allow arbitrary JavaScript. Index arguments are **zero-based**. Canvas positions are SVG-coordinate units; wall widths/heights use centimetres. The current `meter` SVG scale is available through `status`.
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@ -350,3 +350,6 @@
+     <div id="panel" class="leftBox">
+         <ul class="list-unstyled">
++            <li><button class="btn btn-light shadow fully" id="script_mode" data-editor-action="toggleScript"
++                    title="Open the HomeEditor Script terminal" aria-label="Open Script terminal">SCRIPT</button></li>
++            <br/>
+             <li><button class="btn disabled halfy " id="undo" title="Undo last change" aria-label="Undo last change"><i class="fa fa-chevron-circle-left"
+@@ -381,5 +384,3 @@
+             <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
+                     title="Add text">TEXT</button></li>
+-            <li><button class="btn btn-light shadow fully" id="script_mode" data-editor-action="toggleScript"
+-                    title="Open the HomeEditor Script terminal" aria-label="Open Script terminal">SCRIPT</button></li>
+             <br/>
+@@ -618,9 +619,10 @@
+-    <section id="homeScriptPanel" class="home-script-panel" role="dialog"
+-             aria-label="HomeEditor Script terminal" aria-modal="false" hidden>
++    <section id="homeScriptPanel" class="home-script-panel" role="region"
++             aria-label="HomeEditor Script terminal" hidden>
+         <div class="home-script-header">
+-            <span>HomeEditor Script</span>
+-            <button type="button" data-editor-action="toggleScript" title="Close Script terminal">Close</button>
++            <span>HomeEditor CLI</span>
++            <button type="button" data-editor-action="toggleScript"
++                    title="Return to drawing tools" aria-label="Return to drawing tools">◀ TOOLS</button>
+         </div>
+         <div id="homeScriptTerminal" aria-label="Script command line"></div>
+     </section>
+ </body>
+diff --git a/res/HomeEditorScript.css b/res/HomeEditorScript.css
+index 7a2c980..4efb8a6 100644
+--- a/res/HomeEditorScript.css
++++ b/res/HomeEditorScript.css
+@@ -1,27 +1,29 @@
+-/* HomeEditor's floating script terminal: no global styles or external assets. */
+-.home-script-panel[hidden] { display:none !important; }
++/* Script and drawing tools are two views of HomeEditor's LEFT sidebar. */
++.home-script-panel[hidden] { display: none !important; }
+ .home-script-panel {
+     position: fixed;
+-    top: 10vh;
+-    right: 14px;
+-    width: min(560px, calc(100vw - 28px));
+-    height: min(530px, 75vh);
+-    min-height: 210px;
++    box-sizing: border-box;
++    top: 0;
++    left: 0;
++    right: auto;
++    width: clamp(300px, 32vw, 440px);
++    height: 100vh;
++    height: 100dvh;
+     display: flex;
+     flex-direction: column;
+     background: #222;
+     color: #eee;
+-    z-index: 250;
+-    border: 1px solid #667789;
+-    border-radius: 7px;
+-    box-shadow: 0 9px 30px #0006;
++    z-index: 40;
++    border-right: 1px solid #667789;
++    box-shadow: 2px 0 8px #0003;
+     overflow: hidden;
+ }
+ .home-script-header {
+     display: flex;
++    flex: 0 0 auto;
+     align-items: center;
+     justify-content: space-between;
+     gap: 12px;
+-    padding: 5px 10px;
++    padding: 9px 12px;
+     background: #344250;
+     color: #fff;
+@@ -33,18 +35,26 @@
+     color: #fff;
+     border-radius: 4px;
+-    padding: 2px 9px;
++    padding: 5px 10px;
+     cursor: pointer;
+ }
++.home-script-header button:hover,
++.home-script-header button:focus-visible { background: #5b7488; }
+ #homeScriptTerminal {
+     flex: 1 1 auto;
+     min-height: 0;
+-    padding: 9px;
++    min-width: 0;
++    padding: 8px;
+     font-size: 13px;
+ }
+-#homeScriptTerminal .container { overflow-x: auto; }
++#homeScriptTerminal .container {
++    height: 100%;
++    overflow-y: auto;
++    overflow-x: auto;
++}
+ #homeScriptTerminal .serial-stream { white-space: pre-wrap; overflow-wrap: anywhere; }
+ #homeScriptTerminal .command { position: sticky; bottom: 0; background: #222; }
+-@media(max-width: 620px) {
+-    .home-script-panel { top: 8vh; right: 6px; width: calc(100vw - 12px); height: 65vh; }
++#homeScriptTerminal .command .input { min-width: 0; }
++@media (max-width: 620px) {
++    .home-script-panel { width: min(86vw, 360px); }
+ }
+-@media print { .home-script-panel { display:none !important; } }
++@media print { .home-script-panel { display: none !important; } }
+diff --git a/res/HomeEditorScript.js b/res/HomeEditorScript.js
+index a0d7e16..805a3c0 100644
+--- a/res/HomeEditorScript.js
++++ b/res/HomeEditorScript.js
+@@ -507,7 +507,22 @@ function HomeEditorScript()
+     this.toggle = function()
+     {
+-        var popup = document.getElementById('homeScriptPanel');
+-        if (!popup) return false;
+-        if (!popup.hidden) { popup.hidden = true; return false; }
++        var sidebar = document.getElementById('homeScriptPanel');
++        var toolsPanel = document.getElementById('panel');
++        var scriptButton = document.getElementById('script_mode');
++        if (!sidebar || !toolsPanel) return false;
++
++        // Switch between the same left-hand sidebar's UI and CLI views.
++        if (!sidebar.hidden)
++        {
++            sidebar.hidden = true;
++            toolsPanel.style.display = toolsPanel.dataset.scriptPreviousDisplay || '';
++            delete toolsPanel.dataset.scriptPreviousDisplay;
++            if (scriptButton)
++            {
++                scriptButton.setAttribute('aria-expanded', 'false');
++                scriptButton.focus();
++            }
++            return false;
++        }
+         if (!oTERMINAL)
+         {
+@@ -529,5 +544,8 @@ function HomeEditorScript()
+             oTERMINAL.write(self.help() + '\n');
+         }
+-        popup.hidden = false;
++        toolsPanel.dataset.scriptPreviousDisplay = toolsPanel.style.display;
++        toolsPanel.style.display = 'none';
++        sidebar.hidden = false;
++        if (scriptButton) scriptButton.setAttribute('aria-expanded', 'true');
+         oTERMINAL._o.DOM.input.focus();
+         return true;
+diff --git a/test/script-sidebar.html b/test/script-sidebar.html
+new file mode 100644
+index 0000000..ffd1d51
+--- /dev/null
++++ b/test/script-sidebar.html
+@@ -0,0 +1,64 @@
++<!doctype html>
++<html lang="en">
++<head>
++<meta charset="utf-8">
++<title>HomeEditor Script sidebar regression</title>
++<link rel="stylesheet" href="../res/COM_TERM.css">
++<link rel="stylesheet" href="../res/HomeEditorScript.css">
++<style>
++body { margin: 0; font: 14px system-ui; }
++#panel { position: fixed; inset: 0 auto 0 0; width: 200px; background: #f7f7f7; }
++main { margin-left: 460px; }
++.pass { color: green; } .fail { color: darkred; }
++</style>
++</head>
++<body>
++<aside id="panel"><ul><li><button id="script_mode" data-editor-action="toggleScript">SCRIPT</button></li><li>Drawing tools</li></ul></aside>
++<main><h1>Script sidebar regression</h1><ol id="results"></ol><p id="summary"></p></main>
++<section id="homeScriptPanel" class="home-script-panel" role="region" aria-label="HomeEditor Script terminal" hidden>
++  <div class="home-script-header"><span>HomeEditor CLI</span>
++    <button data-editor-action="toggleScript" aria-label="Return to drawing tools">◀ TOOLS</button>
++  </div>
++  <div id="homeScriptTerminal" aria-label="Script command line"></div>
++</section>
++<script src="../res/COM_TERM.js"></script>
++<script src="../res/HomeEditorScript.js"></script>
++<script src="../res/ui_actions.js"></script>
++<script>
++var results = [];
++function check(name, actual)
++{
++    var li = document.createElement('li');
++    li.textContent = (actual ? 'PASS ' : 'FAIL ') + name;
++    li.className = actual ? 'pass' : 'fail';
++    document.getElementById('results').appendChild(li);
++    results.push(!!actual);
++}
++var tools = document.getElementById('panel');
++var cli = document.getElementById('homeScriptPanel');
++var trigger = document.getElementById('script_mode');
++check('SCRIPT first in toolbar', tools.querySelector('button') === trigger);
++check('CLI initially hidden', cli.hidden);
++trigger.click();
++check('SCRIPT opens sidebar', !cli.hidden && getComputedStyle(tools).display === 'none');
++var bounds = cli.getBoundingClientRect();
++check('Sidebar fills left edge and viewport height', Math.abs(bounds.left) < 1 &&
++    Math.abs(bounds.top) < 1 && Math.abs(bounds.height - innerHeight) < 3);
++check('Canvas remains visible', bounds.width < innerWidth);
++check('Input is focused', cli.contains(document.activeElement) &&
++    document.activeElement.matches('input'));
++check('Expanded state communicated', trigger.getAttribute('aria-expanded') === 'true');
++var input = cli.querySelector('.command .input');
++input.value = 'help';
++input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
++check('Existing CLI works', cli.querySelector('output').textContent.includes('wall add'));
++cli.querySelector('.home-script-header button').click();
++check('TOOLS restores drawing menu', cli.hidden && getComputedStyle(tools).display !== 'none');
++check('Focus returns to SCRIPT', document.activeElement === trigger);
++trigger.click();
++check('Terminal persists across switching', !cli.hidden &&
++    cli.querySelectorAll('.container').length === 1 && cli.querySelector('output').textContent.includes('wall add'));
++document.getElementById('summary').textContent = results.filter(Boolean).length + '/' + results.length + ' checks passed';
++</script>
++</body>
++</html>

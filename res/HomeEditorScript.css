@@ -1,28 +1,30 @@
-/* HomeEditor's floating script terminal: no global styles or external assets. */
-.home-script-panel[hidden] { display:none !important; }
+/* Script and drawing tools are two views of HomeEditor's LEFT sidebar. */
+.home-script-panel[hidden] { display: none !important; }
 .home-script-panel {
     position: fixed;
-    top: 10vh;
-    right: 14px;
-    width: min(560px, calc(100vw - 28px));
-    height: min(530px, 75vh);
-    min-height: 210px;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    right: auto;
+    width: clamp(300px, 32vw, 440px);
+    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     background: #222;
     color: #eee;
-    z-index: 250;
-    border: 1px solid #667789;
-    border-radius: 7px;
-    box-shadow: 0 9px 30px #0006;
+    z-index: 40;
+    border-right: 1px solid #667789;
+    box-shadow: 2px 0 8px #0003;
     overflow: hidden;
 }
 .home-script-header {
     display: flex;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 5px 10px;
+    padding: 9px 12px;
     background: #344250;
     color: #fff;
     font: 600 14px system-ui, sans-serif;
@@ -32,19 +34,27 @@
     background: #42596b;
     color: #fff;
     border-radius: 4px;
-    padding: 2px 9px;
+    padding: 5px 10px;
     cursor: pointer;
 }
+.home-script-header button:hover,
+.home-script-header button:focus-visible { background: #5b7488; }
 #homeScriptTerminal {
     flex: 1 1 auto;
     min-height: 0;
-    padding: 9px;
+    min-width: 0;
+    padding: 8px;
     font-size: 13px;
 }
-#homeScriptTerminal .container { overflow-x: auto; }
+#homeScriptTerminal .container {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+}
 #homeScriptTerminal .serial-stream { white-space: pre-wrap; overflow-wrap: anywhere; }
 #homeScriptTerminal .command { position: sticky; bottom: 0; background: #222; }
-@media(max-width: 620px) {
-    .home-script-panel { top: 8vh; right: 6px; width: calc(100vw - 12px); height: 65vh; }
+#homeScriptTerminal .command .input { min-width: 0; }
+@media (max-width: 620px) {
+    .home-script-panel { width: min(86vw, 360px); }
 }
-@media print { .home-script-panel { display:none !important; } }
+@media print { .home-script-panel { display: none !important; } }

@@ -506,9 +506,24 @@ function HomeEditorScript()
 
     this.toggle = function()
     {
-        var popup = document.getElementById('homeScriptPanel');
-        if (!popup) return false;
-        if (!popup.hidden) { popup.hidden = true; return false; }
+        var sidebar = document.getElementById('homeScriptPanel');
+        var toolsPanel = document.getElementById('panel');
+        var scriptButton = document.getElementById('script_mode');
+        if (!sidebar || !toolsPanel) return false;
+
+        // Switch between the same left-hand sidebar's UI and CLI views.
+        if (!sidebar.hidden)
+        {
+            sidebar.hidden = true;
+            toolsPanel.style.display = toolsPanel.dataset.scriptPreviousDisplay || '';
+            delete toolsPanel.dataset.scriptPreviousDisplay;
+            if (scriptButton)
+            {
+                scriptButton.setAttribute('aria-expanded', 'false');
+                scriptButton.focus();
+            }
+            return false;
+        }
         if (!oTERMINAL)
         {
             oTERMINAL = new TERMINAL({ container: 'homeScriptTerminal', welcome: '',
@@ -528,7 +543,10 @@ function HomeEditorScript()
             });
             oTERMINAL.write(self.help() + '\n');
         }
-        popup.hidden = false;
+        toolsPanel.dataset.scriptPreviousDisplay = toolsPanel.style.display;
+        toolsPanel.style.display = 'none';
+        sidebar.hidden = false;
+        if (scriptButton) scriptButton.setAttribute('aria-expanded', 'true');
         oTERMINAL._o.DOM.input.focus();
         return true;
     };

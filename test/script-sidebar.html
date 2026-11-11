@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HomeEditor Script sidebar regression</title>
+<link rel="stylesheet" href="../res/COM_TERM.css">
+<link rel="stylesheet" href="../res/HomeEditorScript.css">
+<style>
+body { margin: 0; font: 14px system-ui; }
+#panel { position: fixed; inset: 0 auto 0 0; width: 200px; background: #f7f7f7; }
+main { margin-left: 460px; }
+.pass { color: green; } .fail { color: darkred; }
+</style>
+</head>
+<body>
+<aside id="panel"><ul><li><button id="script_mode" data-editor-action="toggleScript">SCRIPT</button></li><li>Drawing tools</li></ul></aside>
+<main><h1>Script sidebar regression</h1><ol id="results"></ol><p id="summary"></p></main>
+<section id="homeScriptPanel" class="home-script-panel" role="region" aria-label="HomeEditor Script terminal" hidden>
+  <div class="home-script-header"><span>HomeEditor CLI</span>
+    <button data-editor-action="toggleScript" aria-label="Return to drawing tools">◀ TOOLS</button>
+  </div>
+  <div id="homeScriptTerminal" aria-label="Script command line"></div>
+</section>
+<script src="../res/COM_TERM.js"></script>
+<script src="../res/HomeEditorScript.js"></script>
+<script src="../res/ui_actions.js"></script>
+<script>
+var results = [];
+function check(name, actual)
+{
+    var li = document.createElement('li');
+    li.textContent = (actual ? 'PASS ' : 'FAIL ') + name;
+    li.className = actual ? 'pass' : 'fail';
+    document.getElementById('results').appendChild(li);
+    results.push(!!actual);
+}
+var tools = document.getElementById('panel');
+var cli = document.getElementById('homeScriptPanel');
+var trigger = document.getElementById('script_mode');
+check('SCRIPT first in toolbar', tools.querySelector('button') === trigger);
+check('CLI initially hidden', cli.hidden);
+trigger.click();
+check('SCRIPT opens sidebar', !cli.hidden && getComputedStyle(tools).display === 'none');
+var bounds = cli.getBoundingClientRect();
+check('Sidebar fills left edge and viewport height', Math.abs(bounds.left) < 1 &&
+    Math.abs(bounds.top) < 1 && Math.abs(bounds.height - innerHeight) < 3);
+check('Canvas remains visible', bounds.width < innerWidth);
+check('Input is focused', cli.contains(document.activeElement) &&
+    document.activeElement.matches('input'));
+check('Expanded state communicated', trigger.getAttribute('aria-expanded') === 'true');
+var input = cli.querySelector('.command .input');
+input.value = 'help';
+input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+check('Existing CLI works', cli.querySelector('output').textContent.includes('wall add'));
+cli.querySelector('.home-script-header button').click();
+check('TOOLS restores drawing menu', cli.hidden && getComputedStyle(tools).display !== 'none');
+check('Focus returns to SCRIPT', document.activeElement === trigger);
+trigger.click();
+check('Terminal persists across switching', !cli.hidden &&
+    cli.querySelectorAll('.container').length === 1 && cli.querySelector('output').textContent.includes('wall add'));
+document.getElementById('summary').textContent = results.filter(Boolean).length + '/' + results.length + ' checks passed';
+</script>
+</body>
+</html>

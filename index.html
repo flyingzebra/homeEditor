@@ -349,6 +349,9 @@
 
     <div id="panel" class="leftBox">
         <ul class="list-unstyled">
+            <li><button class="btn btn-light shadow fully" id="script_mode" data-editor-action="toggleScript"
+                    title="Open the HomeEditor Script terminal" aria-label="Open Script terminal">SCRIPT</button></li>
+            <br/>
             <li><button class="btn disabled halfy " id="undo" title="Undo last change" aria-label="Undo last change"><i class="fa fa-chevron-circle-left"
                         aria-hidden="true"></i>
                     <button class="btn disabled halfy pull-right" id="redo" title="Redo last change" aria-label="Redo last change"><i class="fa fa-chevron-circle-right"
@@ -380,8 +383,6 @@
                     title="Add a measurement">MEASURE</button></li>
             <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
                     title="Add text">TEXT</button></li>
-            <li><button class="btn btn-light shadow fully" id="script_mode" data-editor-action="toggleScript"
-                    title="Open the HomeEditor Script terminal" aria-label="Open Script terminal">SCRIPT</button></li>
             <br/>
             <div id="door_list" class="list-unstyled sub"
                 style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;width:150px">
@@ -615,11 +616,12 @@
 
         <div style="clear:both"></div>
     </div>
-    <section id="homeScriptPanel" class="home-script-panel" role="dialog"
-             aria-label="HomeEditor Script terminal" aria-modal="false" hidden>
+    <section id="homeScriptPanel" class="home-script-panel" role="region"
+             aria-label="HomeEditor Script terminal" hidden>
         <div class="home-script-header">
-            <span>HomeEditor Script</span>
-            <button type="button" data-editor-action="toggleScript" title="Close Script terminal">Close</button>
+            <span>HomeEditor CLI</span>
+            <button type="button" data-editor-action="toggleScript"
+                    title="Return to drawing tools" aria-label="Return to drawing tools">◀ TOOLS</button>
         </div>
         <div id="homeScriptTerminal" aria-label="Script command line"></div>
     </section>

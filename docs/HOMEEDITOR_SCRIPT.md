@@ -1,6 +1,6 @@
 # HomeEditor Script terminal
 
-The **SCRIPT** button in HomeEditor's main toolbar opens a floating console powered by the existing `res/COM_TERM.js` and `res/COM_TERM.css`. No network, Node.js or additional libraries are needed. It works directly from `file://`.
+The **SCRIPT** button is the first item in HomeEditor's main toolbar. It switches the left navigation pane to a full-height CLI terminal, with a **◀ TOOLS** button to return to the normal menu. The terminal is powered by the existing `res/COM_TERM.js` and `res/COM_TERM.css`. No network, Node.js or additional libraries are needed. It works directly from `file://`.
 
 The terminal executes a **restricted set of commands** using HomeEditor's live `WALLS`, `OBJDATA` and `ROOM` containers, `editor` constructors, SVG rendering (`editor.architect`) and the existing `save()` history. It intentionally does **not** use `eval()` or allow arbitrary JavaScript. Index arguments are **zero-based**. Canvas positions are SVG-coordinate units; wall widths/heights use centimetres. The current `meter` SVG scale is available through `status`.
 

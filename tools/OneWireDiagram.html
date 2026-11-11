@@ -8,9 +8,9 @@
 
 
   <script>
-var SPECIAL_THANKS_TO = 'Ivan Goethals (https://ivan.goethals-jacobs.be)'
-var CONF_version="1.1.0"
-var CONF_builddate="20191010-151000"
+var SPECIAL_THANKS_TO = 'Ivan Goethals (https://ivan.goethals-jacobs.be)';
+var CONF_version="1.1.0";
+var CONF_builddate="20191010-151000";
 //var CONF_basedir = "https://eendraadschema.goethals-jacobs.be/examples/"
 
 function init_gui(_o)
@@ -101,7 +101,8 @@ function Translation()
   this.get = function(idx,mod)
   {
     if(idx.length>0 && typeof(this.t[idx])=="undefined") { alert(idx); return "<font color=red>"+idx+"</font>" }
-  switch(mod) {
+  switch(mod)
+  {
     case "cap": return this.t[idx].charAt(0).toUpperCase()+this.t[idx].substring(1,this.t[idx].length);
     case "inv":
     {
@@ -120,13 +121,14 @@ function Translation()
 var oTranslation = new Translation();
 function _T(idx,mod) { return oTranslation.get(idx,mod); }
 function _D(idx) { if(typeof(_T(idx)=="string")) document.write(_T(idx)) }
-function _TITLE() {
+function _TITLE()
+{
 var css = "#topmenu{width:100%;background-color:#f0f0f0}ul#minitabs{list-style:none;margin:0;padding:3px 0 0 0;border-left:1px solid #ccc;border-right:1px solid #ccc;border-top:1px solid #ccc;border-bottom:1px solid #ccc;font-weight:700;text-align:left;white-space:nowrap}ul#minitabs li{display:inline;margin:0 3px}ul#minitabs a{text-decoration:none;color:#999}ul#minitabs a#current{border-color:#f60;color:#06f}ul#minitabs a:hover{border-color:#f60;color:#666}"
 /*
 +"#texturespace {background: #f7f7f7 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEEAYAAAD5YUI9AAAACXBIWXMAAA4mAAAOJgGi7yX8AAAARElEQVQIHWPYyrxTed9eg3UQWkQHQgtaQGg5JgaohAdUoglC8z+A0mFQBYIpUIEXULoOQgvIQRXIBUElMqASShBaWQwApNg4NPAzQGwAAAAASUVORK5CYII=') repeat center top;font: 62.5%/1 sans-serif;height: 100%;width: 100%;}#carvetext {color: transparent;background: #f7f7f7;font: 62.5%/1 sans-serif;stroke: 2px rgba(0,0,0,0.2);background-color: rgba(140,140,140,1);-webkit-background-clip: text;text-shadow: rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;transition: text-shadow .1s ease-out, background-color .2s ease-out;}#carvetext:hover {color: transparent;background-color: rgba(82,96,117,0.5);-webkit-background-clip: text;text-shadow: rgba(255,255,255,0.5) 0 5px 6px;}#carvetext:focus {outline: none;}.slider_main {position: relative;height: 100%; margin:0px; padding:0px  }.slider_overlay {position: absolute;bottom: 0;left: 0;right: 0;background-color: #B0B0B0;overflow: hidden;width: 100%;height: 85%;transition: .5s ease;}.slider_main:hover .slider_overlay {height: 100%;}"
 */
 
-return "<style>"+css+".slider_overlay{height: 85%}</style>"
+return "<style>"+css+".slider_overlay{height: 85%}</style>";
 /*
 +"<div id=texturespace style='height:100%;width:100%'><center><div id='carvetext'>"
 +"<div style='font-size:5em'>"+(typeof(_T("title"))=="string"?_T("title"):"")+"</div>"
@@ -201,18 +203,23 @@ function ListItem()
     this.collapsed = false; //at the start, nothingh is collapsed
     this.keys = [];
 
-    this.getKey = function (key) {
-        for (var i = 0; i < this.keys.length; i++) {
-            if (this.keys[i][0] == key) {
+    this.getKey = function (key)
+    {
+        for (var i = 0; i < this.keys.length; i++)
+        {
+            if (this.keys[i][0] == key)
+            {
                 return (this.keys[i][2]);
             }
         }
     };
 
-    this.stringToHTML = function (keyid, size) {
+    this.stringToHTML = function (keyid, size)
+    {
         var output = "";
         var sizestr = "";
-        switch (size) {
+        switch (size)
+        {
             case null: break;
             default:
                 sizestr = " size=" + size + " ";
@@ -224,22 +231,27 @@ function ListItem()
         return (output);
     };
 
-    this.checkboxToHTML = function (keyid) {
+    this.checkboxToHTML = function (keyid)
+    {
         var output = "";
         output += "<input type=\"checkbox\" id=\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] + "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" + this.keys[keyid][1] + "\",\"" + "HL_edit_" + this.id + "_" + this.keys[keyid][0] + "\")" + (this.keys[keyid][2] ? " checked" : "") + ">";
         return (output);
     };
 
-    this.selectToHTML = function (keyid, items) {
+    this.selectToHTML = function (keyid, items)
+    {
         var myId = "HL_edit_" + this.id + "_" + this.keys[keyid][0];
         var myType = this.keys[keyid][1];
         var output = "";
         output += "<select id=\"" + myId + "\" onchange=HLUpdate(" + this.id + ",\"" + this.keys[keyid][0] + "\",\"" + this.keys[keyid][1] + "\",\"" + myId + "\")>";
-        for (var i = 0; i < items.length; i++) {
-            if (this.keys[keyid][2] == items[i]) {
+        for (var i = 0; i < items.length; i++)
+        {
+            if (this.keys[keyid][2] == items[i])
+            {
                 output += "<option value=\"" + items[i] + "\" selected>" + items[i] + "</option>";
             }
-            else {
+            else
+            {
                 output += "<option value=\"" + items[i] + "\">" + items[i] + "</option>";
             }
         }
@@ -272,11 +284,14 @@ function ElectroItem(Parent)
     this.keys.push(["transfo_zekering_aanwezig", "BOOLEAN", false]); //16
     this.keys.push(["polen", "SELECT", "2"]); //17
 
-    this.updateConsumers = function () {
-        if (this.Parent_Item == null) {
+    this.updateConsumers = function ()
+    {
+        if (this.Parent_Item == null)
+        {
             this.consumers = ["", "Bord", "Kring"];
         }
-        else {
+        else
+        {
             switch (this.Parent_Item.getKey("type")) {
                 case "Bord": {
                     this.consumers = ["", "Kring"];
@@ -295,7 +310,8 @@ function ElectroItem(Parent)
                     this.consumers = ["", "Splitsing", "Vrije tekst", "Stopcontact", "Lichtcircuit", "Boiler", "Diepvriezer", "Droogkast", "Elektrische oven", "Koelkast", "Kookfornuis", "Microgolfoven", "Transformator", "Vaatwasmachine", "Ventilator", "Verwarmingstoestel", "Wasmachine"];
                     break;
                 }
-                default: {
+                default:
+                {
                     this.consumers = ["Leeg"];
                     break;
                 }
@@ -304,7 +320,8 @@ function ElectroItem(Parent)
     };
     this.updateConsumers();
 
-    this.resetKeys = function () {
+    this.resetKeys = function ()
+    {
         this.keys[1][2] = true;
         this.keys[2][2] = true;
         this.keys[3][2] = false;
@@ -314,7 +331,8 @@ function ElectroItem(Parent)
         this.keys[7][2] = "automatisch";
         this.keys[8][2] = "20";
         this.keys[9][2] = "XVB 3G2,5";
-        switch (this.keys[1][1]) { //Naam
+        switch (this.keys[1][1])
+        { //Naam
             case "Kring":
                 this.keys[10][2] = "---";
                 break;
@@ -326,10 +344,12 @@ function ElectroItem(Parent)
         }
 
         this.keys[11][2] = "300"; //Differentieel
-        if (this.Parent_Item == null) {
+        if (this.Parent_Item == null)
+        {
             this.keys[12][2] = "true";
         }
-        else {
+        else
+        {
             switch (this.Parent_Item.getKey("type")) { //Kabel_aanwezig
                 case "Splitsing":
                     this.keys[7][2] = "geen"; //geen zekering per default na splitsing
@@ -349,11 +369,14 @@ function ElectroItem(Parent)
         this.keys[17][2] = 2; // polen
     }
 
-    this.setKey = function (key, setvalue) {
+    this.setKey = function (key, setvalue)
+    {
 
         // override (do not inherit from List_Item)
-        for (var i = 0; i < this.keys.length; i++) {
-            if (this.keys[i][0] == key) {
+        for (var i = 0; i < this.keys.length; i++)
+        {
+            if (this.keys[i][0] == key)
+            {
                 this.keys[i][2] = setvalue;
             }
         }
@@ -363,7 +386,8 @@ function ElectroItem(Parent)
             this.resetKeys();
         }
         //Some validation on the input. Do properties still make sense after update
-        switch (this.keys[0][2]) {
+        switch (this.keys[0][2])
+        {
             case "Lichtcircuit":
                 if (this.getKey("lichtkring_poligheid") == _T("double_pole")) {
                     if (this.getKey("aantal") > 2) {
@@ -384,7 +408,8 @@ function ElectroItem(Parent)
         }
     };
 
-    this.toHTML = function (Parent) {
+    this.toHTML = function (Parent)
+    {
         var output = "";
         output += " <button style=\"background-color:"+_T("_COL").insert_item+";\" onclick=\"HLInsertBefore(" + this.id + ")\">&#9650;</button>";
         output += " <button style=\"background-color:"+_T("_COL").insert_item+";\" onclick=\"HLInsertAfter(" + this.id + ")\">&#9660;</button>";
@@ -393,7 +418,8 @@ function ElectroItem(Parent)
         output += "&nbsp;";
         this.updateConsumers();
         output += this.selectToHTML(0, this.consumers);
-        switch (this.keys[0][2]) {
+        switch (this.keys[0][2])
+        {
             case "Kring":
                 output += "&nbsp;"+_T("name","cap")+": " + this.stringToHTML(10, 5) + "<br>";
                 output += _T("fuse","cap")+": " + this.selectToHTML(7, ["automatisch", "differentieel", "smelt", "geen"]) +
@@ -487,8 +513,12 @@ function ElectroItem(Parent)
         //output += "id: " + this.id + " parent: " + this.parent;
         return (output);
     };
-    this.toSVG = function (hasChild) {
-        if (hasChild === void 0) { hasChild = false; }
+    this.toSVG = function (hasChild)
+    {
+        if (hasChild === void 0)
+        {
+            hasChild = false;
+        }
         var mySVG = new DiagramSVG();
         var outputstr = "";
         mySVG.data = "";
@@ -496,7 +526,8 @@ function ElectroItem(Parent)
         mySVG.xright = 20;
         mySVG.yup = 25;
         mySVG.ydown = 25;
-        switch (this.keys[0][2]) {
+        switch (this.keys[0][2])
+        {
             case "Stopcontact":
                 var startx = 1;
                 for (var i = 0; i < this.getKey("aantal"); i++) {
@@ -507,7 +538,8 @@ function ElectroItem(Parent)
                         outputstr += "<use xlink:href=#stopcontact_kinderveilig x=" + startx + " y=25></use>";
                     startx += 20;
                 }
-                if (hasChild) {
+                if (hasChild)
+                {
                     outputstr += "<line x1=" + startx + " y1=25 x2=" + (startx + 21) + " y2=25 stroke=black />";
                 }
 
@@ -674,7 +706,8 @@ function ElectroItem(Parent)
                                if (this.getKey("lichtkring_poligheid") == _T("single_pole")) {
                                    elements.push("enkel");
                                }
-                               else {
+                               else
+                               {
                                    elements.push("dubbel");
                                }
                             }
@@ -687,7 +720,8 @@ function ElectroItem(Parent)
                                }
                                elements.push("wissel_enkel");
                             }
-                            else {
+                            else
+                            {
                                elements.push("wissel_dubbel");
                                elements.push("wissel_dubbel");
                             }
@@ -705,8 +739,10 @@ function ElectroItem(Parent)
 
                var startx = 1;
                var endx = 0;
-               for (i = 0; i < elements.length; i++) {
-                   switch (elements[i]) {
+               for (i = 0; i < elements.length; i++)
+               {
+                   switch (elements[i])
+                   {
                        case "enkel":
                            endx = startx + 30;
                            outputstr += "<path d='M" + startx + " 25 L" + (endx) + " 25' stroke=black />";
@@ -809,7 +845,8 @@ function ElectroItem(Parent)
                            endx = startx + 30;
                            outputstr += "<path d='M" + startx + " 25 L" + endx + " 25' stroke=black />";
                            outputstr += "<use xlink:href=#lamp x=" + endx + " y=25 />";
-                           if ((i < elements.length - 1) || ((i == elements.length - 1) && (hasChild))) {
+                           if ((i < elements.length - 1) || ((i == elements.length - 1) && (hasChild)))
+                           {
                                outputstr += "<line x1=" + endx + " y1=25 x2=" + (endx + 10) + " y2=25 stroke=black />";
                            }
                            startx = endx + 10;
@@ -850,15 +887,19 @@ function HierarchicalList()
     };
 
     // methods
-    this.getOrdinalById = function (my_id) {
-        for (var i = 0; i < this.length; i++) {
-            if (this.id[i] == my_id) {
+    this.getOrdinalById = function (my_id)
+    {
+        for (var i = 0; i < this.length; i++)
+        {
+            if (this.id[i] == my_id)
+            {
                 return (i);
             }
         }
     }
 
-    this.addItem = function (my_item) {
+    this.addItem = function (my_item)
+    {
         //First set the correct identifyer
         my_item.id = this.curid;
         my_item.parent = 0;
@@ -872,9 +913,12 @@ function HierarchicalList()
         this.length += 1;
     }
 
-    this.insertItemBeforeId = function (my_item, my_id) {
-        for (var i = 0; i < this.length; i++) {
-            if (this.id[i] == my_id) {
+    this.insertItemBeforeId = function (my_item, my_id)
+    {
+        for (var i = 0; i < this.length; i++)
+        {
+            if (this.id[i] == my_id)
+            {
                 //First set the correct identifyer
                 my_item.id = this.curid;
                 my_item.parent = this.data[i].parent;
@@ -894,9 +938,12 @@ function HierarchicalList()
         }
     }
 
-    this.insertItemAfterId = function (my_item, my_id) {
-        for (var i = 0; i < this.length; i++) {
-            if (this.id[i] == my_id) {
+    this.insertItemAfterId = function (my_item, my_id)
+    {
+        for (var i = 0; i < this.length; i++)
+        {
+            if (this.id[i] == my_id)
+            {
                 //First set the correct identifyer
                 my_item.id = this.curid;
                 my_item.parent = this.data[i].parent;
@@ -917,7 +964,8 @@ function HierarchicalList()
         }
     }
 
-    this.insertChildAfterId = function (my_item, my_id) {
+    this.insertChildAfterId = function (my_item, my_id)
+    {
         var ordinal = this.insertItemAfterId(my_item, my_id);
         this.data[ordinal].parent = my_id;
         this.data[ordinal].indent = this.data[ordinal - 1].indent + 1;
@@ -926,11 +974,15 @@ function HierarchicalList()
         //this.data[ordinal].updateConsumers(); //Needed to ensure we do not give options in the select-box that parent wouldn't allow
     }
 
-    this.deleteById = function (my_id) {
-        for (var i = 0; i < this.length; i++) {
-            if (this.id[i] == my_id) {
+    this.deleteById = function (my_id)
+    {
+        for (var i = 0; i < this.length; i++)
+        {
+            if (this.id[i] == my_id)
+            {
                 this.active[i] = false;
-                for (var j = 0; j < this.length; j++) {
+                for (var j = 0; j < this.length; j++)
+                {
                     if (this.data[j].parent == my_id)
                         this.deleteById(this.id[j]);
                 }
@@ -939,51 +991,65 @@ function HierarchicalList()
         //alert("Deleted id: " + my_id);
     }
 
-    this.toHTML = function (myParent) {
+    this.toHTML = function (myParent)
+    {
         var output = "";
         var numberDrawn = 0;
-        for (var i = 0; i < this.length; i++) {
-            if (this.active[i] && (this.data[i].parent == myParent)) {
+        for (var i = 0; i < this.length; i++)
+        {
+            if (this.active[i] && (this.data[i].parent == myParent))
+            {
                 numberDrawn++;
-                if (this.data[i].collapsed) {
+                if (this.data[i].collapsed)
+                {
                     output += "<table class=html_edit_table><tr><td bgcolor="+_T("_COL").tree_collapsed+" onclick=HLCollapseExpand(" + this.data[i].id + ") valign=top>&#x229E;</td><td width=100%>";
                 }
-                else {
+                else
+                {
                     output += "<table class=html_edit_table><tr><td bgcolor="+_T("_COL").tree_expanded+" onclick=HLCollapseExpand(" + this.data[i].id + ") valign=top>&#x229F;</td><td width=100%>";
                 }
-                switch (myParent) {
-                    case 0: {
+                switch (myParent)
+                {
+                    case 0:
+                    {
                         output += this.data[i].toHTML() + "<br>";
                         break;
                     }
-                    default: {
+                    default:
+                    {
                         output += this.data[i].toHTML(this.data[myParent]) + "<br>";
                         break;
                     }
                 }
-                if (!this.data[i].collapsed) {
+                if (!this.data[i].collapsed)
+                {
                     output += this.toHTML(this.id[i]);
                 }
                 output += "</td></tr></table>";
             }
         }
-        if ((myParent == 0) && (numberDrawn < 1)) {
+        if ((myParent == 0) && (numberDrawn < 1))
+        {
             output += "<button onclick=\"HLAdd()\">"+_T("add_first_object")+"</button>"; //no need for the add button if we have items
         }
         return (output);
     }
 
-    this.toSVG = function (myParent, stack) {
+    this.toSVG = function (myParent, stack)
+    {
         //--- First read all underlying elements in an Array called inSVG ---
         var inSVG = []; //Results from nested calls will be added here
         var elementCounter = 0;
         var lastChildOrdinal = 0;
-        for (var i = 0; i < this.length; i++) {
+        for (var i = 0; i < this.length; i++)
+        {
             if (this.active[i] && (this.data[i].parent == myParent))
                 lastChildOrdinal = i;
         }
-        for (var i = 0; i < this.length; i++) {
-            if (this.active[i] && (this.data[i].parent == myParent)) {
+        for (var i = 0; i < this.length; i++)
+        {
+            if (this.active[i] && (this.data[i].parent == myParent))
+            {
                 switch (this.data[i].getKey("type")) {
                     case "Bord":
                         //get image of the entire bord
@@ -1023,7 +1089,8 @@ function HierarchicalList()
                             inSVG[elementCounter].xleft = 1;
                             inSVG[elementCounter].xright += 24;
                         }
-                        else {
+                        else
+                        {
                             inSVG[elementCounter].data = inSVG[elementCounter].data +
                                 "<line x1=" + (inSVG[elementCounter].xleft) + " x2=" + (inSVG[elementCounter].xleft + inSVG[elementCounter].xrightmin) +
                                 " y1=" + inSVG[elementCounter].yup + " y2=" + inSVG[elementCounter].yup + " stroke=black />";
@@ -1035,11 +1102,13 @@ function HierarchicalList()
                         //If direct child of a Kring, put a vertical pipe and "nr" at the left
                         if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Kring") {
                             var y1, y2;
-                            if (i !== lastChildOrdinal) {
+                            if (i !== lastChildOrdinal)
+                            {
                                 y1 = 0;
                                 y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
                             }
-                            else {
+                            else
+                            {
                                 y1 = inSVG[elementCounter].yup;
                                 y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
                             }
@@ -1072,7 +1141,8 @@ function HierarchicalList()
                                 this.data[i].getKey("kabel") + "</text>";
                             inSVG[elementCounter].yup += 100;
                         }
-                        else {
+                        else
+                        {
                             inSVG[elementCounter].data += "<line x1=" + inSVG[elementCounter].xleft +
                                 " x2=" + inSVG[elementCounter].xleft +
                                 " y1=" + inSVG[elementCounter].yup +
@@ -1144,7 +1214,8 @@ function HierarchicalList()
                             " y2=" + (inSVG[elementCounter].yup + 15) + " stroke=black />";
                         inSVG[elementCounter].yup += 15;
                         //if there is nothing, still draw an empty one
-                        if (inSVG[elementCounter].yup <= 0) {
+                        if (inSVG[elementCounter].yup <= 0)
+                        {
                             inSVG[elementCounter].xleft = 20;
                             inSVG[elementCounter].xright = 20;
                             inSVG[elementCounter].yup = 50;
@@ -1160,17 +1231,20 @@ function HierarchicalList()
                         if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Meerdere verbruikers") {
                             inSVG[elementCounter] = this.data[i].toSVG(i !== lastChildOrdinal);
                         }
-                        else {
+                        else
+                        {
                             inSVG[elementCounter] = this.data[i].toSVG(false);
                         }
                         //If direct child of a Kring, put a vertical pipe and "nr" at the left
                         if ((this.data[this.getOrdinalById(myParent)]).getKey("type") == "Kring") {
                             var y1, y2;
-                            if (i !== lastChildOrdinal) {
+                            if (i !== lastChildOrdinal)
+                            {
                                 y1 = 0;
                                 y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
                             }
-                            else {
+                            else
+                            {
                                 y1 = inSVG[elementCounter].yup;
                                 y2 = inSVG[elementCounter].yup + inSVG[elementCounter].ydown;
                             }
@@ -1190,7 +1264,8 @@ function HierarchicalList()
             }
         }
         //--- If there are no elements, make at least an empty one to avoid problems here below ---
-        if (elementCounter == 0) {
+        if (elementCounter == 0)
+        {
             inSVG[0] = new DiagramSVG();
         }
         //--- Now create the output element ---
@@ -1202,24 +1277,28 @@ function HierarchicalList()
         outSVG.data = "";
         var width = 0; //How wide is the structure?
         var height = 0; //How high is the structure?
-        switch (stack) {
+        switch (stack)
+        {
             case "horizontal":
                 var max_yup = 0; //What is the maximal distance above the horizontal line?
                 var max_ydown = 0; //What is the maximal distance below the horizontal line?
                 //analyse the size of the structure. Build horizontally
-                for (var i = 0; i < elementCounter; i++) {
+                for (var i = 0; i < elementCounter; i++)
+                {
                     width = width + inSVG[i].xleft + inSVG[i].xright;
                     max_yup = Math.max(max_yup, inSVG[i].yup);
                     max_ydown = Math.max(max_ydown, inSVG[i].ydown);
                 }
                 height = max_yup + max_ydown;
                 //decide on the output structure
-                if (elementCounter > 0) {
+                if (elementCounter > 0)
+                {
                     outSVG.xleft = inSVG[0].xleft; //Leave space of the first element at the left
                     outSVG.xright = width - outSVG.xleft;
                     outSVG.xrightmin = outSVG.xright - inSVG[elementCounter - 1].xright;
                 }
-                else {
+                else
+                {
                     outSVG.xleft = 0;
                     outSVG.xright = 0;
                     outSVG.xrightmin = 0;
@@ -1229,7 +1308,8 @@ function HierarchicalList()
                 outSVG.ydown = max_ydown;
                 //--Create the output data--
                 var xpos = 0;
-                for (var i = 0; i < elementCounter; i++) {
+                for (var i = 0; i < elementCounter; i++)
+                {
                     outSVG.data += "<svg x=" + xpos + " y=" + (max_yup - inSVG[i].yup) + ">";
                     outSVG.data += inSVG[i].data;
                     outSVG.data += "</svg>";
@@ -1240,7 +1320,8 @@ function HierarchicalList()
                 var max_xleft = 0; //What is the maximal distance left of the vertical line?
                 var max_xright = 0; //What is the maximal distance right of the vertical line?
                 //analyse the size of the structure. Build vertically
-                for (var i = 0; i < elementCounter; i++) {
+                for (var i = 0; i < elementCounter; i++)
+                {
                     height = height + inSVG[i].yup + inSVG[i].ydown;
                     max_xleft = Math.max(max_xleft, inSVG[i].xleft);
                     max_xright = Math.max(max_xright, inSVG[i].xright);
@@ -1253,7 +1334,8 @@ function HierarchicalList()
                 outSVG.xright = Math.max(max_xright, 25); // foresee at least 15 at the right
                 //create the output data
                 var ypos = 0;
-                for (var i = elementCounter - 1; i >= 0; i--) {
+                for (var i = elementCounter - 1; i >= 0; i--)
+                {
                     outSVG.data += "<svg x=" + (outSVG.xleft - inSVG[i].xleft) + " y=" + ypos + ">";
                     outSVG.data += inSVG[i].data;
                     outSVG.data += "</svg>";
@@ -1263,7 +1345,8 @@ function HierarchicalList()
         }
         //alert("stack = " + stack + " width = " + width + "height = " + height  + " yup = " + outSVG.yup + "ydown = " + outSVG.ydown);
         outSVG.data += "\n";
-        if (myParent == 0) {
+        if (myParent == 0)
+        {
             var header = "<svg xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink transform=scale(1,1) width=" + width + " height=" + height + ">";
             header += this.outputSVGDefs();
             var footer = "</svg>";
@@ -1283,7 +1366,8 @@ var Hierarchical_List = HierarchicalList;
 
 
 
-function buildNewStructure(structure) {
+function buildNewStructure(structure)
+{
     //Paremeterisation of the electro board
     var aantalDrogeKringen = CONF_aantal_droge_kringen;
     var aantalNatteKringen = CONF_aantal_natte_kringen;
@@ -1321,7 +1405,8 @@ function buildNewStructure(structure) {
     itemCounter++;
     //3 kringen toevoegen aan nat bord
     var natBordCounter = itemCounter;
-    for (var i = 0; i < aantalNatteKringen; i++) {
+    for (var i = 0; i < aantalNatteKringen; i++)
+    {
         structure.insertChildAfterId(new ElectroItem(structure.data[natBordCounter - 1]), natBordCounter);
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen + aantalNatteKringen - i);
@@ -1329,7 +1414,8 @@ function buildNewStructure(structure) {
     }
 
     //7 droge kringen toevoegen aan droog bord
-    for (var i = 0; i < aantalDrogeKringen; i++) {
+    for (var i = 0; i < aantalDrogeKringen; i++)
+    {
         structure.insertChildAfterId(new ElectroItem(structure.data[structure.getOrdinalById(droogBordCounter)]), droogBordCounter);
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("type", "Kring");
         structure.data[structure.getOrdinalById(itemCounter + 1)].setKey("naam", aantalDrogeKringen - i);
@@ -1382,7 +1468,7 @@ var _level = 0;
 var _spc = "&nbsp; &nbsp; &nbsp;";
 var level_prop = new Array();
 
-iterate(nobj)
+iterate(nobj);
 
 function iterate(obj)
 {
@@ -1395,10 +1481,10 @@ function iterate(obj)
         if (obj.hasOwnProperty(property))
         {
             if (typeof(obj[property]) != "object")
-                disp(_level,_prefix,property,obj[property])
+                disp(_level,_prefix,property,obj[property]);
             else
             {
-              disp(_level,_prefix,property,obj[property])
+              disp(_level,_prefix,property,obj[property]);
               _level++;
               if(_level<7)
                   iterate(obj[property]);
@@ -1411,7 +1497,7 @@ function iterate(obj)
   function disp(_level,_prefix,property,obj_property)
   {
     level_prop[_level] = property
-    var s = _level + ":" + property
+    var s = _level + ":" + property;
 
     switch(s)
     {

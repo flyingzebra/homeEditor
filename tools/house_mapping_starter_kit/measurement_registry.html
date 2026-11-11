@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>House Measurement Registry</title>
+  <style>
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #202020;
+      color: #f2f2f2;
+    }
+
+    * { box-sizing: border-box; }
+
+    #toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.84);
+      color: #fff;
+      font-size: 13px;
+      user-select: none;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #ff9940;
+      color: #fff;
+    }
+
+    button:hover { opacity: 0.85; }
+    button.secondary { background: #4d7cff; }
+    button.neutral { background: #666; }
+    button.active { background: #18a558; }
+    button.danger { background: #bd3e3e; }
+
+    input, select, textarea {
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 4px;
+      padding: 6px;
+      background: #1f1f1f;
+      color: #fff;
+      font: inherit;
+    }
+
+    input[type="number"] { width: 110px; }
+    textarea { min-height: 70px; resize: vertical; }
+
+    label {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .lblbox {
+      border: 1px solid white;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(360px, 480px) minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px;
+    }
+
+    @media (max-width: 1000px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    section, .panel {
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 7px;
+      background: rgba(0,0,0,0.32);
+      padding: 12px;
+    }
+
+    h1, h2, h3 { margin: 0 0 10px 0; }
+    h1 { font-size: 18px; }
+    h2 { font-size: 16px; }
+    h3 { font-size: 14px; color: #cfe0ff; }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .tab-button.active { background: #18a558; }
+    .tab-page { display: none; }
+    .tab-page.active { display: block; }
+
+    .grid-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .grid-form .wide { grid-column: 1 / -1; }
+    .grid-form label {
+      display: grid;
+      gap: 4px;
+      align-items: stretch;
+      font-size: 12px;
+      color: #ddd;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 210px);
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+      font-size: 12px;
+    }
+
+    th, td {
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding: 6px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #111;
+      z-index: 2;
+      color: #cfe0ff;
+    }
+
+    td code {
+      color: #d7ffd7;
+      white-space: pre-wrap;
+    }
+
+    .muted { color: #aaa; }
+    .ok { color: #7dff9f; font-weight: 700; }
+    .bad { color: #ff8d8d; font-weight: 700; }
+    .warn { color: #ffd37d; font-weight: 700; }
+
+    #jsonPreview {
+      max-height: 300px;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.78);
+      color: #d7ffd7;
+      font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <label class="lblbox">
+      project <input id="projectName" type="text" value="House mapping" />
+    </label>
+    <label class="lblbox">
+      units
+      <select id="projectUnits">
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="m">m</option>
+      </select>
+    </label>
+    <button id="downloadButton" type="button">DOWNLOAD JSON</button>
+    <label class="lblbox">import <input id="importInput" type="file" accept=".json,application/json" /></label>
+    <button id="saveLocalButton" class="secondary" type="button">SAVE LOCAL</button>
+    <button id="loadLocalButton" class="secondary" type="button">LOAD LOCAL</button>
+    <button id="clearButton" class="danger" type="button">CLEAR</button>
+    <span id="status" class="muted">Ready.</span>
+  </div>
+
+  <main>
+    <aside class="panel">
+      <h1>House measurement registry</h1>
+      <p class="muted">
+        Use IDs such as <code>M001</code>, <code>R001</code>, <code>C001</code>. Formula examples:
+        <code>avg(M001,M002)</code>, <code>abs(M003-M004)</code>, <code>(R001-R002)/2</code>.
+      </p>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="measurements">Measurements</button>
+        <button class="tab-button neutral" data-tab="results">Results / checkpoints</button>
+        <button class="tab-button neutral" data-tab="meshes">Meshes / vertices</button>
+        <button class="tab-button neutral" data-tab="export">Preview</button>
+      </div>
+
+      <div id="tab-measurements" class="tab-page active">
+        <h2>Add measurement</h2>
+        <div class="grid-form" id="measurementForm">
+          <label>ID <input id="m_id" type="text" placeholder="M001" /></label>
+          <label>Orientation
+            <select id="m_orientation">
+              <option>N-S</option><option>S-N</option><option>E-W</option><option>W-E</option><option>D-U</option><option>U-D</option><option>diagonal</option><option>other</option>
+            </select>
+          </label>
+          <label>From item/material <input id="m_from" type="text" placeholder="north inner plaster face" /></label>
+          <label>To item/material <input id="m_to" type="text" placeholder="south inner plaster face" /></label>
+          <label>Value <input id="m_value" type="number" step="0.001" /></label>
+          <label>Unit
+            <select id="m_unit"><option>mm</option><option>cm</option><option>m</option></select>
+          </label>
+          <label>Precision
+            <select id="m_precision"></select>
+          </label>
+          <label>Floor / room <input id="m_room" type="text" placeholder="GF / living" /></label>
+          <label class="wide">Precise location / description <input id="m_description" type="text" placeholder="measured at floor level, 60 cm from west wall" /></label>
+          <label class="wide">Notes <textarea id="m_notes"></textarea></label>
+          <button id="addMeasurementButton" class="wide" type="button">ADD MEASUREMENT</button>
+        </div>
+      </div>
+
+      <div id="tab-results" class="tab-page">
+        <h2>Add result or checkpoint</h2>
+        <div class="grid-form">
+          <label>ID <input id="r_id" type="text" placeholder="R001 or C001" /></label>
+          <label>Kind
+            <select id="r_kind"><option value="parameter">parameter</option><option value="checkpoint">checkpoint</option></select>
+          </label>
+          <label class="wide">Formula <input id="r_formula" type="text" placeholder="avg(M001,M002)" /></label>
+          <label>Unit <input id="r_unit" type="text" placeholder="mm" /></label>
+          <label>Tolerance <input id="r_tolerance" type="number" step="0.001" placeholder="10" /></label>
+          <label>Expected value <input id="r_expected" type="number" step="0.001" placeholder="optional" /></label>
+          <label>Target mesh <input id="r_targetMesh" type="text" placeholder="GF_Wall_NorthFront" /></label>
+          <label>Target property <input id="r_targetProperty" type="text" placeholder="length / width / checkpoint" /></label>
+          <label class="wide">Notes <textarea id="r_notes"></textarea></label>
+          <button id="addResultButton" class="wide" type="button">ADD RESULT / CHECKPOINT</button>
+        </div>
+      </div>
+
+      <div id="tab-meshes" class="tab-page">
+        <h2>Add mesh and named vertices</h2>
+        <div class="grid-form">
+          <label>Mesh ID <input id="mesh_id" type="text" placeholder="GF_Floor_OuterFootprint" /></label>
+          <label>Type
+            <select id="mesh_type"><option value="box">box</option><option value="extrudedPolygon">extruded polygon</option></select>
+          </label>
+          <label class="wide">Mesh name <input id="mesh_name" type="text" /></label>
+          <label>Width formula <input id="mesh_width" type="text" placeholder="R001" /></label>
+          <label>Depth formula <input id="mesh_depth" type="text" placeholder="R002" /></label>
+          <label>Height formula <input id="mesh_height" type="text" placeholder="2700" /></label>
+          <button id="addMeshButton" class="wide" type="button">ADD / UPDATE MESH</button>
+        </div>
+
+        <h3 style="margin-top:14px">Add vertex to selected mesh</h3>
+        <div class="grid-form">
+          <label>Mesh <select id="vertex_mesh"></select></label>
+          <label>Vertex name <input id="vertex_name" type="text" placeholder="NW" /></label>
+          <label>X formula <input id="vertex_x" type="text" placeholder="0" /></label>
+          <label>Y formula <input id="vertex_y" type="text" placeholder="0" /></label>
+          <label>Z formula <input id="vertex_z" type="text" placeholder="R002" /></label>
+          <label class="wide">Notes <input id="vertex_notes" type="text" /></label>
+          <button id="addVertexButton" class="wide" type="button">ADD VERTEX</button>
+        </div>
+      </div>
+
+      <div id="tab-export" class="tab-page">
+        <h2>Current JSON preview</h2>
+        <pre id="jsonPreview"></pre>
+      </div>
+    </aside>
+
+    <section>
+      <h2>Measurements</h2>
+      <div class="table-wrap"><table id="measurementsTable"></table></div>
+      <h2 style="margin-top:14px">Results and checkpoints</h2>
+      <div class="table-wrap"><table id="resultsTable"></table></div>
+      <h2 style="margin-top:14px">Meshes and named vertices</h2>
+      <div class="table-wrap"><table id="meshesTable"></table></div>
+    </section>
+  </main>
+
+  <script type="text/javascript">
+  (function () {
+    const precisionPresets = [
+      { id: "P001", label: "1 mm", value: 1, unit: "mm", score: 1 },
+      { id: "P005", label: "5 mm", value: 5, unit: "mm", score: 2 },
+      { id: "P010", label: "1 cm", value: 10, unit: "mm", score: 3 },
+      { id: "P050", label: "5 cm", value: 50, unit: "mm", score: 4 },
+      { id: "P100", label: "10 cm", value: 100, unit: "mm", score: 5 },
+      { id: "P500", label: "50 cm", value: 500, unit: "mm", score: 6 }
+    ];
+
+    const state = {
+      schema: "house-measurement-registry-v1",
+      project: {
+        name: "House mapping",
+        units: "mm",
+        coordinateSystem: {
+          x: "east-west, positive east",
+          y: "down-up, positive up",
+          z: "north-south, positive south because the back of the house faces south"
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      precisionPresets,
+      measurements: [],
+      results: [],
+      meshes: []
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const status = $("status");
+
+    function nextId(prefix, collection) {
+      const max = collection.reduce((acc, row) => {
+        const m = String(row.id || "").match(new RegExp("^" + prefix + "(\\d+)$"));
+        return m ? Math.max(acc, Number(m[1])) : acc;
+      }, 0);
+      return prefix + String(max + 1).padStart(3, "0");
+    }
+
+    function normaliseNumber(value) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function unitToMm(value, unit) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return null;
+      if (unit === "m") return n * 1000;
+      if (unit === "cm") return n * 10;
+      return n;
+    }
+
+    function fillPrecisionSelect() {
+      const select = $("m_precision");
+      select.innerHTML = "";
+      precisionPresets.forEach((p) => {
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = `${p.label} / score ${p.score}`;
+        select.appendChild(option);
+      });
+    }
+
+    function setDefaultIds() {
+      if (!$("m_id").value) $("m_id").value = nextId("M", state.measurements);
+      if (!$("r_id").value) $("r_id").value = nextId($("r_kind").value === "checkpoint" ? "C" : "R", state.results);
+      if (!$("mesh_id").value) $("mesh_id").value = nextId("OBJ", state.meshes);
+    }
+
+    function makeExportModel() {
+      state.project.name = $("projectName").value || "House mapping";
+      state.project.units = $("projectUnits").value || "mm";
+      state.project.updatedAt = new Date().toISOString();
+      const evaluated = evaluateAll();
+      return {
+        ...state,
+        evaluated
+      };
+    }
+
+    function contextValues() {
+      const context = {};
+      state.measurements.forEach((m) => {
+        const mm = unitToMm(m.value, m.unit);
+        if (mm !== null) context[m.id] = mm;
+      });
+      return context;
+    }
+
+    function evaluateAll() {
+      const context = contextValues();
+      const resultValues = {};
+      const resultErrors = {};
+
+      // Several passes allow R002 to depend on R001 without making the UI complex.
+      for (let pass = 0; pass < 8; pass++) {
+        state.results.forEach((r) => {
+          if (resultValues[r.id] !== undefined || resultErrors[r.id]) return;
+          try {
+            const value = evalFormula(r.formula, { ...context, ...resultValues });
+            resultValues[r.id] = value;
+          } catch (err) {
+            if (pass === 7) resultErrors[r.id] = err.message;
+          }
+        });
+      }
+
+      const results = state.results.map((r) => {
+        const value = resultValues[r.id];
+        const error = resultErrors[r.id];
+        let status = "value";
+        if (error) status = "error";
+        else if (r.kind === "checkpoint") {
+          if (typeof value === "boolean") status = value ? "pass" : "fail";
+          else if (Number.isFinite(Number(r.tolerance))) {
+            const expected = Number.isFinite(Number(r.expected)) ? Number(r.expected) : 0;
+            status = Math.abs(Number(value) - expected) <= Number(r.tolerance) ? "pass" : "fail";
+          } else {
+            status = "unchecked";
+          }
+        }
+        return { id: r.id, kind: r.kind, formula: r.formula, value, unit: r.unit || "mm", status, error: error || null };
+      });
+
+      const meshValues = state.meshes.map((mesh) => ({
+        id: mesh.id,
+        type: mesh.type,
+        parameters: evaluateObject(mesh.parameters || {}, { ...context, ...resultValues }),
+        vertices: (mesh.vertices || []).map((v) => ({
+          name: v.name,
+          x: safeEvalFormula(v.xFormula, { ...context, ...resultValues }),
+          y: safeEvalFormula(v.yFormula, { ...context, ...resultValues }),
+          z: safeEvalFormula(v.zFormula, { ...context, ...resultValues }),
+          sourceFormulas: { x: v.xFormula, y: v.yFormula, z: v.zFormula },
+          notes: v.notes || ""
+        }))
+      }));
+
+      return { results, meshes: meshValues };
+    }
+
+    function evaluateObject(obj, context) {
+      const out = {};
+      Object.entries(obj).forEach(([key, value]) => out[key] = safeEvalFormula(value, context));
+      return out;
+    }
+
+    function safeEvalFormula(formula, context) {
+      try { return evalFormula(formula, context); }
+      catch (err) { return { error: err.message, formula }; }
+    }
+
+    function evalFormula(formula, context) {
+      if (formula === null || formula === undefined || String(formula).trim() === "") return null;
+      const text = String(formula).trim();
+      if (/^-?\d+(\.\d+)?$/.test(text)) return Number(text);
+
+      const allowed = {
+        avg: (...a) => a.reduce((s, v) => s + Number(v), 0) / a.length,
+        sum: (...a) => a.reduce((s, v) => s + Number(v), 0),
+        min: Math.min,
+        max: Math.max,
+        abs: Math.abs,
+        sqrt: Math.sqrt,
+        pow: Math.pow,
+        round: Math.round,
+        floor: Math.floor,
+        ceil: Math.ceil
+      };
+
+      let expr = text.replace(/\b[A-Za-z_][A-Za-z0-9_]*\b/g, (token) => {
+        if (Object.prototype.hasOwnProperty.call(allowed, token)) return token;
+        if (token === "true" || token === "false") return token;
+        if (Object.prototype.hasOwnProperty.call(context, token)) return `(${Number(context[token])})`;
+        throw new Error(`Unknown ID or function: ${token}`);
+      });
+
+      if (!/^[0-9+\-*/%()., <>=!&|]+[0-9)truefals]+$/.test(expr.replace(/\b(avg|sum|min|max|abs|sqrt|pow|round|floor|ceil)\b/g, ""))) {
+        // This check is intentionally conservative; it keeps formulas numeric/boolean only.
+        if (/[^0-9+\-*/%()., <>=!&|]/.test(expr.replace(/\b(avg|sum|min|max|abs|sqrt|pow|round|floor|ceil)\b/g, ""))) {
+          throw new Error("Formula contains unsupported characters.");
+        }
+      }
+
+      return Function(...Object.keys(allowed), `"use strict"; return (${expr});`)(...Object.values(allowed));
+    }
+
+    function render() {
+      setDefaultIds();
+      renderMeasurements();
+      renderResults();
+      renderMeshes();
+      updateVertexMeshSelect();
+      $("jsonPreview").textContent = JSON.stringify(makeExportModel(), null, 2);
+    }
+
+    function renderMeasurements() {
+      const table = $("measurementsTable");
+      table.innerHTML = `<thead><tr>
+        <th>ID</th><th>Value</th><th>Orientation</th><th>From</th><th>To</th><th>Precision</th><th>Room</th><th>Description</th><th>Notes</th><th></th>
+      </tr></thead><tbody></tbody>`;
+      const tbody = table.querySelector("tbody");
+      state.measurements.forEach((m, idx) => {
+        const precision = precisionPresets.find(p => p.id === m.precisionId);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><code>${escapeHtml(m.id)}</code></td>
+          <td>${escapeHtml(m.value)} ${escapeHtml(m.unit)}<br><span class="muted">${unitToMm(m.value, m.unit)} mm</span></td>
+          <td>${escapeHtml(m.orientation)}</td>
+          <td>${escapeHtml(m.from.label)}</td>
+          <td>${escapeHtml(m.to.label)}</td>
+          <td>${precision ? escapeHtml(precision.label) + " / score " + precision.score : ""}</td>
+          <td>${escapeHtml(m.room)}</td>
+          <td>${escapeHtml(m.description)}</td>
+          <td>${escapeHtml(m.notes)}</td>
+          <td><button class="danger" data-delete-measurement="${idx}">DEL</button></td>`;
+        tbody.appendChild(tr);
+      });
+      table.querySelectorAll("[data-delete-measurement]").forEach(btn => btn.addEventListener("click", () => {
+        state.measurements.splice(Number(btn.dataset.deleteMeasurement), 1);
+        render();
+      }));
+    }
+
+    function renderResults() {
+      const evaluated = evaluateAll().results;
+      const byId = Object.fromEntries(evaluated.map(r => [r.id, r]));
+      const table = $("resultsTable");
+      table.innerHTML = `<thead><tr>
+        <th>ID</th><th>Kind</th><th>Formula</th><th>Value</th><th>Tolerance</th><th>Target</th><th>Status</th><th>Notes</th><th></th>
+      </tr></thead><tbody></tbody>`;
+      const tbody = table.querySelector("tbody");
+      state.results.forEach((r, idx) => {
+        const e = byId[r.id] || {};
+        const klass = e.status === "pass" ? "ok" : e.status === "fail" || e.status === "error" ? "bad" : "warn";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><code>${escapeHtml(r.id)}</code></td>
+          <td>${escapeHtml(r.kind)}</td>
+          <td><code>${escapeHtml(r.formula)}</code></td>
+          <td>${e.error ? escapeHtml(e.error) : escapeHtml(formatValue(e.value))} ${escapeHtml(r.unit || "")}</td>
+          <td>${escapeHtml(r.tolerance || "")} ${escapeHtml(r.expected ? "expected " + r.expected : "")}</td>
+          <td>${escapeHtml(r.targetMesh || "")}<br><span class="muted">${escapeHtml(r.targetProperty || "")}</span></td>
+          <td class="${klass}">${escapeHtml(e.status || "")}</td>
+          <td>${escapeHtml(r.notes || "")}</td>
+          <td><button class="danger" data-delete-result="${idx}">DEL</button></td>`;
+        tbody.appendChild(tr);
+      });
+      table.querySelectorAll("[data-delete-result]").forEach(btn => btn.addEventListener("click", () => {
+        state.results.splice(Number(btn.dataset.deleteResult), 1);
+        render();
+      }));
+    }
+
+    function renderMeshes() {
+      const evaluated = evaluateAll().meshes;
+      const byId = Object.fromEntries(evaluated.map(m => [m.id, m]));
+      const table = $("meshesTable");
+      table.innerHTML = `<thead><tr>
+        <th>ID</th><th>Type</th><th>Parameters</th><th>Named vertices</th><th></th>
+      </tr></thead><tbody></tbody>`;
+      const tbody = table.querySelector("tbody");
+      state.meshes.forEach((mesh, idx) => {
+        const e = byId[mesh.id] || {};
+        const vertices = (mesh.vertices || []).map((v, vIdx) => {
+          const ev = (e.vertices || [])[vIdx] || {};
+          return `<div><code>${escapeHtml(v.name)}</code>: x=${escapeHtml(formatValue(ev.x))}, y=${escapeHtml(formatValue(ev.y))}, z=${escapeHtml(formatValue(ev.z))} <button class="danger" data-delete-vertex="${idx}:${vIdx}">DEL</button></div>`;
+        }).join("");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><code>${escapeHtml(mesh.id)}</code><br>${escapeHtml(mesh.name || "")}</td>
+          <td>${escapeHtml(mesh.type)}</td>
+          <td><code>${escapeHtml(JSON.stringify(mesh.parameters || {}))}</code><br><span class="muted">evaluated: ${escapeHtml(JSON.stringify(e.parameters || {}))}</span></td>
+          <td>${vertices || "<span class='muted'>no vertices</span>"}</td>
+          <td><button class="danger" data-delete-mesh="${idx}">DEL</button></td>`;
+        tbody.appendChild(tr);
+      });
+      table.querySelectorAll("[data-delete-mesh]").forEach(btn => btn.addEventListener("click", () => {
+        state.meshes.splice(Number(btn.dataset.deleteMesh), 1);
+        render();
+      }));
+      table.querySelectorAll("[data-delete-vertex]").forEach(btn => btn.addEventListener("click", () => {
+        const [meshIdx, vertexIdx] = btn.dataset.deleteVertex.split(":").map(Number);
+        state.meshes[meshIdx].vertices.splice(vertexIdx, 1);
+        render();
+      }));
+    }
+
+    function updateVertexMeshSelect() {
+      const select = $("vertex_mesh");
+      const selected = select.value;
+      select.innerHTML = "";
+      state.meshes.forEach((mesh) => {
+        const option = document.createElement("option");
+        option.value = mesh.id;
+        option.textContent = mesh.id + (mesh.name ? " / " + mesh.name : "");
+        select.appendChild(option);
+      });
+      if (state.meshes.some(m => m.id === selected)) select.value = selected;
+    }
+
+    function formatValue(value) {
+      if (value && typeof value === "object") return JSON.stringify(value);
+      if (Number.isFinite(Number(value))) return Number(value).toFixed(3).replace(/\.000$/, "");
+      return value === null || value === undefined ? "" : String(value);
+    }
+
+    function escapeHtml(value) {
+      return String(value === null || value === undefined ? "" : value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function downloadJSON(data, filename) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importModel(model) {
+      if (!model || typeof model !== "object") throw new Error("Invalid JSON model.");
+      state.schema = model.schema || state.schema;
+      state.project = { ...state.project, ...(model.project || {}) };
+      state.measurements = Array.isArray(model.measurements) ? model.measurements : [];
+      state.results = Array.isArray(model.results) ? model.results : [];
+      state.meshes = Array.isArray(model.meshes) ? model.meshes : [];
+      $("projectName").value = state.project.name || "House mapping";
+      $("projectUnits").value = state.project.units || "mm";
+      render();
+    }
+
+    document.querySelectorAll(".tab-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-page").forEach(p => p.classList.remove("active"));
+        button.classList.add("active");
+        $("tab-" + button.dataset.tab).classList.add("active");
+        render();
+      });
+    });
+
+    $("addMeasurementButton").addEventListener("click", () => {
+      const row = {
+        id: $("m_id").value.trim() || nextId("M", state.measurements),
+        description: $("m_description").value.trim(),
+        from: { label: $("m_from").value.trim(), material: "", item: $("m_from").value.trim() },
+        to: { label: $("m_to").value.trim(), material: "", item: $("m_to").value.trim() },
+        orientation: $("m_orientation").value,
+        value: normaliseNumber($("m_value").value),
+        unit: $("m_unit").value,
+        precisionId: $("m_precision").value,
+        room: $("m_room").value.trim(),
+        notes: $("m_notes").value.trim(),
+        recordedAt: new Date().toISOString()
+      };
+      state.measurements.push(row);
+      ["m_id", "m_description", "m_from", "m_to", "m_value", "m_room", "m_notes"].forEach(id => $(id).value = "");
+      render();
+      status.textContent = `Added measurement ${row.id}.`;
+    });
+
+    $("r_kind").addEventListener("change", () => {
+      $("r_id").value = nextId($("r_kind").value === "checkpoint" ? "C" : "R", state.results);
+    });
+
+    $("addResultButton").addEventListener("click", () => {
+      const row = {
+        id: $("r_id").value.trim() || nextId($("r_kind").value === "checkpoint" ? "C" : "R", state.results),
+        kind: $("r_kind").value,
+        formula: $("r_formula").value.trim(),
+        unit: $("r_unit").value.trim() || "mm",
+        tolerance: normaliseNumber($("r_tolerance").value),
+        expected: normaliseNumber($("r_expected").value),
+        targetMesh: $("r_targetMesh").value.trim(),
+        targetProperty: $("r_targetProperty").value.trim(),
+        notes: $("r_notes").value.trim(),
+        recordedAt: new Date().toISOString()
+      };
+      state.results.push(row);
+      ["r_id", "r_formula", "r_unit", "r_tolerance", "r_expected", "r_targetMesh", "r_targetProperty", "r_notes"].forEach(id => $(id).value = "");
+      render();
+      status.textContent = `Added ${row.kind} ${row.id}.`;
+    });
+
+    $("addMeshButton").addEventListener("click", () => {
+      const id = $("mesh_id").value.trim() || nextId("OBJ", state.meshes);
+      let mesh = state.meshes.find(m => m.id === id);
+      if (!mesh) {
+        mesh = { id, name: "", type: "box", parameters: {}, vertices: [] };
+        state.meshes.push(mesh);
+      }
+      mesh.name = $("mesh_name").value.trim();
+      mesh.type = $("mesh_type").value;
+      mesh.parameters = {
+        width: $("mesh_width").value.trim(),
+        depth: $("mesh_depth").value.trim(),
+        height: $("mesh_height").value.trim()
+      };
+      ["mesh_id", "mesh_name", "mesh_width", "mesh_depth", "mesh_height"].forEach(id => $(id).value = "");
+      render();
+      status.textContent = `Added/updated mesh ${mesh.id}.`;
+    });
+
+    $("addVertexButton").addEventListener("click", () => {
+      const mesh = state.meshes.find(m => m.id === $("vertex_mesh").value);
+      if (!mesh) {
+        status.textContent = "Create a mesh first.";
+        return;
+      }
+      mesh.vertices = mesh.vertices || [];
+      mesh.vertices.push({
+        name: $("vertex_name").value.trim() || `V${mesh.vertices.length + 1}`,
+        xFormula: $("vertex_x").value.trim() || "0",
+        yFormula: $("vertex_y").value.trim() || "0",
+        zFormula: $("vertex_z").value.trim() || "0",
+        notes: $("vertex_notes").value.trim()
+      });
+      ["vertex_name", "vertex_x", "vertex_y", "vertex_z", "vertex_notes"].forEach(id => $(id).value = "");
+      render();
+      status.textContent = `Added vertex to ${mesh.id}.`;
+    });
+
+    $("downloadButton").addEventListener("click", () => downloadJSON(makeExportModel(), "house_measurements_registry.json"));
+    $("saveLocalButton").addEventListener("click", () => {
+      localStorage.setItem("houseMeasurementRegistry", JSON.stringify(makeExportModel()));
+      status.textContent = "Saved to local browser storage.";
+    });
+    $("loadLocalButton").addEventListener("click", () => {
+      const raw = localStorage.getItem("houseMeasurementRegistry");
+      if (!raw) { status.textContent = "No local save found."; return; }
+      importModel(JSON.parse(raw));
+      status.textContent = "Loaded from local browser storage.";
+    });
+    $("clearButton").addEventListener("click", () => {
+      if (!confirm("Clear all measurements, results, meshes and vertices?")) return;
+      state.measurements = [];
+      state.results = [];
+      state.meshes = [];
+      render();
+      status.textContent = "Cleared.";
+    });
+    $("importInput").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        importModel(JSON.parse(await file.text()));
+        status.textContent = `Imported ${file.name}.`;
+      } catch (err) {
+        status.textContent = "Import failed: " + err.message;
+      }
+    });
+    $("projectName").addEventListener("input", render);
+    $("projectUnits").addEventListener("change", render);
+
+    fillPrecisionSelect();
+    render();
+  })();
+  </script>
+</body>
+</html>

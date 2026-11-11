@@ -1,0 +1,301 @@
+{
+  "schema": "house-measurement-registry-v1",
+  "project": {
+    "name": "House mapping",
+    "units": "mm",
+    "coordinateSystem": {
+      "x": "east-west, positive east",
+      "y": "down-up, positive up",
+      "z": "north-south, positive south because the back of the house faces south"
+    },
+    "createdAt": "2026-09-28T13:35:14.879Z",
+    "updatedAt": "2026-09-28T15:34:09.684Z"
+  },
+  "precisionPresets": [
+    {
+      "id": "P001",
+      "label": "1 mm",
+      "value": 1,
+      "unit": "mm",
+      "score": 1
+    },
+    {
+      "id": "P005",
+      "label": "5 mm",
+      "value": 5,
+      "unit": "mm",
+      "score": 2
+    },
+    {
+      "id": "P010",
+      "label": "1 cm",
+      "value": 10,
+      "unit": "mm",
+      "score": 3
+    },
+    {
+      "id": "P050",
+      "label": "5 cm",
+      "value": 50,
+      "unit": "mm",
+      "score": 4
+    },
+    {
+      "id": "P100",
+      "label": "10 cm",
+      "value": 100,
+      "unit": "mm",
+      "score": 5
+    },
+    {
+      "id": "P500",
+      "label": "50 cm",
+      "value": 500,
+      "unit": "mm",
+      "score": 6
+    }
+  ],
+  "measurements": [
+    {
+      "id": "M001",
+      "description": "",
+      "from": {
+        "label": "outer front wall",
+        "material": "",
+        "item": "outer front wall"
+      },
+      "to": {
+        "label": "outer back wall",
+        "material": "",
+        "item": "outer back wall"
+      },
+      "orientation": "N-S",
+      "value": 15.685,
+      "unit": "m",
+      "precisionId": "P050",
+      "room": "GF",
+      "notes": "Total depth of the house",
+      "recordedAt": "2026-09-28T14:10:12.481Z"
+    },
+    {
+      "id": "M002",
+      "description": "measured at floor level at the facade",
+      "from": {
+        "label": "outer left of the house",
+        "material": "",
+        "item": "outer left of the house"
+      },
+      "to": {
+        "label": "outer right of the house",
+        "material": "",
+        "item": "outer right of the house"
+      },
+      "orientation": "E-W",
+      "value": 4.85,
+      "unit": "m",
+      "precisionId": "P010",
+      "room": "GF",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:12:23.866Z"
+    },
+    {
+      "id": "M003",
+      "description": "measured at GF at the east wall opposite the garden stairs",
+      "from": {
+        "label": "outer wall of the back room",
+        "material": "",
+        "item": "outer wall of the back room"
+      },
+      "to": {
+        "label": "outer sliding door threshold",
+        "material": "",
+        "item": "outer sliding door threshold"
+      },
+      "orientation": "S-N",
+      "value": 2.85,
+      "unit": "m",
+      "precisionId": "P010",
+      "room": "GF",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:22:30.168Z"
+    },
+    {
+      "id": "M006",
+      "description": "",
+      "from": {
+        "label": "corridor/garage door inside",
+        "material": "",
+        "item": "corridor/garage door inside"
+      },
+      "to": {
+        "label": "corridor/garage door ouside",
+        "material": "",
+        "item": "corridor/garage door ouside"
+      },
+      "orientation": "S-N",
+      "value": 4,
+      "unit": "cm",
+      "precisionId": "P001",
+      "room": "",
+      "notes": "Door thickness",
+      "recordedAt": "2026-09-28T14:29:24.109Z"
+    },
+    {
+      "id": "M007",
+      "description": "garage",
+      "from": {
+        "label": "corrdor/garage door outside",
+        "material": "",
+        "item": "corrdor/garage door outside"
+      },
+      "to": {
+        "label": "garage door inside",
+        "material": "",
+        "item": "garage door inside"
+      },
+      "orientation": "S-N",
+      "value": 8.19,
+      "unit": "m",
+      "precisionId": "P005",
+      "room": "GF",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:31:22.087Z"
+    },
+    {
+      "id": "M008",
+      "description": "garage door",
+      "from": {
+        "label": "garage door inside",
+        "material": "",
+        "item": "garage door inside"
+      },
+      "to": {
+        "label": "outer back wall",
+        "material": "",
+        "item": "outer back wall"
+      },
+      "orientation": "S-N",
+      "value": 8.5,
+      "unit": "cm",
+      "precisionId": "P005",
+      "room": "",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:32:59.075Z"
+    },
+    {
+      "id": "M004",
+      "description": "measured in the GF corridor",
+      "from": {
+        "label": "inner sliding door threshold",
+        "material": "",
+        "item": "inner sliding door threshold"
+      },
+      "to": {
+        "label": "corridor/garage door inside",
+        "material": "",
+        "item": "corridor/garage door inside"
+      },
+      "orientation": "S-N",
+      "value": 4.29,
+      "unit": "m",
+      "precisionId": "P005",
+      "room": "GF",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:40:05.877Z"
+    },
+    {
+      "id": "M005",
+      "description": "",
+      "from": {
+        "label": "outer sliding door threshold",
+        "material": "",
+        "item": "outer sliding door threshold"
+      },
+      "to": {
+        "label": "inner sliding door threshold",
+        "material": "",
+        "item": "inner sliding door threshold"
+      },
+      "orientation": "S-N",
+      "value": 23.5,
+      "unit": "cm",
+      "precisionId": "P001",
+      "room": "GF",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:43:28.411Z"
+    }
+  ],
+  "results": [
+    {
+      "id": "R001",
+      "kind": "parameter",
+      "formula": "sum(M003,M004,M005,M006,M007,M008)",
+      "unit": "m",
+      "tolerance": 0,
+      "expected": 15.685,
+      "targetMesh": "OBJ001",
+      "targetProperty": "compositeDepth",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:38:51.580Z"
+    },
+    {
+      "id": "R002",
+      "kind": "parameter",
+      "formula": "M002",
+      "unit": "mm",
+      "tolerance": 0,
+      "expected": 0,
+      "targetMesh": "OBJ001",
+      "targetProperty": "width",
+      "notes": "",
+      "recordedAt": "2026-09-28T14:46:38.106Z"
+    }
+  ],
+  "meshes": [
+    {
+      "id": "OBJ001",
+      "name": "Ground plane",
+      "type": "box",
+      "parameters": {
+        "width": "R001",
+        "depth": "R002",
+        "height": "1"
+      },
+      "vertices": []
+    }
+  ],
+  "evaluated": {
+    "results": [
+      {
+        "id": "R001",
+        "kind": "parameter",
+        "formula": "sum(M003,M004,M005,M006,M007,M008)",
+        "value": 15690,
+        "unit": "m",
+        "status": "value",
+        "error": null
+      },
+      {
+        "id": "R002",
+        "kind": "parameter",
+        "formula": "M002",
+        "value": 4850,
+        "unit": "mm",
+        "status": "value",
+        "error": null
+      }
+    ],
+    "meshes": [
+      {
+        "id": "OBJ001",
+        "type": "box",
+        "parameters": {
+          "width": 15690,
+          "depth": 4850,
+          "height": 1
+        },
+        "vertices": []
+      }
+    ]
+  }
+}

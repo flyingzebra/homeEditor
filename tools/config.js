@@ -380,12 +380,13 @@ function OneWireController()
     this.quoteSVG = function(_str)
 {
     var newhtml = null;
-    while(_str != newhtml){
+    while(_str != newhtml)
+    {
        if(newhtml)
             _str = newhtml;
        newhtml = _str.replace(/(<[^>]+?=)([^"'\s>][^\s>]*)/,"$1'$2'");
     }
-		//alert(newhtml)
+        //alert(newhtml)
     return _str;
 }
 
@@ -409,11 +410,14 @@ function OneWireController()
         }
     }
     strleft += "\n    </select>\n    <br>\n    "+_T("circuits_wet")+"\n    <select id=\"aantal_natte_kringen\">\n  ";
-    for (var i = 1; i < 21; i++) {
-        if (i == 3) {
+    for (var i = 1; i < 21; i++)
+    {
+        if (i == 3)
+        {
             strleft = strleft + "<option selected=selected value=" + i + ">" + i + "</option>";
         }
-        else {
+        else
+        {
             strleft = strleft + "<option value=" + i + ">" + i + "</option>";
         }
     }
@@ -438,15 +442,18 @@ function OneWireController()
 }
 
 // menu item 'IMPORT'
-    this.importClicked = function() {
+    this.importClicked = function()
+    {
     document.getElementById('importfile').click();  // file requester triggers importjson
     document.getElementById('importfile').value = "";
 }
 
-    this.importJSON = function (event) {
+    this.importJSON = function (event)
+    {
     var input = event.target;
     var reader = new FileReader();
-    reader.onload = function () {
+    reader.onload = function ()
+    {
         var text = reader.result;
         import_to_structure(text);
     };
@@ -454,7 +461,8 @@ function OneWireController()
 }
 
 // menu item 'EXPORT'
-    this.exportJSON = function() {
+    this.exportJSON = function()
+    {
     var filename;
     filename = "eendraadschema.eds";
     var text = JSON.stringify(oHierarchicalList);
@@ -482,15 +490,17 @@ function OneWireController()
 };
 
 // schema pre-load buttons
-    this.loadSchema = function(nr) {
-    switch (nr) {
+    this.loadSchema = function(nr)
+    {
+    switch (nr)
+    {
         case 0:
-						EXAMPLE0 = bytesToString(pako.inflateRaw(atob(C_EXAMPLE0)));
+                        EXAMPLE0 = bytesToString(pako.inflateRaw(atob(C_EXAMPLE0)));
             EXAMPLE0 = EXAMPLE0.replace(/\\"/g, '"').replace(/\\n/g, String.fromCharCode(10));
             import_to_structure(EXAMPLE0);
             break;
         case 1:
-						EXAMPLE1 = bytesToString(pako.inflateRaw(atob(C_EXAMPLE1)));
+                        EXAMPLE1 = bytesToString(pako.inflateRaw(atob(C_EXAMPLE1)));
             EXAMPLE1 = EXAMPLE1.replace(/\\"/g, '"').replace(/\\n/g, String.fromCharCode(10));
             import_to_structure(EXAMPLE1);
             break;
@@ -505,7 +515,7 @@ function OneWireController()
             reset_all();
             break;
         case 3:
-        		importclicked();
+                importclicked();
             break;
     }
 }

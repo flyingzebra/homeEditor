@@ -7,14 +7,19 @@
     <meta charset="utf-8">
 
     <style>
-        /* Keep the configuration and editor controls above the diagram scrollable. */
-        #configsection:not(:empty),
+        /* Limit only the diagram editor controls, not the introductory screen. */
         #left_col_inner:not(:empty)
         {
-            height: 300px;
+            height: 200px;
             box-sizing: border-box;
             overflow-y: auto;
             overflow-x: hidden;
+        }
+
+        /* The shared header stylesheet otherwise clips introductions taller than the viewport. */
+        body .slider_overlay
+        {
+            overflow-y: auto;
         }
     </style>
 
@@ -57,7 +62,7 @@
                 , "circuits_dry": "Number of circuits (dry areas):"
                 , "differential_wet": "Differential protection for wet areas (mA)"
                 , "continue_option": "Continue with this option"
-                , "import_notice": "Import a previously saved diagram (.eds file). Only files created after 12 July 2019 are supported."
+                , "import_notice": "Import a previously saved diagram (.eds file)."
                 , "add_first_object": "Add the first component, or select New above."
                 , "name": "name"
                 , "text": "text"

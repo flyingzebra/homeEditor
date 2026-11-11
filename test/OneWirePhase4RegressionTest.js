@@ -96,6 +96,22 @@ function runOneWirePhase4RegressionTests()
         assert(document.getElementById('right_col_inner').innerHTML.indexOf('<svg') >= 0, 'Redraw failed');
     });
 
+    check('300px scrolling controls and no drawing version footer', function()
+    {
+        restart_all();
+        var oConfiguration = document.getElementById('configsection');
+        assert(getComputedStyle(oConfiguration).height === '300px', 'Configuration area is not 300px high');
+        assert(getComputedStyle(oConfiguration).overflowY === 'auto', 'Configuration is not vertically scrollable');
+
+        reset_all();
+        var oEditor = document.getElementById('left_col_inner');
+        assert(getComputedStyle(oEditor).height === '300px', 'Editor area is not 300px high');
+        assert(getComputedStyle(oEditor).overflowY === 'auto', 'Editor is not vertically scrollable');
+        assert(getComputedStyle(oConfiguration).height !== '300px', 'Empty configuration area did not collapse');
+        assert(document.getElementById('right_col_inner').textContent.indexOf(CONF_builddate) < 0,
+            'Build/version footer remains beneath the diagram');
+    });
+
     check('Top-menu downloads, action tooltips and no drawing legend', function()
     {
         var oMenu = document.getElementById('minitabs');

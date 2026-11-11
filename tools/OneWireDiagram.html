@@ -6,6 +6,18 @@
     <meta name="author" content="Freddy Vandriessche">
     <meta charset="utf-8">
 
+    <style>
+        /* Keep the configuration and editor controls above the diagram scrollable. */
+        #configsection:not(:empty),
+        #left_col_inner:not(:empty)
+        {
+            height: 300px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    </style>
+
     <script type="text/javascript" src="../res/pako.min.js"></script>
     <script type="text/javascript" src="TOOLS_Header.js"></script>
 
@@ -96,7 +108,7 @@
                 {
                     "tree_collapsed": "#9AC2F4"
                     , "tree_expanded": "#D0D0D0"
-                    , "delete_item": "red"
+                    //, "delete_item": "red"
                     , "insert_item": "#40E000"
                 }
                 , get _() { return this }
@@ -160,16 +172,12 @@
                 <li><a id="download-svg" href="javascript:download('svg')" title="Download the diagram as an SVG vector image">
                         <script>_D("download_svg")</script>
                     </a></li>
-                <li><a href="javascript:popUp('https://ewdiagram.blogspot.com')" title="Open information and contact details">
-                        <script>_D("menu_info")</script>
-                    </a></li>
             </ul>
         </div>
         <div id=main>
 
 
-            <div id="configsection">
-            </div>
+            <div id="configsection"></div>
             <div id="canvas_2col">
                 <div id="left_col">
                     <div id="left_col_inner"></div>
@@ -437,10 +445,10 @@
                     _T("_COL").insert_item + ";\" onclick=\"HLInsertAfter(" + this.id + ")\">&#9660;</button>";
                 output += " <button type=\"button\" title=\"" + _T("insert_child") +
                     "\" aria-label=\"" + _T("insert_child") + "\" style=\"background-color:" +
-                    _T("_COL").insert_item + ";\" onclick=\"HLInsertChild(" + this.id + ")\">&#9654;</button>";
+                    _T("_COL").insert_item + ";\" onclick=\"HLInsertChild(" + this.id + ")\"><!--&#9654;-->➕</button>";
                 output += " <button type=\"button\" title=\"" + _T("delete_item") +
                     "\" aria-label=\"" + _T("delete_item") + "\" style=\"background-color:" +
-                    _T("_COL").delete_item + ";\" onclick=\"HLDelete(" + this.id + ")\">&#9851;</button>";
+                    _T("_COL").delete_item + ";\" onclick=\"HLDelete(" + this.id + ")\"><!--&#2716;-->✗</button>";
                 output += "&nbsp;";
                 this.updateConsumers();
                 output += this.selectToHTML(0, this.consumers);

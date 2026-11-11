@@ -662,7 +662,6 @@ function OneWireController()
         var oDrawing = document.getElementById("right_col_inner");
         oDrawing.innerHTML = "<b>" + _T("drawing", "cap") + ": </b><br><br>" +
             oHierarchicalList.toSVG(0, "horizontal").data;
-        document.getElementById("right_col_inner").innerHTML += "<i><br><small>" + _T("version", "cap") + ": " + CONF_builddate + "</small></i><br><br>";
     }
 
     // Primary instance and legacy alias always refer to the same diagram.
